@@ -141,7 +141,7 @@ function sign(text: string, x: number, z: number, color: string) {
 }
 sign("SEESTEG", -11, 4, "#8bd4d7");
 sign("BAUPLATZ", 1, 5, "#b7d88b");
-sign("BOOM-ZONE", 14, 16, "#efb453");
+sign("BOOM-ZONE", 10, 16, "#efb453");
 // Buoys mark the test area's boundary without blocking access.
 for (let x = 9; x <= 19; x += 2) {
   for (const z of [6, 16]) {
@@ -284,6 +284,7 @@ let joyX = 0,
   joyY = 0,
   jump = false;
 function clearInput() {
+  joyId = lookId = -1;
   keys.clear();
   joyX = joyY = 0;
   jump = false;
@@ -588,7 +589,7 @@ joystick.onpointerdown = (e) => {
   moveJoy(e);
 };
 function moveJoy(e: PointerEvent) {
-  if (e.pointerId !== joyId) return;
+  if (paused || e.pointerId !== joyId) return;
   const r = joystick.getBoundingClientRect(),
     x = e.clientX - r.left - r.width / 2,
     y = e.clientY - r.top - r.height / 2,
