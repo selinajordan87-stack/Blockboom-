@@ -10,7 +10,11 @@ export class Player {
     if (Math.abs(p[0]) > LIMIT - 0.35 || Math.abs(p[2]) > LIMIT - 0.35)
       return true;
     for (let x = Math.floor(p[0] - 0.28); x <= Math.floor(p[0] + 0.28); x++)
-      for (let y = Math.floor(p[1] + 0.001); y <= Math.floor(p[1] + 1.74); y++)
+      for (
+        let y = Math.floor(p[1] + 0.000001);
+        y <= Math.floor(p[1] + 1.74);
+        y++
+      )
         for (let z = Math.floor(p[2] - 0.28); z <= Math.floor(p[2] + 0.28); z++)
           if (this.world.get(x, y, z)) return true;
     return false;
@@ -50,7 +54,7 @@ export class Player {
     } else {
       if (this.vy < 0) {
         this.grounded = true;
-        this.pos[1] = Math.floor(this.pos[1] + 0.001) + 0.001;
+        this.pos[1] = Math.floor(this.pos[1] + 0.001) + 0.00001;
       }
       this.vy = 0;
     }

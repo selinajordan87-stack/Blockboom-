@@ -38,6 +38,10 @@ describe("Bewegung", () => {
     expect(p.pos[1]).toBeGreaterThanOrEqual(1);
     expect(p.pos[1]).toBeLessThan(1.02);
     expect(p.grounded).toBe(true);
+    for (let i = 0; i < 30; i++) {
+      p.step(1 / 120, 0, 0, false);
+      expect(p.grounded).toBe(true);
+    }
     p.step(1 / 120, 0, 0, true);
     expect(p.vy).toBeGreaterThan(0);
     for (let i = 0; i < 240; i++) p.step(1 / 120, 0, 0, false);
