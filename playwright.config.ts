@@ -3,7 +3,8 @@ export default defineConfig({
   testDir: "./e2e",
   timeout: 45000,
   use: {
-    baseURL: process.env.BLOCKBOOM_TEST_URL || "http://localhost:5173",
+    baseURL:
+      process.env.BLOCKBOOM_TEST_URL || "http://localhost:5173/blockboom/",
     headless: true,
     launchOptions: {
       executablePath: "/usr/bin/chromium",

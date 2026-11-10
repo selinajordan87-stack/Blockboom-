@@ -94,7 +94,7 @@ npm ci
 npm run dev
 ```
 
-`http://localhost:5173` öffnen. Produktionsprüfung:
+`http://localhost:5173/blockboom/` öffnen. Produktionsprüfung:
 
 ```bash
 npm test
@@ -106,15 +106,15 @@ npm run preview -- --port 4173
 In einem zweiten Terminal, Chromium unter `/usr/bin/chromium`:
 
 ```bash
-BLOCKBOOM_TEST_URL=http://localhost:4173 npm run test:browser
+BLOCKBOOM_TEST_URL=http://localhost:4173/blockboom/ npm run test:browser
 ```
 
 Auf anderen Systemen den Browserpfad in `playwright.config.ts` anpassen. Es wurde weder ein Remote-Push noch ein öffentliches Deployment vorgenommen.
 
 ## 10. Android-Gerätetest
 
-1. PC und Android in dasselbe vertrauenswürdige WLAN bringen. Lokal `npm run dev` starten, gegebenenfalls den lokalen Port 5173 für dieses Netz freigeben. Auf dem Telefon `http://<LAN-IP-des-PCs>:5173` in aktuellem Chrome öffnen. Die privaten IPs der Cloud-Arbeitsumgebung sind dafür außerhalb dieser Umgebung nicht allgemein erreichbar.
-2. Alternativ per USB und Android-Debugging: `adb reverse tcp:5173 tcp:5173`, dann am Telefon `http://localhost:5173` öffnen. Das erlaubt auch die Prüfung von Funktionen, die einen sicheren Kontext voraussetzen.
+1. PC und Android in dasselbe vertrauenswürdige WLAN bringen. Lokal `npm run dev` starten, gegebenenfalls den lokalen Port 5173 für dieses Netz freigeben. Auf dem Telefon `http://<LAN-IP-des-PCs>:5173/blockboom/` in aktuellem Chrome öffnen. Die privaten IPs der Cloud-Arbeitsumgebung sind dafür außerhalb dieser Umgebung nicht allgemein erreichbar.
+2. Alternativ per USB und Android-Debugging: `adb reverse tcp:5173 tcp:5173`, dann am Telefon `http://localhost:5173/blockboom/` öffnen. Das erlaubt auch die Prüfung von Funktionen, die einen sicheren Kontext voraussetzen.
 3. Hochformat zwischen 360 und 430 CSS-Pixeln und Querformat prüfen. Links laufen und gleichzeitig rechts umsehen; springen, Blöcke wählen, setzen und entfernen. Kein Scrollen/Zoom und keine überlappenden Aktionsflächen im Spiel.
 4. Zum Steg gehen und hinaufspringen. Mission überspringen und frei angeln; danach annehmen, mehrere Fische fangen und Sammlung kontrollieren. Lokales Vorlesen prüfen, sofern eine deutsche Gerätestimme vorhanden ist.
 5. In der BOOM-Zone mehrfach auslösen und zurücksetzen; Sound im Menü bewusst aktivieren. Keine weiter anwachsende Partikelzahl nach Ende der Effekte.
@@ -130,3 +130,16 @@ Auf anderen Systemen den Browserpfad in `playwright.config.ts` anpassen. Es wurd
 5. Angelauswurf und Fang visuell verfeinern. Erst nach Spieltests weitere kurze freiwillige Lesemissionen als JSON ergänzen; keine automatische Diagnose und kein Lernzwang.
 
 Der Kern ist ein echtes kleines Sandbox-Spiel. Größere Lernprogramme, Offline-Installation und eine nachgewiesene Android-Performance sind bewusst noch kein Teil dieser Abnahme.
+
+
+## 12. Ergänzung: GitHub-Pages-Vorbereitung
+
+- Ausgangsstand: sauberer Branch `master`, HEAD `e9f633c`, vier bestehende Commits, kein Git-Remote. Bestehende Dateien und Historie bleiben erhalten; es wird ein zusätzlicher lokaler Commit erstellt. Kein Repository erstellt, kein Remote hinzugefügt, kein Push und kein Deployment.
+- Vorhandene Vite-Konfiguration und Manifest geprüft. Base jetzt `/blockboom/`, vorhandene Chunk-Aufteilung beibehalten. Manifest-/Icon-Links berücksichtigen die Base; Start-URL und Scope des Manifests sind relativ. Keine Änderungen an Spiellogik oder Speicherformat.
+- Neue `.github/workflows/pages.yml`: Push auf `main` oder manueller Lauf, Node 24, `npm ci`, TypeScript, Vitest, Produktionsbuild, offizielle Configure-/Upload-/Deploy-Pages-Actions. Build liest Repository und Pages-Konfiguration, Deployment erhält ausschließlich `pages: write` und `id-token: write`. Veröffentlichungen sind über eine gemeinsame Concurrency-Gruppe serialisiert; der Deploymentjob ist auf `main` beschränkt.
+- Bestehende Browserfälle verwenden relative Navigation unter der eingestellten Base-URL. Screenshots können in ein separates Verzeichnis geschrieben werden; ursprüngliche Artefakte bleiben erhalten. Ein zusätzlicher Pages-Test prüft Manifest, Scope, Icon, mitgelieferte Three.js-Lizenz, unterpfadgebundene JS-/CSS-Requests, echten WebGL-Zeichenpuffer, Neuladen und fehlende Laufzeit-/Requestfehler.
+- Lokale Prüfung des Produktionsbuilds unter `http://127.0.0.1:4180/blockboom/` mit einem einfachen statischen Python-Server, ausdrücklich ohne SPA-Fallback. Unterpfad liefert HTTP 200, nicht vorhandene Unterroute HTTP 404. Es existieren keine History-Routen; aktuelle Menüs brauchen keine eigene URL. Bei künftigen Routen Hash-Routing vorsehen.
+- TypeScript-Prüfung: bestanden. Logiktests: **12/12 bestanden**. Produktionsbuild: bestanden, ohne Warnungen. Browserprüfung: **8/8 bestanden** (ca. 1 Minute, Chromium mit Software-WebGL), einschließlich Speicherung, Touch bei 360/390/430 Pixeln und Pages-Assets.
+- Spielstandspeicherung ist originabhängig und unabhängig vom Pfad; die bestehenden Browserfälle prüfen den Roundtrip von Blöcken, Fang und Mission nun unter `/blockboom/`. Daten von localhost werden nicht automatisch auf eine spätere GitHub-Domain übertragen. Keine Cloud-Synchronisierung.
+- GitHub-Actions-Ausführung, tatsächliche Pages-URL und echte Tests in Safari/iOS und Chrome/Android sind noch offen. Keine automatische Konfigurationsprüfung mit actionlint (hier nicht installiert); Workflow statisch geprüft. Nach Vorbereitung ist weiterhin ausdrückliche Freigabe vor Push und Veröffentlichung nötig.
+- Anleitung: [GitHub Pages und Handytest](docs/GITHUB_PAGES.md). Die bestehende Android-/Performance-Einschränkung gilt weiterhin; die PWA ist nach wie vor nur vorbereitet und bietet keinen vollständigen Offline-Modus.

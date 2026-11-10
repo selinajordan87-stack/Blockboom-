@@ -2,16 +2,17 @@
   "name": "BLOCKBOOM",
   "short_name": "BLOCKBOOM",
   "lang": "de",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#173c37",
   "theme_color": "#173c37",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     }
-  ]
+  ],
+  "scope": "./"
 }

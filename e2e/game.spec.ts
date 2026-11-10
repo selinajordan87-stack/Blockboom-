@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+const artifactDir = process.env.BLOCKBOOM_ARTIFACT_DIR || "artifacts";
 const blank = (position = [0, 1.01, 17], yaw = 0, pitch = 0) => ({
   version: 1,
   position,
@@ -16,7 +17,7 @@ const blank = (position = [0, 1.01, 17], yaw = 0, pitch = 0) => ({
   settings: { sound: false, quality: 1 },
 });
 async function seed(page: any, s: any) {
-  await page.goto("/");
+  await page.goto("./");
   await page.evaluate(
     (s: any) => localStorage.setItem("blockboom.save", JSON.stringify(s)),
     s,
@@ -40,9 +41,9 @@ test("Desktop: Start, Bewegung, Kamera, Bauen und dauerhafter Spielstand", async
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/");
+  await page.goto("./");
   await expect(page.locator("h1")).toContainText("BLOCK");
-  await page.screenshot({ path: "artifacts/start-desktop.png" });
+  await page.screenshot({ path: `${artifactDir}/start-desktop.png` });
   await page.locator("#play").click();
   await page.keyboard.down("KeyW");
   await page.waitForTimeout(500);
@@ -70,7 +71,7 @@ test("Desktop: Start, Bewegung, Kamera, Bauen und dauerhafter Spielstand", async
   await page.keyboard.press("Minus");
   s = await getSave(page);
   expect(s.changes[k]).toBeNull();
-  await page.screenshot({ path: "artifacts/game-desktop.png" });
+  await page.screenshot({ path: `${artifactDir}/game-desktop.png` });
   expect(errors).toEqual([]);
 });
 test("Angeln, freiwillige Mission, Sammlung und Neuladen", async ({ page }) => {
@@ -89,7 +90,7 @@ test("Angeln, freiwillige Mission, Sammlung und Neuladen", async ({ page }) => {
   await expect(page.locator("#toast")).toContainText("Auftrag geschafft");
   await page.locator("#bag").click();
   await expect(page.locator(".fish-list")).toContainText("Flussbarsch");
-  await page.screenshot({ path: "artifacts/fish-collection.png" });
+  await page.screenshot({ path: `${artifactDir}/fish-collection.png` });
   await page.locator("#close").click();
   const s = await getSave(page);
   expect(s.fish.Flussbarsch).toBe(1);
@@ -122,7 +123,7 @@ for (const width of [360, 390, 430])
     const page = await context.newPage();
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto("/");
+    await page.goto("./");
     await expect(page.locator("#play")).toBeInViewport();
     await page.locator("#play").tap();
     await page.waitForTimeout(150);
@@ -167,7 +168,7 @@ for (const width of [360, 390, 430])
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page.screenshot({ path: `artifacts/mobile-${width}.png` });
+    await page.screenshot({ path: `${artifactDir}/mobile-${width}.png` });
     expect(errors).toEqual([]);
     await context.close();
   });
@@ -213,7 +214,7 @@ test("Touch: Blöcke setzen/entfernen, Barsch fangen und BOOM zurücksetzen", as
   await expect(page.locator("#toast")).toContainText(
     "Die Struktur steht wieder",
   );
-  await page.screenshot({ path: "artifacts/boom-mobile.png" });
+  await page.screenshot({ path: `${artifactDir}/boom-mobile.png` });
   expect(errors).toEqual([]);
   await context.close();
 });

@@ -7,7 +7,7 @@ npm ci
 npm run dev
 ```
 
-Dann http://localhost:5173 öffnen. Node.js 22.12+ oder 24 empfohlen.
+Dann http://localhost:5173/blockboom/ öffnen. Node.js 22.12+ oder 24 empfohlen.
 
 ```bash
 npm test
@@ -25,3 +25,5 @@ Touch: Joystick links, rechts wischen, ↑ springen, − entfernen, + bauen. Akt
 Spielstände bleiben im lokalen Browserspeicher dieser Adresse. Automatisch alle 10 Sekunden, nach Änderungen und beim Verlassen; manuell im Menü. Inkonsistente oder unbekannte Versionen werden als `blockboom.save.backup` gesichert, bevor ein neues Spiel gespeichert wird. Browserdaten löschen entfernt den Spielstand. Ein privates Browserfenster bietet keine dauerhafte Speicherung.
 
 Weitere Details, Grenzen, Testergebnisse und Android-Anleitung: [REPORT.md](REPORT.md). Assetlizenzen: [THIRD_PARTY.md](THIRD_PARTY.md).
+
+GitHub Pages ist lokal vorbereitet, aber noch nicht veröffentlicht: [Repository, Pages-Einstellungen und Handytest](docs/GITHUB_PAGES.md). Ein Push auf `main` löst nach der Einrichtung den automatischen Workflow aus; dafür ist zuvor die ausdrückliche Freigabe erforderlich.
