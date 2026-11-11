@@ -9,3 +9,7 @@ Vor Änderungen ausgeführt: TypeScript strict, 21 Unit-/Logiktests und Produkti
 Risiken: gespeicherte Weltänderungen dürfen durch neue Grundlandschaft nicht verschoben werden; native Touch-/Klick-Reihenfolge muss erhalten bleiben; Lernformulare benötigen bei Tastaturänderungen eigene Scrollfläche. Deshalb: additive, versionierte Erweiterung des bestehenden Saves; eigene Lernspeicherung; separate Module für Inventar, Fischpopulation, Challenges und Missionen. Kein Rewrite und keine neuen Produktabhängigkeiten.
 
 Geplanter vertikaler Abschnitt: freies Bauen/Undo → sichtbare reale Fänge → drei vollständige Lernmissionen → mobile Regression und Freigabe. Komplexer Survival-Kampf, Crafting und endlose Welt bleiben außerhalb dieses Releases.
+
+## Phasen 2–4: modulare Erweiterungen
+
+Phase 2: neun Materialien, freies Bauen bis in ausgehobene Bereiche, geschützte Steg-/Auftragspunkte, sichere letzte Bauaktion rückgängig. Additive Save-Erweiterung mit Ausgabeprüfung, begrenztem Fangprotokoll und unverändertem v1-Weltformat. 24 Tests bestanden. Phase 3: fünf Arten mit je drei lebenden Tieren, getrenntem Populationsmodell und instanzierten Körperteilen; echte Fischidentität und Bewegung zum Schwimmer. 26 Tests bestanden. Phase 4: 40 JSON-Aufgaben in fünf Bereichen und drei Stufen, eigenständige adaptive Engine, eigene lokale Lernspeicherung und rein logische Missionszustände mit einmaliger Belohnung. 29 Tests bestanden. Die Oberflächenintegration und komplette mobile Abnahme folgen in Phase 5.

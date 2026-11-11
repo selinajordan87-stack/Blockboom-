@@ -1,0 +1,836 @@
+[
+  {
+    "id": "world-01",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 1,
+    "target": "Fisch",
+    "solution": "Fisch",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Fisch.",
+    "options": [],
+    "hints": [
+      "Ein Fisch schwimmt im See.",
+      "Das Wort beginnt mit F und hat 5 Buchstaben."
+    ],
+    "syllables": "Fisch",
+    "speech": "Schreibe das Wort: Fisch.",
+    "reward": 2
+  },
+  {
+    "id": "world-02",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 1,
+    "target": "Angel",
+    "solution": "Angel",
+    "variants": [
+      "n"
+    ],
+    "prompt": "Ergänze das Wort: A_gel.",
+    "options": [],
+    "hints": [
+      "Mit der Angel fängst du Fische.",
+      "Das Wort beginnt mit A und hat 5 Buchstaben."
+    ],
+    "syllables": "An-gel",
+    "speech": "Ergänze das Wort: A_gel.",
+    "reward": 2
+  },
+  {
+    "id": "world-03",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 1,
+    "target": "Barsch",
+    "solution": "Barsch",
+    "variants": [],
+    "prompt": "Der Barsch hat dunkle Streifen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Barsch",
+      "See",
+      "Abenteuer"
+    ],
+    "hints": [
+      "Der Barsch hat dunkle Streifen.",
+      "Das Wort beginnt mit B und hat 6 Buchstaben."
+    ],
+    "syllables": "Barsch",
+    "speech": "Der Barsch hat dunkle Streifen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-04",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 1,
+    "target": "Hecht",
+    "solution": "Hecht",
+    "variants": [],
+    "prompt": "Der Hecht lauert zwischen Pflanzen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Hecht",
+      "Fackel",
+      "Bretter"
+    ],
+    "hints": [
+      "Der Hecht lauert zwischen Pflanzen.",
+      "Das Wort beginnt mit H und hat 5 Buchstaben."
+    ],
+    "syllables": "Hecht",
+    "speech": "Der Hecht lauert zwischen Pflanzen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-05",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 1,
+    "target": "Baum",
+    "solution": "Baum",
+    "variants": [],
+    "prompt": "Ein Baum hat einen Stamm. Welches Wort kam im Satz vor?",
+    "options": [
+      "Baum",
+      "Höhle",
+      "Blätter"
+    ],
+    "hints": [
+      "Ein Baum hat einen Stamm.",
+      "Das Wort beginnt mit B und hat 4 Buchstaben."
+    ],
+    "syllables": "Baum",
+    "speech": "Ein Baum hat einen Stamm. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-06",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 1,
+    "target": "Holz",
+    "solution": "Holz",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Holz.",
+    "options": [],
+    "hints": [
+      "Aus Holz entstehen Bretter.",
+      "Das Wort beginnt mit H und hat 4 Buchstaben."
+    ],
+    "syllables": "Holz",
+    "speech": "Schreibe das Wort: Holz.",
+    "reward": 2
+  },
+  {
+    "id": "world-07",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 1,
+    "target": "Stein",
+    "solution": "Stein",
+    "variants": [
+      "t"
+    ],
+    "prompt": "Ergänze das Wort: S_ein.",
+    "options": [],
+    "hints": [
+      "Stein ist ein festes Baumaterial.",
+      "Das Wort beginnt mit S und hat 5 Buchstaben."
+    ],
+    "syllables": "Stein",
+    "speech": "Ergänze das Wort: S_ein.",
+    "reward": 2
+  },
+  {
+    "id": "world-08",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 1,
+    "target": "Sand",
+    "solution": "Sand",
+    "variants": [],
+    "prompt": "Am Ufer liegt heller Sand. Welches Wort kam im Satz vor?",
+    "options": [
+      "Sand",
+      "Werkzeug",
+      "Spitzhacke"
+    ],
+    "hints": [
+      "Am Ufer liegt heller Sand.",
+      "Das Wort beginnt mit S und hat 4 Buchstaben."
+    ],
+    "syllables": "Sand",
+    "speech": "Am Ufer liegt heller Sand. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-09",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 1,
+    "target": "Glas",
+    "solution": "Glas",
+    "variants": [],
+    "prompt": "Durch Glas kannst du hindurchsehen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Glas",
+      "Abenteuer",
+      "Schaufel"
+    ],
+    "hints": [
+      "Durch Glas kannst du hindurchsehen.",
+      "Das Wort beginnt mit G und hat 4 Buchstaben."
+    ],
+    "syllables": "Glas",
+    "speech": "Durch Glas kannst du hindurchsehen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-10",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 1,
+    "target": "See",
+    "solution": "See",
+    "variants": [],
+    "prompt": "Im See leben viele Fische. Welches Wort kam im Satz vor?",
+    "options": [
+      "See",
+      "Bretter",
+      "Ziegel"
+    ],
+    "hints": [
+      "Im See leben viele Fische.",
+      "Das Wort beginnt mit S und hat 3 Buchstaben."
+    ],
+    "syllables": "See",
+    "speech": "Im See leben viele Fische. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-11",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 2,
+    "target": "Fackel",
+    "solution": "Fackel",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Fackel.",
+    "options": [],
+    "hints": [
+      "Eine Fackel spendet Licht.",
+      "Das Wort beginnt mit F und hat 6 Buchstaben."
+    ],
+    "syllables": "Fa-ckel",
+    "speech": "Schreibe das Wort: Fackel.",
+    "reward": 2
+  },
+  {
+    "id": "world-12",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 2,
+    "target": "Höhle",
+    "solution": "Höhle",
+    "variants": [
+      "ö"
+    ],
+    "prompt": "Ergänze das Wort: H_hle.",
+    "options": [],
+    "hints": [
+      "In einer Höhle kann es dunkel sein.",
+      "Das Wort beginnt mit H und hat 5 Buchstaben."
+    ],
+    "syllables": "Höh-le",
+    "speech": "Ergänze das Wort: H_hle.",
+    "reward": 2
+  },
+  {
+    "id": "world-13",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 2,
+    "target": "Schatz",
+    "solution": "Schatz",
+    "variants": [],
+    "prompt": "In der Kiste liegt ein Schatz. Welches Wort kam im Satz vor?",
+    "options": [
+      "Schatz",
+      "Forelle",
+      "Ufer"
+    ],
+    "hints": [
+      "In der Kiste liegt ein Schatz.",
+      "Das Wort beginnt mit S und hat 6 Buchstaben."
+    ],
+    "syllables": "Schatz",
+    "speech": "In der Kiste liegt ein Schatz. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-14",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 2,
+    "target": "Brücke",
+    "solution": "Brücke",
+    "variants": [],
+    "prompt": "Eine Brücke führt über das Wasser. Welches Wort kam im Satz vor?",
+    "options": [
+      "Brücke",
+      "Spitzhacke",
+      "Stamm"
+    ],
+    "hints": [
+      "Eine Brücke führt über das Wasser.",
+      "Das Wort beginnt mit B und hat 6 Buchstaben."
+    ],
+    "syllables": "Brü-cke",
+    "speech": "Eine Brücke führt über das Wasser. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-15",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 2,
+    "target": "Werkzeug",
+    "solution": "Werkzeug",
+    "variants": [],
+    "prompt": "Mit einem Werkzeug kannst du arbeiten. Welches Wort kam im Satz vor?",
+    "options": [
+      "Werkzeug",
+      "Schaufel",
+      "Wurzel"
+    ],
+    "hints": [
+      "Mit einem Werkzeug kannst du arbeiten.",
+      "Das Wort beginnt mit W und hat 8 Buchstaben."
+    ],
+    "syllables": "Werk-zeug",
+    "speech": "Mit einem Werkzeug kannst du arbeiten. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-16",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 2,
+    "target": "Abenteuer",
+    "solution": "Abenteuer",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Abenteuer.",
+    "options": [],
+    "hints": [
+      "Ein Abenteuer beginnt mit einer Idee.",
+      "Das Wort beginnt mit A und hat 9 Buchstaben."
+    ],
+    "syllables": "A-ben-teu-er",
+    "speech": "Schreibe das Wort: Abenteuer.",
+    "reward": 2
+  },
+  {
+    "id": "world-17",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 2,
+    "target": "Bretter",
+    "solution": "Bretter",
+    "variants": [
+      "r"
+    ],
+    "prompt": "Ergänze das Wort: B_etter.",
+    "options": [],
+    "hints": [
+      "Aus Brettern kannst du einen Steg bauen.",
+      "Das Wort beginnt mit B und hat 7 Buchstaben."
+    ],
+    "syllables": "Bret-ter",
+    "speech": "Ergänze das Wort: B_etter.",
+    "reward": 2
+  },
+  {
+    "id": "world-18",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 2,
+    "target": "Blätter",
+    "solution": "Blätter",
+    "variants": [],
+    "prompt": "Die Blätter wachsen an den Ästen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Blätter",
+      "Wald",
+      "Kiste"
+    ],
+    "hints": [
+      "Die Blätter wachsen an den Ästen.",
+      "Das Wort beginnt mit B und hat 7 Buchstaben."
+    ],
+    "syllables": "Blät-ter",
+    "speech": "Die Blätter wachsen an den Ästen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-19",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 2,
+    "target": "Karpfen",
+    "solution": "Karpfen",
+    "variants": [],
+    "prompt": "Ein Karpfen hat Barteln am Maul. Welches Wort kam im Satz vor?",
+    "options": [
+      "Karpfen",
+      "Ufer",
+      "Dach"
+    ],
+    "hints": [
+      "Ein Karpfen hat Barteln am Maul.",
+      "Das Wort beginnt mit K und hat 7 Buchstaben."
+    ],
+    "syllables": "Karp-fen",
+    "speech": "Ein Karpfen hat Barteln am Maul. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-20",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 2,
+    "target": "Forelle",
+    "solution": "Forelle",
+    "variants": [],
+    "prompt": "Die Forelle schwimmt sehr schnell. Welches Wort kam im Satz vor?",
+    "options": [
+      "Forelle",
+      "Stamm",
+      "Mauer"
+    ],
+    "hints": [
+      "Die Forelle schwimmt sehr schnell.",
+      "Das Wort beginnt mit F und hat 7 Buchstaben."
+    ],
+    "syllables": "Fo-rel-le",
+    "speech": "Die Forelle schwimmt sehr schnell. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-21",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 2,
+    "target": "Spitzhacke",
+    "solution": "Spitzhacke",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Spitzhacke.",
+    "options": [],
+    "hints": [
+      "Mit der Spitzhacke bearbeitest du Stein.",
+      "Das Wort beginnt mit S und hat 10 Buchstaben."
+    ],
+    "syllables": "Spitz-ha-cke",
+    "speech": "Schreibe das Wort: Spitzhacke.",
+    "reward": 2
+  },
+  {
+    "id": "world-22",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 2,
+    "target": "Schaufel",
+    "solution": "Schaufel",
+    "variants": [
+      "c"
+    ],
+    "prompt": "Ergänze das Wort: S_haufel.",
+    "options": [],
+    "hints": [
+      "Eine Schaufel hilft beim Graben.",
+      "Das Wort beginnt mit S und hat 8 Buchstaben."
+    ],
+    "syllables": "Schau-fel",
+    "speech": "Ergänze das Wort: S_haufel.",
+    "reward": 2
+  },
+  {
+    "id": "world-23",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 2,
+    "target": "Ziegel",
+    "solution": "Ziegel",
+    "variants": [],
+    "prompt": "Aus Ziegeln kannst du eine Mauer bauen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Ziegel",
+      "Sammlung",
+      "Entdeckung"
+    ],
+    "hints": [
+      "Aus Ziegeln kannst du eine Mauer bauen.",
+      "Das Wort beginnt mit Z und hat 6 Buchstaben."
+    ],
+    "syllables": "Zie-gel",
+    "speech": "Aus Ziegeln kannst du eine Mauer bauen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-24",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 2,
+    "target": "Wasser",
+    "solution": "Wasser",
+    "variants": [],
+    "prompt": "Fische brauchen Wasser zum Leben. Welches Wort kam im Satz vor?",
+    "options": [
+      "Wasser",
+      "Kiste",
+      "Konstruktion"
+    ],
+    "hints": [
+      "Fische brauchen Wasser zum Leben.",
+      "Das Wort beginnt mit W und hat 6 Buchstaben."
+    ],
+    "syllables": "Was-ser",
+    "speech": "Fische brauchen Wasser zum Leben. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-25",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 2,
+    "target": "Wald",
+    "solution": "Wald",
+    "variants": [],
+    "prompt": "Im Wald stehen viele Bäume. Welches Wort kam im Satz vor?",
+    "options": [
+      "Wald",
+      "Dach",
+      "Überraschung"
+    ],
+    "hints": [
+      "Im Wald stehen viele Bäume.",
+      "Das Wort beginnt mit W und hat 4 Buchstaben."
+    ],
+    "syllables": "Wald",
+    "speech": "Im Wald stehen viele Bäume. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-26",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 2,
+    "target": "Ufer",
+    "solution": "Ufer",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Ufer.",
+    "options": [],
+    "hints": [
+      "Das Ufer liegt am Rand des Sees.",
+      "Das Wort beginnt mit U und hat 4 Buchstaben."
+    ],
+    "syllables": "U-fer",
+    "speech": "Schreibe das Wort: Ufer.",
+    "reward": 2
+  },
+  {
+    "id": "world-27",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 3,
+    "target": "Stamm",
+    "solution": "Stamm",
+    "variants": [
+      "t"
+    ],
+    "prompt": "Ergänze das Wort: S_amm.",
+    "options": [],
+    "hints": [
+      "Der Stamm trägt die Krone des Baumes.",
+      "Das Wort beginnt mit S und hat 5 Buchstaben."
+    ],
+    "syllables": "Stamm",
+    "speech": "Ergänze das Wort: S_amm.",
+    "reward": 2
+  },
+  {
+    "id": "world-28",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 3,
+    "target": "Wurzel",
+    "solution": "Wurzel",
+    "variants": [],
+    "prompt": "Die Wurzel hält den Baum im Boden. Welches Wort kam im Satz vor?",
+    "options": [
+      "Wurzel",
+      "Insel",
+      "Fisch"
+    ],
+    "hints": [
+      "Die Wurzel hält den Baum im Boden.",
+      "Das Wort beginnt mit W und hat 6 Buchstaben."
+    ],
+    "syllables": "Wur-zel",
+    "speech": "Die Wurzel hält den Baum im Boden. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-29",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 3,
+    "target": "Flussbarsch",
+    "solution": "Flussbarsch",
+    "variants": [
+      "Barsch"
+    ],
+    "prompt": "Der Flussbarsch hat stachelige Rückenflossen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Flussbarsch",
+      "Entdeckung",
+      "Angel"
+    ],
+    "hints": [
+      "Der Flussbarsch hat stachelige Rückenflossen.",
+      "Das Wort beginnt mit F und hat 11 Buchstaben."
+    ],
+    "syllables": "Fluss-barsch",
+    "speech": "Der Flussbarsch hat stachelige Rückenflossen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-30",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 3,
+    "target": "Sammlung",
+    "solution": "Sammlung",
+    "variants": [],
+    "prompt": "Deine Sammlung zeigt alle gefangenen Arten. Welches Wort kam im Satz vor?",
+    "options": [
+      "Sammlung",
+      "Konstruktion",
+      "Barsch"
+    ],
+    "hints": [
+      "Deine Sammlung zeigt alle gefangenen Arten.",
+      "Das Wort beginnt mit S und hat 8 Buchstaben."
+    ],
+    "syllables": "Samm-lung",
+    "speech": "Deine Sammlung zeigt alle gefangenen Arten. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-31",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 3,
+    "target": "Kiste",
+    "solution": "Kiste",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Kiste.",
+    "options": [],
+    "hints": [
+      "In der Kiste kannst du einen Schatz finden.",
+      "Das Wort beginnt mit K und hat 5 Buchstaben."
+    ],
+    "syllables": "Kis-te",
+    "speech": "Schreibe das Wort: Kiste.",
+    "reward": 2
+  },
+  {
+    "id": "world-32",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 3,
+    "target": "Dach",
+    "solution": "Dach",
+    "variants": [
+      "a"
+    ],
+    "prompt": "Ergänze das Wort: D_ch.",
+    "options": [],
+    "hints": [
+      "Ein Dach schützt vor Regen.",
+      "Das Wort beginnt mit D und hat 4 Buchstaben."
+    ],
+    "syllables": "Dach",
+    "speech": "Ergänze das Wort: D_ch.",
+    "reward": 2
+  },
+  {
+    "id": "world-33",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 3,
+    "target": "Mauer",
+    "solution": "Mauer",
+    "variants": [],
+    "prompt": "Eine Mauer besteht aus vielen Steinen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Mauer",
+      "Holzknüppel",
+      "Holz"
+    ],
+    "hints": [
+      "Eine Mauer besteht aus vielen Steinen.",
+      "Das Wort beginnt mit M und hat 5 Buchstaben."
+    ],
+    "syllables": "Mau-er",
+    "speech": "Eine Mauer besteht aus vielen Steinen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-34",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 3,
+    "target": "Fenster",
+    "solution": "Fenster",
+    "variants": [],
+    "prompt": "Durch das Fenster fällt Licht ins Haus. Welches Wort kam im Satz vor?",
+    "options": [
+      "Fenster",
+      "Fisch",
+      "Stein"
+    ],
+    "hints": [
+      "Durch das Fenster fällt Licht ins Haus.",
+      "Das Wort beginnt mit F und hat 7 Buchstaben."
+    ],
+    "syllables": "Fens-ter",
+    "speech": "Durch das Fenster fällt Licht ins Haus. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-35",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 3,
+    "target": "Insel",
+    "solution": "Insel",
+    "variants": [],
+    "prompt": "Eine Insel ist von Wasser umgeben. Welches Wort kam im Satz vor?",
+    "options": [
+      "Insel",
+      "Angel",
+      "Sand"
+    ],
+    "hints": [
+      "Eine Insel ist von Wasser umgeben.",
+      "Das Wort beginnt mit I und hat 5 Buchstaben."
+    ],
+    "syllables": "In-sel",
+    "speech": "Eine Insel ist von Wasser umgeben. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-36",
+    "domain": "Rechtschreibung",
+    "kind": "spelling",
+    "level": 3,
+    "target": "Entdeckung",
+    "solution": "Entdeckung",
+    "variants": [],
+    "prompt": "Schreibe das Wort: Entdeckung.",
+    "options": [],
+    "hints": [
+      "Eine Entdeckung kann dich überraschen.",
+      "Das Wort beginnt mit E und hat 10 Buchstaben."
+    ],
+    "syllables": "Ent-de-ckung",
+    "speech": "Schreibe das Wort: Entdeckung.",
+    "reward": 2
+  },
+  {
+    "id": "world-37",
+    "domain": "Schreibflüssigkeit",
+    "kind": "gap",
+    "level": 3,
+    "target": "Konstruktion",
+    "solution": "Konstruktion",
+    "variants": [
+      "o"
+    ],
+    "prompt": "Ergänze das Wort: K_nstruktion.",
+    "options": [],
+    "hints": [
+      "Eine Konstruktion besteht aus verbundenen Teilen.",
+      "Das Wort beginnt mit K und hat 12 Buchstaben."
+    ],
+    "syllables": "Kon-struk-ti-on",
+    "speech": "Ergänze das Wort: K_nstruktion.",
+    "reward": 2
+  },
+  {
+    "id": "world-38",
+    "domain": "Wortschatz",
+    "kind": "choice",
+    "level": 3,
+    "target": "Überraschung",
+    "solution": "Überraschung",
+    "variants": [],
+    "prompt": "In der Schatzkiste wartet eine Überraschung. Welches Wort kam im Satz vor?",
+    "options": [
+      "Überraschung",
+      "Baum",
+      "Fackel"
+    ],
+    "hints": [
+      "In der Schatzkiste wartet eine Überraschung.",
+      "Das Wort beginnt mit Ü und hat 12 Buchstaben."
+    ],
+    "syllables": "Ü-ber-ra-schung",
+    "speech": "In der Schatzkiste wartet eine Überraschung. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-39",
+    "domain": "Textverständnis",
+    "kind": "comprehension",
+    "level": 3,
+    "target": "Rückenflosse",
+    "solution": "Rückenflosse",
+    "variants": [],
+    "prompt": "Die Rückenflosse hilft dem Fisch beim Schwimmen. Welches Wort kam im Satz vor?",
+    "options": [
+      "Rückenflosse",
+      "Holz",
+      "Höhle"
+    ],
+    "hints": [
+      "Die Rückenflosse hilft dem Fisch beim Schwimmen.",
+      "Das Wort beginnt mit R und hat 12 Buchstaben."
+    ],
+    "syllables": "Rü-cken-flos-se",
+    "speech": "Die Rückenflosse hilft dem Fisch beim Schwimmen. Welches Wort kam im Satz vor?",
+    "reward": 2
+  },
+  {
+    "id": "world-40",
+    "domain": "Leseflüssigkeit",
+    "kind": "reading",
+    "level": 3,
+    "target": "Holzknüppel",
+    "solution": "Holzknüppel",
+    "variants": [],
+    "prompt": "Der Holzknüppel ist ein einfaches Spielwerkzeug. Welches Wort kam im Satz vor?",
+    "options": [
+      "Holzknüppel",
+      "Stein",
+      "Schatz"
+    ],
+    "hints": [
+      "Der Holzknüppel ist ein einfaches Spielwerkzeug.",
+      "Das Wort beginnt mit H und hat 11 Buchstaben."
+    ],
+    "syllables": "Holz-knüp-pel",
+    "speech": "Der Holzknüppel ist ein einfaches Spielwerkzeug. Welches Wort kam im Satz vor?",
+    "reward": 2
+  }
+]
