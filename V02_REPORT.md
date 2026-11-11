@@ -1,5 +1,7 @@
 # BLOCKBOOM v0.2 – Arbeits- und Abschlussbericht
 
+**Stand 11. November 2026, 21:04 UTC: implementiert, lokal vollständig geprüft und auf main hochgeladen; Veröffentlichung extern blockiert. GitHub meldet einen größeren Ausfall bei Actions und Pages. Die Live-Adresse liefert derzeit weiterhin v0.1.1. Nach der Definition of Done ist der Release deshalb noch nicht vollständig abgeschlossen.**
+
 ## Phase 1: geprüfter Ausgangsstand
 
 Ausgangspunkt ist `3f3305d` auf main. Arbeitsbaum sauber, origin/main identisch. Die vollständigen mobilen Korrekturen aus v0.1.1 sind vorhanden: getrennter Lifecycle für Blur/Visibility, eigener Besitzer je Touchfläche, sichere native Button-Klicks, Safe Areas, 20-Hz-Zielsuche und Regressionstests. `/Blockboom-/` ist korrekt konfiguriert; der bestehende Pages-Workflow bleibt bestehen.
@@ -35,7 +37,7 @@ localStorage bleibt angesichts der begrenzten Welt und Datenmengen angemessen. F
 
 ## Tests und zwischenzeitliche Fehler
 
-Vor Änderungen: TypeScript, 21 Tests und Build bestanden. Danach schrittweise 24/26/29 Tests für die neuen Module. Releasekandidat: TypeScript strict, **32 Unit-/Logiktests**, Produktionsbuild bestanden. Bestehende 20 Browserfälle sind erhalten; sieben neue Funktionsfälle und ein zusätzlicher Touch-Missionsfall ergänzen sie. Ein Gesamtlauf mit 27 Fällen bestand, die neue Touch-Schatzmission zusätzlich separat. Der abschließende Gesamtlauf des Bestands wird unten ergänzt.
+Vor Änderungen: TypeScript, 21 Tests und Build bestanden. Danach schrittweise 24/26/29 Tests für die neuen Module. Releasekandidat: TypeScript strict, **32 Unit-/Logiktests**, Produktionsbuild bestanden. Bestehende 20 Browserfälle sind erhalten; sieben neue Funktionsfälle, eine zusätzliche Touch-Mission und die Prüfung auf Kompatibilitätsklicks ergänzen sie auf 29 Fälle. Ein Gesamtlauf mit 27 Fällen bestand, die neue Touch-Schatzmission zusätzlich separat. Der abschließende unveränderte Releasekandidat bestand am Ende **29/29 Browserfälle** in einem einzigen Gesamtlauf (2,7 Minuten), protokolliert unter `artifacts/pages/v02-local-final.log` im Arbeitsbereich.
 
 Getestet werden tatsächliche Platzierung/Entfernung/Undo, Kollision, Save-Roundtrips, sichtbare bewegte Fischidentitäten und Modelltreffer, Angelbiss, Fangmethoden, echte Holzernte, alle drei Missionsabschlüsse und einmalige Belohnung. Tests setzen Positionen/Alt-Saves zur Vorbereitung; Materialien, Fischfänge und Missionsabschlüsse werden über Spielaktionen erzeugt. Lernfehler, Hilfen, getrennte Speicherung, Moduswechsel und Texteingabe mit verkleinerter Höhe sind enthalten. Speech-Auswahl/Benutzeraktion wird mit einer lokalen deutschen Stimme als Browser-API-Mock geprüft; das ist kein Nachweis hörbarer Geräteausgabe.
 
@@ -70,3 +72,22 @@ Lokale deutsche Stimmen können fehlen oder erst verzögert verfügbar sein; der
 TypeScript strict, 32 Unit-/Logiktests und Produktionsbuild bestanden. 29 Browserfälle wurden erfolgreich ausgeführt: 28 im letzten Gesamtlauf, anschließend der neue Kompatibilitätsklickfall nach Ergänzung seines zuvor fehlenden Touch-Kontexts separat. Der Kontextfehler war eine Testkonfiguration, kein übergangener Produktfehler. Die zuvor intermittierende 360-Pixel-Bedienung bestand nach der ereignisbasierten Tap-Korrektur auch im wiederholten gezielten Lauf; zehn Touch-/Angel-/Menüfälle wurden dabei erfolgreich wiederholt. Der gesamte Bestand wird nach Veröffentlichung nochmals gegen die reale Pages-Adresse geprüft.
 
 Der Anwendungsstand ist für den freigegebenen Release vorbereitet. Die tatsächliche Veröffentlichung wird erst nach grünem Workflow, passendem Live-Bundle und HTTP-Erreichbarkeit bestätigt. Endgültige Abnahme auf echtem iPhone bleibt offen.
+
+
+## Phase 6: Produktionsstand, Commits und tatsächlicher Deployment-Status
+
+Abgeschlossene lokale Prüfungen des freigegebenen Anwendungsstands: **TypeScript bestanden, 32/32 Unit-/Logiktests bestanden, 29/29 Browserfälle im abschließenden Gesamtlauf bestanden, Produktionsbuild erfolgreich**. JavaScript etwa 557 kB insgesamt / 145 kB gzip, CSS etwa 15 kB / 4 kB gzip. Keine neue Produktabhängigkeit.
+
+Die Feature-Historie wurde ohne Rewrite/Force-Push per Fast-Forward nach main übernommen und hochgeladen:
+
+- `31f7dc8`: Audit und Kompatibilitätsstrategie.
+- `c1a406b`: Baustoffe, Undo und additive Speicherung.
+- `d64b0dc`: fünf lebende Fischarten und identitätsgebundene Fänge.
+- `adfaa95`: Learning Engine, 40 Inhalte und Missionszustände.
+- `d9e9265`: vollständige Spiel-/UI-Integration, Regression und mobile Tap-Absicherung.
+
+Der bestehende [Pages-Workflow für den Anwendungsstand](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43099128884) wurde durch den Push gestartet, steht aber weiterhin auf **queued**. Jobs melden keinen zugewiesenen Runner und es werden keine ausstehenden manuellen Deployment-Freigaben angezeigt. Die offizielle [GitHub-Statusseite](https://www.githubstatus.com/) meldete beim Abruf einen „Partial System Outage“, insbesondere **Actions: major_outage** und **Pages: major_outage**. Das ist ein externer Dienstfehler; eine Konfigurationsänderung oder ein Force-Push wäre keine sachliche Behebung.
+
+Die [Live-Adresse](https://selinajordan87-stack.github.io/Blockboom-/) ist zwar mit HTTP 200 erreichbar, liefert aber noch den alten Bundle `index-B6PmffVw.js` aus v0.1.1. Erwarteter v0.2-Anwendungsbundle ist `index-CH-n8Nxp.js`. Deshalb werden **weder ein erfolgreicher v0.2-Deploymentabschluss noch erfolgreiche v0.2-Live-Browsertests behauptet**. Eine Dokumentationsaktualisierung auf main nutzt ebenfalls den bestehenden Workflow; sie ändert keinen Anwendungsbundle.
+
+Offen bis zum vollständigen Release: Nach Behebung der GitHub-Störung den laufenden/gegebenenfalls fehlgeschlagenen Pages-Lauf prüfen oder erneut starten, dessen grünen Abschluss abwarten, Live-Bundle und Startmarkierung v0.2.0 vergleichen und die Browserfälle gegen die tatsächliche öffentliche URL ausführen. Erst danach kann die Produktionsbereitstellung nach der Definition of Done bestätigt werden. Anschließend folgt die separate echte iPhone-Abnahme nach obigem Plan. Website-Daten dabei nicht löschen.
