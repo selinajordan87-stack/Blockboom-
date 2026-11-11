@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test("Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang", async ({
   page,
-  request,
   baseURL,
 }) => {
   const errors: string[] = [];
@@ -17,23 +16,38 @@ test("Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang
   await page.goto("./");
   expect(new URL(page.url()).pathname).toBe("/Blockboom-/");
   await expect(page.locator("#play")).toBeVisible();
+  await expect(page.locator(".eyebrow")).toContainText("v0.1.1");
   const manifestURL = await page
     .locator('link[rel="manifest"]')
     .evaluate((el: HTMLLinkElement) => el.href);
-  expect(new URL(manifestURL).pathname).toBe("/Blockboom-/manifest.webmanifest");
-  const manifestResponse = await request.get(manifestURL);
-  expect(manifestResponse.ok()).toBe(true);
-  const manifest = await manifestResponse.json();
-  expect(new URL(manifest.start_url, manifestURL).pathname).toBe("/Blockboom-/");
+  expect(new URL(manifestURL).pathname).toBe(
+    "/Blockboom-/manifest.webmanifest",
+  );
+  // Browser fetch follows the same trusted networking path as the actual app.
+  const fetchAsset = (url: string) =>
+    page.evaluate(async (url) => {
+      const r = await fetch(url);
+      return {
+        status: r.status,
+        headers: Object.fromEntries(r.headers),
+        text: await r.text(),
+      };
+    }, url);
+  const manifestResponse = await fetchAsset(manifestURL);
+  expect(manifestResponse.status).toBe(200);
+  const manifest = JSON.parse(manifestResponse.text);
+  expect(new URL(manifest.start_url, manifestURL).pathname).toBe(
+    "/Blockboom-/",
+  );
   expect(new URL(manifest.scope, manifestURL).pathname).toBe("/Blockboom-/");
-  const icon = await request.get(
+  const icon = await fetchAsset(
     new URL(manifest.icons[0].src, manifestURL).href,
   );
-  expect(icon.ok()).toBe(true);
-  expect(icon.headers()["content-type"]).toContain("image/svg+xml");
-  const license = await request.get(new URL("THREE-LICENSE.txt", baseURL).href);
-  expect(license.ok()).toBe(true);
-  expect(await license.text()).toContain("MIT License");
+  expect(icon.status).toBe(200);
+  expect(icon.headers["content-type"]).toContain("image/svg+xml");
+  const license = await fetchAsset(new URL("THREE-LICENSE.txt", baseURL).href);
+  expect(license.status).toBe(200);
+  expect(license.text).toContain("MIT License");
   expect(responses.length).toBeGreaterThanOrEqual(2);
   expect(
     responses.every((url) => new URL(url).pathname.startsWith("/Blockboom-/")),

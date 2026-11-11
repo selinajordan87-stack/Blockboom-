@@ -1,4 +1,4 @@
-# BLOCKBOOM · First Playable v0.1
+# BLOCKBOOM · First Playable v0.1.1
 
 Lokales 3D-Sandbox-Spiel: bauen, angeln, sammeln und in der BOOM-Zone experimentieren. Eine freiwillige Lesemission, keine Anmeldung oder Cloud.
 
@@ -27,3 +27,5 @@ Spielstände bleiben im lokalen Browserspeicher dieser Adresse. Automatisch alle
 Weitere Details, Grenzen, Testergebnisse und Android-Anleitung: [REPORT.md](REPORT.md). Assetlizenzen: [THIRD_PARTY.md](THIRD_PARTY.md).
 
 Die Veröffentlichung für `selinajordan87-stack/Blockboom-` ist freigegeben; der tatsächliche Status steht im [Abschlussbericht](REPORT.md). Einrichtung und Handytest: [Repository, Pages-Einstellungen und Handytest](docs/GITHUB_PAGES.md). Ein Push auf `main` löst nach der Einrichtung den automatischen Workflow aus.
+
+Mobile-Rescue-Update: [Fehlerursache, Regressionstests und iPhone-Abnahme](MOBILE_RESCUE_REPORT.md). Die endgültige mobile Abnahme erfolgt auf einem echten iPhone.

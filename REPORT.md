@@ -153,3 +153,8 @@ Der Kern ist ein echtes kleines Sandbox-Spiel. Größere Lernprogramme, Offline-
 - Erneute TypeScript-Prüfung, zwölf Logiktests und Produktionsbuild bestanden. Erneute Browserprüfung unter `/Blockboom-/`: **6/8 bestanden**, zwei Touchfälle (390 und 430 Pixel) liefen beim Speichern nach Menü-Tap in einen Timeout. Desktop, 360-Pixel-Touch, kompletter Touch-Spielablauf und Pages-Assetprüfung bestanden. Die Ursache der beiden Timeouts ist ungeklärt; keine Spielfunktionen wurden geändert. Ein echter Gerätetest bleibt nötig.
 - Einrichtung von Pages über die API versucht: `POST /repos/selinajordan87-stack/Blockboom-/pages` mit `build_type=workflow` wurde mit **403 Resource not accessible by integration** abgewiesen. Das verbundene GitHub-App-Token darf diese Administration nicht ausführen. Der Repositoryinhaber muss die Quelle unter Settings → Pages einmal auf GitHub Actions stellen.
 - Die Einrichtung bleibt bis zur manuellen Aktivierung von Pages blockiert. Der tatsächliche Upload- und Workflow-Status wird im begleitenden Veröffentlichungsbericht im Chat genannt; dies ist keine Bestätigung einer bereits erreichbaren Website.
+
+
+## 14. Mobile Rescue v0.1.1
+
+Die belegte Kopplung von sichtbarem `window.blur` an das manuelle Pausenmenü wurde entfernt. Touchbesitz, Abbruch und Klickauslösung sind abgesichert; Speicherformat und Kernfunktionen bleiben erhalten. Änderungen, Messgrenzen, Testergebnisse und die notwendige echte iPhone-Abnahme stehen im [Mobile-Rescue-Bericht](MOBILE_RESCUE_REPORT.md).
