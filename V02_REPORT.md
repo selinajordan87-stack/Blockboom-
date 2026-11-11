@@ -1,6 +1,6 @@
 # BLOCKBOOM v0.2 – Arbeits- und Abschlussbericht
 
-**Stand 11. November 2026, 21:04 UTC: implementiert, lokal vollständig geprüft und auf main hochgeladen; Veröffentlichung extern blockiert. GitHub meldet einen größeren Ausfall bei Actions und Pages. Die Live-Adresse liefert derzeit weiterhin v0.1.1. Nach der Definition of Done ist der Release deshalb noch nicht vollständig abgeschlossen.**
+**Release-Status: v0.2.0 ist auf GitHub Pages veröffentlicht und unter der tatsächlichen öffentlichen Adresse erfolgreich geprüft. TypeScript, 32 Logiktests, 29 lokale Browserfälle und alle 29 Live-Browserfälle bestanden. Die separate echte iPhone-Abnahme steht aus.**
 
 ## Phase 1: geprüfter Ausgangsstand
 
@@ -76,7 +76,7 @@ Der Anwendungsstand ist für den freigegebenen Release vorbereitet. Die tatsäch
 
 ## Phase 6: Produktionsstand, Commits und tatsächlicher Deployment-Status
 
-Abgeschlossene lokale Prüfungen des freigegebenen Anwendungsstands: **TypeScript bestanden, 32/32 Unit-/Logiktests bestanden, 29/29 Browserfälle im abschließenden Gesamtlauf bestanden, Produktionsbuild erfolgreich**. JavaScript etwa 557 kB insgesamt / 145 kB gzip, CSS etwa 15 kB / 4 kB gzip. Keine neue Produktabhängigkeit.
+Abgeschlossene Prüfungen: **TypeScript bestanden, 32/32 Unit-/Logiktests bestanden, 29/29 Browserfälle im abschließenden lokalen Gesamtlauf bestanden, Produktionsbuild erfolgreich**. Danach **29/29 Browserfälle direkt auf der öffentlichen GitHub-Pages-Adresse bestanden** (jeweils etwa 2,7 Minuten). Die Tests umfassen alle drei vollständigen Missionen, tatsächliche Holzernte, fünf bewegte Fischarten, beide Fangmethoden, neun Materialien, Undo, alte Spielstände, Challenges, Texteingabe/kleine Bildschirmhöhe, BOOM und die mobilen Regressionen. Protokolle im Arbeitsbereich: `artifacts/pages/v02-local-final.log` und `artifacts/pages/v02-live-final.log`.
 
 Die Feature-Historie wurde ohne Rewrite/Force-Push per Fast-Forward nach main übernommen und hochgeladen:
 
@@ -84,10 +84,11 @@ Die Feature-Historie wurde ohne Rewrite/Force-Push per Fast-Forward nach main ü
 - `c1a406b`: Baustoffe, Undo und additive Speicherung.
 - `d64b0dc`: fünf lebende Fischarten und identitätsgebundene Fänge.
 - `adfaa95`: Learning Engine, 40 Inhalte und Missionszustände.
-- `d9e9265`: vollständige Spiel-/UI-Integration, Regression und mobile Tap-Absicherung.
+- `d9e9265`: vollständige Spiel-/UI-Integration, Regression und mobile Tap-Absicherung (Anwendungsstand v0.2.0).
+- `e43d29f`: Dokumentation der zwischenzeitlichen GitHub-Störung; keine Anwendungsänderung.
 
-Der bestehende [Pages-Workflow für den Anwendungsstand](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43099128884) wurde durch den Push gestartet, steht aber weiterhin auf **queued**. Jobs melden keinen zugewiesenen Runner und es werden keine ausstehenden manuellen Deployment-Freigaben angezeigt. Die offizielle [GitHub-Statusseite](https://www.githubstatus.com/) meldete beim Abruf einen „Partial System Outage“, insbesondere **Actions: major_outage** und **Pages: major_outage**. Das ist ein externer Dienstfehler; eine Konfigurationsänderung oder ein Force-Push wäre keine sachliche Behebung.
+Der [Pages-Workflow des Anwendungsstands](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43099128884) hat **Build und Deployment erfolgreich abgeschlossen**. Auch der [nachfolgende Dokumentationslauf](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43100061885) ist erfolgreich. Zwischenzeitlich meldete die offizielle [GitHub-Statusseite](https://www.githubstatus.com/) einen größeren Ausfall von Actions und Pages; Jobs waren deshalb zunächst queued/waiting. Das wurde geprüft und dokumentiert, ohne die funktionierende Hosting-Konfiguration zu verändern. Der Dienstausfall ist kein offener Blocker dieses Releases mehr.
 
-Die [Live-Adresse](https://selinajordan87-stack.github.io/Blockboom-/) ist zwar mit HTTP 200 erreichbar, liefert aber noch den alten Bundle `index-B6PmffVw.js` aus v0.1.1. Erwarteter v0.2-Anwendungsbundle ist `index-CH-n8Nxp.js`. Deshalb werden **weder ein erfolgreicher v0.2-Deploymentabschluss noch erfolgreiche v0.2-Live-Browsertests behauptet**. Eine Dokumentationsaktualisierung auf main nutzt ebenfalls den bestehenden Workflow; sie ändert keinen Anwendungsbundle.
+Die [Live-Adresse](https://selinajordan87-stack.github.io/Blockboom-/) liefert **HTTP 200**, den mit dem lokalen Produktionsbuild übereinstimmenden v0.2-Bundle `index-CH-n8Nxp.js` und die Startmarkierung **v0.2.0**. JavaScript, CSS, Manifest, Icon und Three.js-Lizenz wurden über den Browser geprüft. Die abschließende Aktualisierung dieses Berichts ändert den Anwendungsbundle nicht. JavaScript etwa 557 kB insgesamt / 145 kB gzip, CSS etwa 15 kB / 4 kB gzip. Keine neue Produktabhängigkeit.
 
-Offen bis zum vollständigen Release: Nach Behebung der GitHub-Störung den laufenden/gegebenenfalls fehlgeschlagenen Pages-Lauf prüfen oder erneut starten, dessen grünen Abschluss abwarten, Live-Bundle und Startmarkierung v0.2.0 vergleichen und die Browserfälle gegen die tatsächliche öffentliche URL ausführen. Erst danach kann die Produktionsbereitstellung nach der Definition of Done bestätigt werden. Anschließend folgt die separate echte iPhone-Abnahme nach obigem Plan. Website-Daten dabei nicht löschen.
+Damit ist die automatisierte Release-Abnahme samt tatsächlicher Bereitstellung abgeschlossen. Kein echter iPhone-/Android- oder erfolgreicher Safari-Gerätetest wird behauptet; die separate Abnahme durch die Auftraggeberin folgt nach obigem Plan. Website-Daten dabei nicht löschen.
