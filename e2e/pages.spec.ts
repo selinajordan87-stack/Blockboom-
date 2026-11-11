@@ -15,17 +15,17 @@ test("Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang
     if (/\.(js|css)(\?|$)/.test(res.url())) responses.push(res.url());
   });
   await page.goto("./");
-  expect(new URL(page.url()).pathname).toBe("/blockboom/");
+  expect(new URL(page.url()).pathname).toBe("/Blockboom-/");
   await expect(page.locator("#play")).toBeVisible();
   const manifestURL = await page
     .locator('link[rel="manifest"]')
     .evaluate((el: HTMLLinkElement) => el.href);
-  expect(new URL(manifestURL).pathname).toBe("/blockboom/manifest.webmanifest");
+  expect(new URL(manifestURL).pathname).toBe("/Blockboom-/manifest.webmanifest");
   const manifestResponse = await request.get(manifestURL);
   expect(manifestResponse.ok()).toBe(true);
   const manifest = await manifestResponse.json();
-  expect(new URL(manifest.start_url, manifestURL).pathname).toBe("/blockboom/");
-  expect(new URL(manifest.scope, manifestURL).pathname).toBe("/blockboom/");
+  expect(new URL(manifest.start_url, manifestURL).pathname).toBe("/Blockboom-/");
+  expect(new URL(manifest.scope, manifestURL).pathname).toBe("/Blockboom-/");
   const icon = await request.get(
     new URL(manifest.icons[0].src, manifestURL).href,
   );
@@ -36,7 +36,7 @@ test("Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang
   expect(await license.text()).toContain("MIT License");
   expect(responses.length).toBeGreaterThanOrEqual(2);
   expect(
-    responses.every((url) => new URL(url).pathname.startsWith("/blockboom/")),
+    responses.every((url) => new URL(url).pathname.startsWith("/Blockboom-/")),
   ).toBe(true);
   // Three.js really created a WebGL drawing surface, not just an HTML shell.
   const buffer = await page

@@ -4,7 +4,7 @@ export default defineConfig({
   timeout: 45000,
   use: {
     baseURL:
-      process.env.BLOCKBOOM_TEST_URL || "http://localhost:5173/blockboom/",
+      process.env.BLOCKBOOM_TEST_URL || "http://localhost:5173/Blockboom-/",
     headless: true,
     launchOptions: {
       executablePath: "/usr/bin/chromium",

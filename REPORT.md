@@ -94,7 +94,7 @@ npm ci
 npm run dev
 ```
 
-`http://localhost:5173/blockboom/` öffnen. Produktionsprüfung:
+`http://localhost:5173/Blockboom-/` öffnen. Produktionsprüfung:
 
 ```bash
 npm test
@@ -106,15 +106,15 @@ npm run preview -- --port 4173
 In einem zweiten Terminal, Chromium unter `/usr/bin/chromium`:
 
 ```bash
-BLOCKBOOM_TEST_URL=http://localhost:4173/blockboom/ npm run test:browser
+BLOCKBOOM_TEST_URL=http://localhost:4173/Blockboom-/ npm run test:browser
 ```
 
 Auf anderen Systemen den Browserpfad in `playwright.config.ts` anpassen. Es wurde weder ein Remote-Push noch ein öffentliches Deployment vorgenommen.
 
 ## 10. Android-Gerätetest
 
-1. PC und Android in dasselbe vertrauenswürdige WLAN bringen. Lokal `npm run dev` starten, gegebenenfalls den lokalen Port 5173 für dieses Netz freigeben. Auf dem Telefon `http://<LAN-IP-des-PCs>:5173/blockboom/` in aktuellem Chrome öffnen. Die privaten IPs der Cloud-Arbeitsumgebung sind dafür außerhalb dieser Umgebung nicht allgemein erreichbar.
-2. Alternativ per USB und Android-Debugging: `adb reverse tcp:5173 tcp:5173`, dann am Telefon `http://localhost:5173/blockboom/` öffnen. Das erlaubt auch die Prüfung von Funktionen, die einen sicheren Kontext voraussetzen.
+1. PC und Android in dasselbe vertrauenswürdige WLAN bringen. Lokal `npm run dev` starten, gegebenenfalls den lokalen Port 5173 für dieses Netz freigeben. Auf dem Telefon `http://<LAN-IP-des-PCs>:5173/Blockboom-/` in aktuellem Chrome öffnen. Die privaten IPs der Cloud-Arbeitsumgebung sind dafür außerhalb dieser Umgebung nicht allgemein erreichbar.
+2. Alternativ per USB und Android-Debugging: `adb reverse tcp:5173 tcp:5173`, dann am Telefon `http://localhost:5173/Blockboom-/` öffnen. Das erlaubt auch die Prüfung von Funktionen, die einen sicheren Kontext voraussetzen.
 3. Hochformat zwischen 360 und 430 CSS-Pixeln und Querformat prüfen. Links laufen und gleichzeitig rechts umsehen; springen, Blöcke wählen, setzen und entfernen. Kein Scrollen/Zoom und keine überlappenden Aktionsflächen im Spiel.
 4. Zum Steg gehen und hinaufspringen. Mission überspringen und frei angeln; danach annehmen, mehrere Fische fangen und Sammlung kontrollieren. Lokales Vorlesen prüfen, sofern eine deutsche Gerätestimme vorhanden ist.
 5. In der BOOM-Zone mehrfach auslösen und zurücksetzen; Sound im Menü bewusst aktivieren. Keine weiter anwachsende Partikelzahl nach Ende der Effekte.
@@ -143,3 +143,13 @@ Der Kern ist ein echtes kleines Sandbox-Spiel. Größere Lernprogramme, Offline-
 - Spielstandspeicherung ist originabhängig und unabhängig vom Pfad; die bestehenden Browserfälle prüfen den Roundtrip von Blöcken, Fang und Mission nun unter `/blockboom/`. Daten von localhost werden nicht automatisch auf eine spätere GitHub-Domain übertragen. Keine Cloud-Synchronisierung.
 - GitHub-Actions-Ausführung, tatsächliche Pages-URL und echte Tests in Safari/iOS und Chrome/Android sind noch offen. Keine automatische Konfigurationsprüfung mit actionlint (hier nicht installiert); Workflow statisch geprüft. Nach Vorbereitung ist weiterhin ausdrückliche Freigabe vor Push und Veröffentlichung nötig.
 - Anleitung: [GitHub Pages und Handytest](docs/GITHUB_PAGES.md). Die bestehende Android-/Performance-Einschränkung gilt weiterhin; die PWA ist nach wie vor nur vorbereitet und bietet keinen vollständigen Offline-Modus.
+
+
+## 13. Veröffentlichungsauftrag am 11. November 2026
+
+- Die ausdrücklich freigegebene Zieladresse wurde auf `selinajordan87-stack/Blockboom-` korrigiert. Das öffentliche Repository wurde über GitHub und `git ls-remote` geprüft: Größe 0, keine vorhandenen Refs, keine fremden Inhalte. Das verbundene Konto meldet Schreibrechte.
+- Lokalen Branch wie beauftragt von `master` in `main` umbenannt, `origin` auf `https://github.com/selinajordan87-stack/Blockboom-.git` gesetzt. Alle fünf vorherigen Commits einschließlich `467adf6` bleiben unverändert Vorfahren des neuen Stands.
+- Wegen des tatsächlichen Repositorynamens die Hosting-Base auf `/Blockboom-/` korrigiert, ebenso Browserprüfungen und aktuelle Anleitungen. Spielfunktionen, Speicherformat und bisherige Referenzbilder bleiben unverändert. Abschnitt 12 dokumentiert den früheren Testpfad; aktuell gilt dieser Abschnitt.
+- Erneute TypeScript-Prüfung, zwölf Logiktests und Produktionsbuild bestanden. Erneute Browserprüfung unter `/Blockboom-/`: **6/8 bestanden**, zwei Touchfälle (390 und 430 Pixel) liefen beim Speichern nach Menü-Tap in einen Timeout. Desktop, 360-Pixel-Touch, kompletter Touch-Spielablauf und Pages-Assetprüfung bestanden. Die Ursache der beiden Timeouts ist ungeklärt; keine Spielfunktionen wurden geändert. Ein echter Gerätetest bleibt nötig.
+- Einrichtung von Pages über die API versucht: `POST /repos/selinajordan87-stack/Blockboom-/pages` mit `build_type=workflow` wurde mit **403 Resource not accessible by integration** abgewiesen. Das verbundene GitHub-App-Token darf diese Administration nicht ausführen. Der Repositoryinhaber muss die Quelle unter Settings → Pages einmal auf GitHub Actions stellen.
+- Die Einrichtung bleibt bis zur manuellen Aktivierung von Pages blockiert. Der tatsächliche Upload- und Workflow-Status wird im begleitenden Veröffentlichungsbericht im Chat genannt; dies ist keine Bestätigung einer bereits erreichbaren Website.

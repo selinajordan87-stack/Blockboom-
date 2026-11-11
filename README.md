@@ -7,7 +7,7 @@ npm ci
 npm run dev
 ```
 
-Dann http://localhost:5173/blockboom/ öffnen. Node.js 22.12+ oder 24 empfohlen.
+Dann http://localhost:5173/Blockboom-/ öffnen. Node.js 22.12+ oder 24 empfohlen.
 
 ```bash
 npm test
@@ -26,4 +26,4 @@ Spielstände bleiben im lokalen Browserspeicher dieser Adresse. Automatisch alle
 
 Weitere Details, Grenzen, Testergebnisse und Android-Anleitung: [REPORT.md](REPORT.md). Assetlizenzen: [THIRD_PARTY.md](THIRD_PARTY.md).
 
-GitHub Pages ist lokal vorbereitet, aber noch nicht veröffentlicht: [Repository, Pages-Einstellungen und Handytest](docs/GITHUB_PAGES.md). Ein Push auf `main` löst nach der Einrichtung den automatischen Workflow aus; dafür ist zuvor die ausdrückliche Freigabe erforderlich.
+Die Veröffentlichung für `selinajordan87-stack/Blockboom-` ist freigegeben; der tatsächliche Status steht im [Abschlussbericht](REPORT.md). Einrichtung und Handytest: [Repository, Pages-Einstellungen und Handytest](docs/GITHUB_PAGES.md). Ein Push auf `main` löst nach der Einrichtung den automatischen Workflow aus.
