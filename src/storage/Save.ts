@@ -1,13 +1,15 @@
+import {readExpansion,type Expansion} from "../inventory/Equipment";
 import { TYPES, type Block, type Cell, LIMIT } from "../world/World";
 import { emptyProgress, type LearningProgress } from "../learning/Learning";
 import { type FishName } from "../fishing/Fishing";
 export interface Save {
   version: 1;
+  extension?: Expansion;
   position: Cell;
   yaw: number;
   pitch: number;
   changes: Record<string, Block | null>;
-  fish: Record<FishName, number>;
+  fish: Record<string, number>;
   progress: LearningProgress;
   missionActive: boolean;
   settings: { sound: boolean; quality: number };
@@ -60,6 +62,8 @@ export function decode(raw: string | null): Save | null {
       )
     )
       return null;
+    for(const f of ["Karpfen","Forelle"])if(s.fish[f]!==undefined&&(!Number.isSafeInteger(s.fish[f])||s.fish[f]<0))return null;
+    if(s.extension!==undefined)s.extension=readExpansion(s.extension);
     const p = s.progress;
     if (
       !p ||

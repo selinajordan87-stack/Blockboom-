@@ -5,6 +5,9 @@ export const TYPES = [
   "Holz",
   "Bretter",
   "Glas",
+  "Sand",
+  "Ziegel",
+  "Laub",
 ] as const;
 export type Block = (typeof TYPES)[number] | "Laub" | "Sand" | "Boom";
 export type Cell = [number, number, number];
@@ -109,13 +112,14 @@ export function canPlace(world: World, c: Cell, p: Cell) {
     c.every(Number.isInteger) &&
     Math.abs(c[0]) < LIMIT &&
     Math.abs(c[2]) < LIMIT &&
-    c[1] >= 1 &&
+    c[1] >= -2 &&
     c[1] <= 14 &&
     Math.hypot(
       c[0] + 0.5 - p[0],
       c[1] + 0.5 - (p[1] + 1.6),
       c[2] + 0.5 - p[2],
     ) <= 6 &&
+    !protectedCell(c) &&
     !world.get(...c) &&
     !intersectsPlayer(c, p)
   );
@@ -126,9 +130,10 @@ export function place(world: World, c: Cell, b: Block, p: Cell) {
   world.set(...c, b);
   return true;
 }
+export function protectedCell(c:Cell){return c[0]>=-12&&c[0]<=-10&&c[2]>=-1&&c[2]<=4&&c[1]===1;}
 export function remove(world: World, c: Cell, p: Cell) {
   if (
-    c[1] <= -3 ||
+    c[1] <= -3 || protectedCell(c) ||
     Math.hypot(
       c[0] + 0.5 - p[0],
       c[1] + 0.5 - (p[1] + 1.6),

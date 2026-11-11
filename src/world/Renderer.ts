@@ -10,6 +10,7 @@ export const colors: Record<Block, number> = {
   Laub: 0x43895c,
   Sand: 0xdec697,
   Boom: 0xe6a148,
+  Ziegel: 0xbd7155,
 };
 const faces = [
   {
