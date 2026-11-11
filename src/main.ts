@@ -2,6 +2,19 @@ import "./ui/style.css";
 import { installLifecycle } from "./core/Lifecycle";
 import { TouchControls, bindTap } from "./player/TouchControls";
 import * as T from "three";
+import { BuildHistory } from "./building/History";
+import { enrich } from "./world/Enrich";
+import { TOOLS, defaultExpansion, readExpansion } from "./inventory/Equipment";
+import { Shoal, LivingFishing, type FishActor } from "./fishing/Shoal";
+import { FishView } from "./fishing/FishView";
+import {
+  LearningEngine,
+  loadProfile,
+  freshProfile,
+  type Mode,
+} from "./learning/Engine";
+import { Missions, MISSIONS, type MissionId } from "./missions/Missions";
+import { AdventureUI, escapeHTML } from "./ui/AdventureUI";
 import {
   World,
   TYPES,
@@ -12,7 +25,7 @@ import {
 } from "./world/World";
 import { WorldView, colors } from "./world/Renderer";
 import { Player } from "./player/Player";
-import { Fishing, Inventory, FISH } from "./fishing/Fishing";
+import { Inventory, FISH } from "./fishing/Fishing";
 import { ReadingEngine, mission } from "./learning/Learning";
 import { explode } from "./boom/Boom";
 import { load, persist, SAVE_KEY, type Save } from "./storage/Save";
@@ -26,14 +39,14 @@ $("app").innerHTML = `
  <div id="mission-pin" hidden><span>FREIWILLIGER AUFTRAG</span><b>Fange einen Barsch.</b></div>
  <div id="rotate-tip">↻ Im Querformat hast du mehr Platz.</div>
  <div class="crosshair">+</div><div id="target-label"></div>
- <div id="context"><span id="context-text"></span><button id="interact">E · Interagieren</button><button id="reset-boom" hidden>↻ Aufbau</button></div>
+ <div id="context"><span id="context-text"></span><button id="interact">E · Interagieren</button><button id="local-mission" hidden>Auftrag</button><button id="reset-boom" hidden>↻ Aufbau</button></div>
  <div id="toast" role="status"></div>
  <div id="look" aria-label="Zum Umsehen wischen"></div>
  <div id="joystick" aria-label="Bewegungsjoystick"><div id="stick"></div></div>
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
- <footer><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E benutzen · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
+ <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E benutzen · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">SANDBOX-ABENTEUER · v0.1.1</div><h1>BLOCK<span>BOOM</span><i>Eine Welt voller Möglichkeiten.</i></h1><p>Ein See voller Fische. Platz für deine Ideen.<br>Und ein guter Ort, um alles krachen zu lassen.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>01 / WIESENLAND</span><b>Dein Abenteuer<br>beginnt hier.</b><p>Schau dich um. Mach es zu deiner Welt.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">LIVING WORLD · v0.2.0</div><h1>BLOCK<span>BOOM</span><i>Eine Welt voller Möglichkeiten.</i></h1><p>Ein See voller Fische. Platz für deine Ideen.<br>Und ein guter Ort, um alles krachen zu lassen.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>01 / WIESENLAND</span><b>Dein Abenteuer<br>beginnt hier.</b><p>Schau dich um. Mach es zu deiner Welt.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
@@ -62,46 +75,80 @@ scene.add(sun);
 const world = new World(),
   player = new Player(world),
   inventory = new Inventory(),
-  fishing = new Fishing();
+  shoal = new Shoal(),
+  fishing = new LivingFishing(shoal);
 let reading = new ReadingEngine(),
   settings = { sound: false, quality: 1.5 },
   saved = safeLoad(),
   started = false,
   paused = false,
   suspended = false,
-  selected = 0;
+  selected = 0,
+  materialPage = 0;
+const expansion = saved?.extension
+  ? readExpansion(saved.extension)
+  : defaultExpansion(saved ? 1 : 2);
+if (expansion.edition === 2) enrich(world);
+const history = new BuildHistory(),
+  missions = new Missions(expansion);
+const learning = new LearningEngine(
+  (() => {
+    try {
+      return loadProfile(localStorage);
+    } catch {
+      return freshProfile();
+    }
+  })(),
+);
 if (saved) {
   world.apply(saved.changes);
   player.pos = saved.position;
   player.yaw = saved.yaw;
   player.pitch = saved.pitch;
-  inventory.fish = saved.fish;
+  Object.assign(inventory.fish, saved.fish);
   reading = new ReadingEngine(saved.progress, saved.missionActive);
   settings = saved.settings;
   player.safeSpawn();
 }
 function safeLoad() {
   try {
-    return load(localStorage);
+    const result = load(localStorage);
+    if (result && !result.extension) {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (raw && !localStorage.getItem(SAVE_KEY + ".pre-v02"))
+          localStorage.setItem(SAVE_KEY + ".pre-v02", raw);
+      } catch {}
+    }
+    return result;
   } catch {
     return null;
   }
 }
 const view = new WorldView(world, scene);
 view.update();
+const fishView = new FishView(shoal, scene);
 const water = new T.Mesh(
   new T.CircleGeometry(1, 48),
   new T.MeshPhongMaterial({
     color: 0x4daeba,
     transparent: true,
-    opacity: 0.76,
+    opacity: 0.3,
     shininess: 65,
     side: T.DoubleSide,
   }),
 );
-water.scale.set(6.4, 6.15, 1);
+water.scale.set(
+  expansion.edition === 2 ? 8.3 : 6.4,
+  expansion.edition === 2 ? 7.4 : 6.15,
+  1,
+);
 water.rotation.x = -Math.PI / 2;
-water.position.set(-9.8, 0.38, -4.9);
+water.position.set(
+  expansion.edition === 2 ? -11 : -9.8,
+  0.38,
+  expansion.edition === 2 ? -6 : -4.9,
+);
 scene.add(water);
 // A few distant block clouds and hand-built signs; all artwork is generated here.
 const cloudMaterial = new T.MeshLambertMaterial({ color: 0xf4f6e9 });
@@ -147,6 +194,42 @@ function sign(text: string, x: number, z: number, color: string) {
 sign("SEESTEG", -11, 4, "#8bd4d7");
 sign("BAUPLATZ", 1, 5, "#b7d88b");
 sign("BOOM-ZONE", 10, 16, "#efb453");
+sign("MARA · HOLZAUFTRAG", -3, 14, "#b7d88b");
+sign("ENTDECKERPFAD", 7, -1, "#e3bd77");
+sign("WALDRUINE", -16, 19, "#b7d88b");
+for (const [x, z, color] of [
+  [-3, 14, 0xe1a663],
+  [-9, 3, 0x78a9b0],
+]) {
+  for (const [y, sx, sy, sz, c] of [
+    [1.5, 0.5, 1, 0.35, color],
+    [2.2, 0.45, 0.45, 0.45, 0xdcb38d],
+  ]) {
+    const m = new T.Mesh(cube, new T.MeshLambertMaterial({ color: c }));
+    m.position.set(x, y, z);
+    m.scale.set(sx, sy, sz);
+    scene.add(m);
+  }
+}
+const chest = new T.Mesh(cube, new T.MeshLambertMaterial({ color: 0xc29148 }));
+chest.position.set(7, 1.4, -4);
+chest.scale.set(1, 0.8, 0.65);
+scene.add(chest);
+const chestLid = new T.Group();
+chestLid.position.set(7, 1.8, -4.325);
+const lid = new T.Mesh(cube, new T.MeshLambertMaterial({ color: 0x9f703d }));
+lid.scale.set(1.05, 0.13, 0.7);
+lid.position.z = 0.325;
+chestLid.add(lid);
+scene.add(chestLid);
+const treasureGold = new T.Mesh(
+  cube,
+  new T.MeshLambertMaterial({ color: 0xf0c66b }),
+);
+treasureGold.position.set(7, 1.8, -4);
+treasureGold.scale.set(0.45, 0.2, 0.35);
+scene.add(treasureGold);
+
 // Buoys mark the test area's boundary without blocking access.
 for (let x = 9; x <= 19; x += 2) {
   for (const z of [6, 16]) {
@@ -190,6 +273,20 @@ rod.rotation.z = -0.2;
 rod.visible = false;
 camera.add(rod);
 scene.add(camera);
+const held = new T.Group();
+camera.add(held);
+const handle = new T.Mesh(cube, new T.MeshLambertMaterial({ color: 0x9c713f }));
+handle.position.set(0.48, -0.52, -0.9);
+handle.scale.set(0.09, 0.65, 0.09);
+held.add(handle);
+const toolHead = new T.Mesh(
+  cube,
+  new T.MeshLambertMaterial({ color: 0xa4b9ba }),
+);
+toolHead.position.set(0.48, -0.2, -0.9);
+held.add(toolHead);
+let swing = 0;
+
 const ray = new T.Raycaster();
 let target: Cell | null = null,
   adjacent: Cell | null = null;
@@ -215,8 +312,18 @@ function aim() {
       adjacent[1] + 0.5,
       adjacent[2] + 0.5,
     );
-    preview.visible = canPlace(world, adjacent, player.pos);
+    preview.visible = expansion.tool === "Bauwerkzeug";
+    (preview.material as T.MeshBasicMaterial).color.set(
+      canPlace(world, adjacent, player.pos) ? 0xc1f5be : 0xf59a6a,
+    );
     $("target-label").textContent = world.get(...target) || "";
+  }
+  if (expansion.tool === "Holzknüppel") {
+    const fish = fishView.hit(ray, 3.4);
+    if (fish && (!hit || fish.distance < hit.distance))
+      $("target-label").textContent =
+        `${fish.fish.species} · ${fish.fish.length} cm`;
+    preview.visible = false;
   }
 }
 function toast(text: string) {
@@ -241,6 +348,7 @@ function save() {
     progress: reading.progress,
     missionActive: reading.active,
     settings,
+    extension: expansion,
   };
   let ok = false;
   try {
@@ -262,20 +370,40 @@ function syncAim() {
 function build() {
   syncAim();
   if (adjacent && place(world, adjacent, TYPES[selected], player.pos)) {
+    history.record(adjacent!, null, TYPES[selected]);
+    $("undo").removeAttribute("disabled");
     save();
-  } else toast("Hier ist kein freier Bauplatz in Reichweite.");
+  } else
+    toast(
+      "Hier ist es belegt, zu weit weg oder geschützt. Visiere eine freie Fläche an.",
+    );
 }
 function destroy() {
+  swing = 0.3;
   syncAim();
+  const previous = target ? world.get(...target) : undefined;
   if (target && remove(world, target, player.pos)) {
+    history.record(target, previous!, null);
+    $("undo").removeAttribute("disabled");
+    if (previous && previous !== "Boom")
+      expansion.materials[previous] = (expansion.materials[previous] || 0) + 1;
+    missions.wood();
     save();
   } else toast("Visiere einen Block in deiner Nähe an.");
 }
 function hotbar() {
-  $("hotbar").innerHTML = TYPES.map(
-    (b, i) =>
-      `<button class="slot ${i === selected ? "selected" : ""}" aria-label="${b} auswählen" data-block="${i}"><span class="block-icon" style="--block:#${colors[b].toString(16)}"></span><small>${b}</small><em>${i + 1}</em></button>`,
-  ).join("");
+  $("hotbar").innerHTML =
+    TYPES.slice(materialPage * 5, materialPage * 5 + 5)
+      .map(
+        (b, i) =>
+          `<button class="slot ${i + materialPage * 5 === selected ? "selected" : ""}" aria-label="${b === "Laub" ? "Blätter" : b} auswählen" data-block="${i + materialPage * 5}"><span class="block-icon" style="--block:#${colors[b].toString(16)}"></span><small>${b === "Laub" ? "Blätter" : b}</small><em>${i + 1}</em></button>`,
+      )
+      .join("") +
+    `<button class="slot" id="material-next" aria-label="Weitere Baustoffe">›<small>Mehr</small></button>`;
+  bindTap($("material-next"), () => {
+    materialPage = 1 - materialPage;
+    hotbar();
+  });
   document.querySelectorAll<HTMLButtonElement>("[data-block]").forEach((b) =>
     bindTap(b, () => {
       selected = Number(b.dataset.block);
@@ -312,6 +440,7 @@ function openPanel(tag: string, html: string) {
   $("panel-tag").textContent = tag;
   $("panel-content").innerHTML = html;
   $("modal").hidden = false;
+  $("tool-palette").hidden = true;
 }
 function closePanel() {
   $("modal").hidden = true;
@@ -327,6 +456,19 @@ function menu() {
       (settings.quality === 1 ? "sparsam" : "normal") +
       '</button><button id="home">Zurück zum Startpunkt</button><p class="hint">Desktop: Zum Umsehen ins Spiel klicken. Falls die Maussperre fehlt: mit gedrückter Maus ziehen; die Tasten + und − bauen und entfernen. I öffnet das Inventar, 1–6 wählen Blöcke.</p>',
   );
+  const mode = document.createElement("label");
+  mode.className = "mode-select";
+  mode.innerHTML = `Spielmodus <select id="game-mode">${["Entspannt", "Abenteuer", "Lern-Challenge"].map((m) => `<option ${learning.profile.mode === m ? "selected" : ""}>${m}</option>`).join("")}</select>`;
+  $("panel-content").append(mode);
+  $("game-mode").onchange = () => {
+    learning.profile.mode = ($("game-mode") as HTMLSelectElement).value as Mode;
+    try {
+      if (!learning.save(localStorage))
+        toast("Lernmodus konnte nicht gespeichert werden.");
+    } catch {
+      toast("Speicher nicht verfügbar.");
+    }
+  };
   $("resume").onclick = closePanel;
   $("save").onclick = () =>
     toast(
@@ -358,12 +500,123 @@ bindTap($("menu"), () => {
   if (!suspended) menu();
 });
 bindTap($("bag"), () => {
-  if (!canPlay()) return;
+  if (canPlay()) showInventory();
+});
+const adventure = new AdventureUI(learning, missions, {
+  open: openPanel,
+  save,
+  near: nearMission,
+  toast,
+});
+function nearMission(id: MissionId) {
+  const p = MISSIONS[id].position;
+  return (
+    Math.hypot(player.pos[0] - p[0], player.pos[2] - p[2]) < 3.6 &&
+    Math.abs(player.pos[1] - p[1]) < 4
+  );
+}
+function showInventory() {
   openPanel(
     "INVENTAR",
-    `<h2>Deine Sammlung</h2><p>${inventory.total} Fische gefangen · Baumaterial unbegrenzt</p><div class="fish-list">${FISH.map((f) => `<div><span class="fish-symbol">≈</span><section><b>${f.name}</b><p>${f.description}</p></section><strong>${inventory.fish[f.name]}</strong></div>`).join("")}</div><p class="hint">Alle sechs Baustoffe findest du unten in der Blockleiste.</p>`,
+    `<h2>Deine Sammlung</h2><p>${inventory.total} Fische · ${expansion.tokens} Sterne · Bauen bleibt frei</p><div class="inventory-tabs"><button id="fish-tab">Fangbuch</button><button id="material-tab">Material & Schätze</button></div><div id="inventory-body"></div>`,
   );
+  const fish = () => {
+    $("inventory-body").innerHTML = `<div class="fish-list">${FISH.map((f) => {
+      const records = expansion.catches.filter((c) => c.species === f.name),
+        best = Math.max(
+          expansion.best[f.name] || 0,
+          ...records.map((c) => c.length),
+        );
+      return `<div><span class="fish-symbol">≈</span><section><b>${f.name}</b><p>${f.description}</p><small>${best ? `Rekord: ${best} cm · letzter Fang: ${records.at(-1)?.method}` : "Noch kein Größenrekord erfasst."}</small></section><strong>${inventory.fish[f.name] || 0}</strong></div>`;
+    }).join(
+      "",
+    )}</div><p class="hint">Alte Fangzahlen bleiben erhalten. Größen und Fangmethoden werden ab v0.2 protokolliert.</p>`;
+  };
+  $("fish-tab").onclick = fish;
+  $("material-tab").onclick = () => {
+    $("inventory-body").innerHTML =
+      `<h3>Gesammelte Vorräte</h3><p>Für Aufträge verwendbar. Freies Bauen hat unbegrenzte Baustoffe.</p><div class="material-grid">${TYPES.map((t) => `<span>${t === "Laub" ? "Blätter" : t}: <b>${expansion.materials[t] || 0}</b></span>`).join("")}</div><h3>Deine Schätze</h3><p>${expansion.badges.map(escapeHTML).join(" · ") || "Hier erscheinen deine Missionsabzeichen."}</p>`;
+  };
+  fish();
+}
+bindTap($("journal"), () => {
+  if (canPlay()) adventure.journal();
 });
+bindTap($("learn"), () => {
+  if (canPlay()) {
+    adventure.challenge();
+    $("learn").classList.remove("offer");
+    learningOffer = 0;
+    offered = false;
+  }
+});
+bindTap($("undo"), () => {
+  if (!canPlay()) return;
+  const a = history.undo(world, player.pos);
+  if (!a) {
+    toast("Rückgängig ist hier gerade nicht möglich.");
+    return;
+  }
+  if (a.before && a.after === null)
+    expansion.materials[a.before] = Math.max(
+      0,
+      (expansion.materials[a.before] || 0) - 1,
+    );
+  $("undo").setAttribute("disabled", "");
+  save();
+  toast("Letzte Bauaktion rückgängig.");
+});
+function equipment() {
+  $("tool-toggle").textContent = expansion.tool;
+  $("tool-palette").innerHTML = TOOLS.map(
+    (t) =>
+      `<button data-tool="${t}" aria-pressed="${expansion.tool === t}">${t}</button>`,
+  ).join("");
+  document.querySelectorAll<HTMLButtonElement>("[data-tool]").forEach((b) =>
+    bindTap(b, () => {
+      expansion.tool = b.dataset.tool as typeof expansion.tool;
+      equipment();
+      $("tool-palette").hidden = true;
+      save();
+    }),
+  );
+}
+bindTap($("tool-toggle"), () => {
+  if (canPlay()) $("tool-palette").hidden = !$("tool-palette").hidden;
+});
+equipment();
+function caught(f: FishActor, method: "Angel" | "Holzknüppel") {
+  inventory.add(f.species);
+  expansion.best[f.species] = Math.max(
+    expansion.best[f.species] || 0,
+    f.length,
+  );
+  expansion.catches.push({ species: f.species, length: f.length, method });
+  expansion.catches = expansion.catches.slice(-100);
+  missions.caught(f.species);
+  const complete = reading.catch(f.species);
+  toast(
+    `${f.species} · ${f.length} cm · ${method} · Sammlung: ${inventory.fish[f.species]}${complete ? " · Auftrag geschafft! Stark!" : ""}`,
+  );
+  save();
+}
+function strike() {
+  swing = 0.3;
+  syncAim();
+  const hit = fishView.hit(ray, 3.4);
+  const block = ray.intersectObjects(view.group.children, false)[0];
+  if (hit && (!block || block.distance > hit.distance)) {
+    const f = shoal.catch(hit.fish.id);
+    if (f) {
+      caught(f, "Holzknüppel");
+      fishView.update();
+      return;
+    }
+  }
+  toast(
+    "Visiere einen sichtbaren Fisch in deiner Nähe an. Der Knüppel reicht 3,4 Blöcke weit.",
+  );
+}
 $("play").onclick = () => {
   started = true;
   $("start").hidden = true;
@@ -396,7 +649,7 @@ function missionPanel() {
   const completed = reading.progress.completedMissions.includes(mission.id);
   openPanel(
     "AM SEESTEG",
-    `<h2>Ein Auftrag vom Angler</h2><p class="mission-text">„${mission.prompt}“</p><p>${completed ? "Geschafft! Dein Barsch ist in der Sammlung." : reading.active ? "Der Auftrag läuft. Du kannst jederzeit frei weiterangeln." : "Lust auf eine kleine Mission? Du kannst auch einfach angeln."}</p>${!completed && !reading.active ? '<button class="primary" id="accept">Auftrag annehmen</button>' : ""}<button id="cast">${completed || reading.active ? "Angeln" : "Überspringen & angeln"}</button>${"speechSynthesis" in window ? '<button id="read">▷ Auftrag vorlesen</button>' : ""}`,
+    `<h2>Ein Auftrag vom Angler</h2><p class="mission-text">„${mission.prompt}“</p><p>${completed ? "Geschafft! Dein Barsch ist in der Sammlung." : reading.active ? "Der Auftrag läuft. Du kannst jederzeit frei weiterangeln." : "Lust auf eine kleine Mission? Du kannst auch einfach angeln."}</p>${!completed && !reading.active ? '<button class="primary" id="accept">Auftrag annehmen</button>' : ""}<label>Angelziel <select id="fish-target"><option value="">Alle Fische</option>${FISH.map((f) => `<option>${f.name}</option>`).join("")}</select></label><button id="cast">${completed || reading.active ? "Angeln" : "Überspringen & angeln"}</button>${"speechSynthesis" in window ? '<button id="read">▷ Auftrag vorlesen</button>' : ""}`,
   );
   if ($("accept"))
     $("accept").onclick = () => {
@@ -430,27 +683,58 @@ function missionPanel() {
     };
 }
 function cast() {
-  fishing.cast(performance.now());
+  expansion.tool = "Angel";
+  equipment();
+  if (
+    !fishing.cast(
+      performance.now(),
+      reading.active ||
+        (missions.state("fish").accepted && !missions.state("fish").completed)
+        ? "Flussbarsch"
+        : (($<HTMLSelectElement>("fish-target")?.value || undefined) as
+            import("./fishing/Fishing").FishName | undefined),
+    )
+  ) {
+    toast(
+      "Gerade ist kein passender Fisch frei. Versuche eine andere Art oder warte kurz.",
+    );
+    return;
+  }
   toast("Angel ausgeworfen … beobachte den Schwimmer.");
 }
 function interact() {
+  if (expansion.tool === "Holzknüppel") {
+    strike();
+    return;
+  }
+  if (["Spitzhacke", "Axt", "Schaufel"].includes(expansion.tool)) {
+    destroy();
+    return;
+  }
+  const nearby = (Object.keys(MISSIONS) as MissionId[]).find((id) =>
+    nearMission(id),
+  );
+  if (nearby && !nearLake()) {
+    adventure.mission(nearby);
+    return;
+  }
   if (nearLake()) {
     if (fishing.state === "bite") {
       const f = fishing.reel(performance.now());
-      if (f) {
-        inventory.add(f);
-        const complete = reading.catch(f);
-        const data = FISH.find((v) => v.name === f)!;
-        toast(
-          `${f}! ${data.description} · Sammlung: ${inventory.fish[f]}${complete ? " · Auftrag geschafft! Stark!" : ""}`,
-        );
-        save();
-      }
+      if (f) caught(f, "Angel");
     } else if (fishing.state === "idle") missionPanel();
     else toast("Noch ist es ruhig am Schwimmer …");
   } else if (nearBoom()) boom();
+  else if (expansion.tool === "Bauwerkzeug") build();
   else toast("Gehe zum Seesteg oder in die BOOM-Zone.");
 }
+bindTap($("local-mission"), () => {
+  if (!canPlay()) return;
+  const id = (Object.keys(MISSIONS) as MissionId[]).find((id) =>
+    nearMission(id),
+  );
+  if (id) adventure.mission(id);
+});
 bindTap($("interact"), () => {
   if (canPlay()) interact();
 });
@@ -518,6 +802,11 @@ $("reset-boom").onclick = () => {
   }
 };
 window.addEventListener("keydown", (e) => {
+  if (
+    e.target instanceof HTMLElement &&
+    e.target.closest("input,textarea,select,[contenteditable=true]")
+  )
+    return;
   if (!started) return;
   if (["Space", "KeyW", "KeyA", "KeyS", "KeyD"].includes(e.code))
     e.preventDefault();
@@ -534,8 +823,15 @@ window.addEventListener("keydown", (e) => {
   if (e.code === "Minus" || e.code === "NumpadSubtract") destroy();
   if (e.code === "KeyI") $("bag").click();
   if (e.code === "Space") jump = true;
-  if (/Digit[1-6]/.test(e.code)) {
+  if (e.code === "KeyQ") {
+    expansion.tool = TOOLS[(TOOLS.indexOf(expansion.tool) + 1) % TOOLS.length];
+    equipment();
+    save();
+  }
+  if (e.code === "KeyZ") $("undo").click();
+  if (/Digit[1-9]/.test(e.code)) {
     selected = Number(e.code.slice(-1)) - 1;
+    materialPage = Math.floor(selected / 5);
     hotbar();
   }
 });
@@ -591,7 +887,11 @@ canvas.addEventListener("pointerdown", (e) => {
   lastX = e.clientX;
   lastY = e.clientY;
   if (document.pointerLockElement === canvas) {
-    if (e.button === 0) destroy();
+    if (e.button === 0) {
+      if (expansion.tool === "Holzknüppel") strike();
+      else if (expansion.tool === "Angel") interact();
+      else destroy();
+    }
     if (e.button === 2) build();
   } else {
     try {
@@ -653,12 +953,27 @@ function resize() {
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);
+function keyboardViewport() {
+  document.documentElement.style.setProperty(
+    "--usable-height",
+    `${window.visualViewport?.height || innerHeight}px`,
+  );
+  document.documentElement.style.setProperty(
+    "--viewport-top",
+    `${window.visualViewport?.offsetTop || 0}px`,
+  );
+}
+window.visualViewport?.addEventListener("resize", keyboardViewport);
+window.visualViewport?.addEventListener("scroll", keyboardViewport);
+keyboardViewport();
 resize();
 const diagnostics = new URLSearchParams(location.search).has("diagnostics");
 let diagnosticsAt = 0,
   renderedFrames = 0,
   picks = 0;
 let lastAim = 0;
+let learningOffer = 0,
+  offered = false;
 let last = performance.now(),
   accum = 0,
   slow = 0,
@@ -699,10 +1014,26 @@ function frame(now: number) {
       aim();
       lastAim = now;
     }
+    shoal.update(elapsed);
+    fishView.update();
+    chestLid.rotation.x = missions.state("treasure").completed ? -1.15 : 0;
+    treasureGold.visible = missions.state("treasure").completed;
+    learningOffer += elapsed;
+    if (learningOffer > learning.interval) {
+      $("learn").classList.add("offer");
+      if (!offered) {
+        toast("Eine neue Challenge wartet – wenn du Lust hast.");
+        offered = true;
+      }
+    }
     const missed = fishing.tick(now);
     if (missed) toast("Der Fisch ist weitergezogen. Versuch es noch einmal!");
     const lake = nearLake(),
       arena = nearBoom();
+    const localMission = (Object.keys(MISSIONS) as MissionId[]).find((id) =>
+      nearMission(id),
+    );
+    $("local-mission").hidden = !localMission;
     if (!lake && fishing.state !== "idle") fishing.cancel();
     $("location").textContent = lake
       ? "Am Seesteg"
@@ -711,7 +1042,8 @@ function frame(now: number) {
         : player.pos[2] > 4 && Math.abs(player.pos[0]) < 6
           ? "Dein Bauplatz"
           : "Wiesenland";
-    $("context").hidden = !lake && !arena;
+    $("context").hidden =
+      !lake && !arena && !localMission && expansion.tool === "Bauwerkzeug";
     $("context-text").textContent = lake
       ? fishing.state === "bite"
         ? "Ein Biss! Jetzt einholen!"
@@ -727,7 +1059,15 @@ function frame(now: number) {
         : fishing.state === "waiting"
           ? "Angel im Wasser"
           : "E · Angeln"
-      : "E · BOOM!";
+      : arena
+        ? "E · BOOM!"
+        : localMission
+          ? "E · Auftrag"
+          : "E · Fangen";
+    if (expansion.tool === "Holzknüppel")
+      $("interact").textContent = "E · Fangen";
+    if (["Axt", "Spitzhacke", "Schaufel"].includes(expansion.tool))
+      $("interact").textContent = "E · Abbauen";
     $("interact").classList.toggle("bite", fishing.state === "bite");
     $("reset-boom").hidden = !arena;
     $("mission-pin").hidden = !reading.active;
@@ -749,7 +1089,23 @@ function frame(now: number) {
     }
   }
   bobber.visible = canPlay() && fishing.state !== "idle";
-  rod.visible = bobber.visible;
+  rod.visible = canPlay() && (bobber.visible || expansion.tool === "Angel");
+  held.visible =
+    canPlay() && !["Bauwerkzeug", "Angel"].includes(expansion.tool);
+  toolHead.visible = expansion.tool !== "Holzknüppel";
+  toolHead.scale.set(
+    expansion.tool === "Spitzhacke" ? 0.5 : 0.28,
+    expansion.tool === "Spitzhacke" ? 0.1 : 0.28,
+    0.1,
+  );
+  swing = Math.max(0, swing - elapsed);
+  held.rotation.z = Math.sin(swing * 12) * 0.2;
+  (handle.material as T.MeshLambertMaterial).color.set(
+    expansion.badges.includes("Holzhelfer") ? 0xe5b35a : 0x9c713f,
+  );
+
+  bobber.position.x = shoal.bobber.x;
+  bobber.position.z = shoal.bobber.z;
   bobber.position.y =
     0.62 +
     Math.sin(now * (fishing.state === "bite" ? 0.025 : 0.003)) *
@@ -768,6 +1124,14 @@ function frame(now: number) {
       particles: particles.length,
       renderedFrames,
       picks,
+      fish: shoal.actors.map((f) => ({
+        id: f.id,
+        species: f.species,
+        x: f.x,
+        y: f.y,
+        z: f.z,
+        alive: f.alive,
+      })),
     });
     diagnosticsAt = now;
   }

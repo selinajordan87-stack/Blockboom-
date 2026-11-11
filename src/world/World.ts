@@ -130,10 +130,22 @@ export function place(world: World, c: Cell, b: Block, p: Cell) {
   world.set(...c, b);
   return true;
 }
-export function protectedCell(c:Cell){return c[0]>=-12&&c[0]<=-10&&c[2]>=-1&&c[2]<=4&&c[1]===1;}
+export function protectedCell(c: Cell) {
+  if (
+    ((c[0] === -3 && c[2] === 14) ||
+      (c[0] === -9 && c[2] === 3) ||
+      (c[0] === 7 && c[2] === -4)) &&
+    c[1] >= 0 &&
+    c[1] <= 2
+  )
+    return true;
+  return c[0] >= -12 && c[0] <= -10 && c[2] >= -1 && c[2] <= 4 && c[1] === 1;
+}
 export function remove(world: World, c: Cell, p: Cell) {
   if (
-    c[1] <= -3 || protectedCell(c) ||
+    c[1] <= -3 ||
+    (protectedCell(c) &&
+      !Object.prototype.hasOwnProperty.call(world.changes, key(...c))) ||
     Math.hypot(
       c[0] + 0.5 - p[0],
       c[1] + 0.5 - (p[1] + 1.6),

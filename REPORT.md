@@ -158,3 +158,8 @@ Der Kern ist ein echtes kleines Sandbox-Spiel. Größere Lernprogramme, Offline-
 ## 14. Mobile Rescue v0.1.1
 
 Die belegte Kopplung von sichtbarem `window.blur` an das manuelle Pausenmenü wurde entfernt. Touchbesitz, Abbruch und Klickauslösung sind abgesichert; Speicherformat und Kernfunktionen bleiben erhalten. Änderungen, Messgrenzen, Testergebnisse und die notwendige echte iPhone-Abnahme stehen im [Mobile-Rescue-Bericht](MOBILE_RESCUE_REPORT.md).
+
+
+## 15. Living World & Learning Challenge v0.2
+
+Die bestehende Anwendung wurde modular erweitert, einschließlich Save-Kompatibilität, fünf lebenden Fischarten, freiem Bauen/Undo, Inventar/Werkzeugen und drei vollständigen Lernmissionen. Verbindlicher Umfang, Testergebnisse, Einschränkungen, Commit-Historie und tatsächlicher Release-Status stehen im [v0.2-Bericht](V02_REPORT.md).

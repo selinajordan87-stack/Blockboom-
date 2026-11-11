@@ -1,3 +1,7 @@
+import { readFileSync } from "node:fs";
+const { version } = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+);
 import { test, expect } from "@playwright/test";
 
 test("Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang", async ({
@@ -16,7 +20,7 @@ test("Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang
   await page.goto("./");
   expect(new URL(page.url()).pathname).toBe("/Blockboom-/");
   await expect(page.locator("#play")).toBeVisible();
-  await expect(page.locator(".eyebrow")).toContainText("v0.1.1");
+  await expect(page.locator(".eyebrow")).toContainText(`v${version}`);
   const manifestURL = await page
     .locator('link[rel="manifest"]')
     .evaluate((el: HTMLLinkElement) => el.href);

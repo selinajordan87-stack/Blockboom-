@@ -13,14 +13,26 @@ export const FISH = [
     description:
       "Ein Meister im Lauern. Zwischen Wasserpflanzen wartet er auf Beute.",
   },
-  {name:"Karpfen",description:"Ein kräftiger Friedfisch mit Barteln am Maul."},
-  {name:"Forelle",description:"Ein schneller Schwimmer mit vielen dunklen Punkten."},
+  {
+    name: "Karpfen",
+    description: "Ein kräftiger Friedfisch mit Barteln am Maul.",
+  },
+  {
+    name: "Forelle",
+    description: "Ein schneller Schwimmer mit vielen dunklen Punkten.",
+  },
 ] as const;
 export type FishName = (typeof FISH)[number]["name"];
 export class Inventory {
-  fish: Record<string, number> = { Rotauge: 0, Flussbarsch: 0, Hecht: 0, Karpfen:0, Forelle:0 };
+  fish: Record<string, number> = {
+    Rotauge: 0,
+    Flussbarsch: 0,
+    Hecht: 0,
+    Karpfen: 0,
+    Forelle: 0,
+  };
   add(f: FishName) {
-    this.fish[f]=(this.fish[f]||0)+1;
+    this.fish[f] = (this.fish[f] || 0) + 1;
   }
   get total() {
     return Object.values(this.fish).reduce((a, b) => a + b, 0);

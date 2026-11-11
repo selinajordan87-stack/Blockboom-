@@ -1,4 +1,4 @@
-import {readExpansion,type Expansion} from "../inventory/Equipment";
+import { readExpansion, type Expansion } from "../inventory/Equipment";
 import { TYPES, type Block, type Cell, LIMIT } from "../world/World";
 import { emptyProgress, type LearningProgress } from "../learning/Learning";
 import { type FishName } from "../fishing/Fishing";
@@ -62,8 +62,20 @@ export function decode(raw: string | null): Save | null {
       )
     )
       return null;
-    for(const f of ["Karpfen","Forelle"])if(s.fish[f]!==undefined&&(!Number.isSafeInteger(s.fish[f])||s.fish[f]<0))return null;
-    if(s.extension!==undefined)s.extension=readExpansion(s.extension);
+    for (const f of ["Karpfen", "Forelle"])
+      if (
+        s.fish[f] !== undefined &&
+        (!Number.isSafeInteger(s.fish[f]) || s.fish[f] < 0)
+      )
+        return null;
+    s.fish = Object.fromEntries(
+      Object.entries(s.fish).filter(([name]) =>
+        ["Rotauge", "Flussbarsch", "Hecht", "Karpfen", "Forelle"].includes(
+          name,
+        ),
+      ),
+    );
+    if (s.extension !== undefined) s.extension = readExpansion(s.extension);
     const p = s.progress;
     if (
       !p ||

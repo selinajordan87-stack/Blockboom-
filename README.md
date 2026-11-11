@@ -1,4 +1,4 @@
-# BLOCKBOOM · First Playable v0.1.1
+# BLOCKBOOM · Living World v0.2.0
 
 Lokales 3D-Sandbox-Spiel: bauen, angeln, sammeln und in der BOOM-Zone experimentieren. Eine freiwillige Lesemission, keine Anmeldung oder Cloud.
 
@@ -29,3 +29,10 @@ Weitere Details, Grenzen, Testergebnisse und Android-Anleitung: [REPORT.md](REPO
 Die Veröffentlichung für `selinajordan87-stack/Blockboom-` ist freigegeben; der tatsächliche Status steht im [Abschlussbericht](REPORT.md). Einrichtung und Handytest: [Repository, Pages-Einstellungen und Handytest](docs/GITHUB_PAGES.md). Ein Push auf `main` löst nach der Einrichtung den automatischen Workflow aus.
 
 Mobile-Rescue-Update: [Fehlerursache, Regressionstests und iPhone-Abnahme](MOBILE_RESCUE_REPORT.md). Die endgültige mobile Abnahme erfolgt auf einem echten iPhone.
+
+
+v0.2 ergänzt sichtbare Fische (fünf Arten), sechs direkt wählbare Werkzeuge, neun Baustoffe, Undo, Fangbuch, 40 Challenges und drei Lernmissionen. „Mehr“ wechselt die Materialseite, Q das Werkzeug, Z macht die letzte Bauaktion rückgängig. Baumaterial zum freien Bauen bleibt unbegrenzt; gesammelte Vorräte zählen separat für Aufträge. Die neuen Lernresultate bleiben lokal in einem eigenen Speicherbereich.
+
+Standardmodus ist Lern-Challenge. Aufgaben sind Angebote und öffnen sich nicht selbst. „Aufträge“ führt zu Mara am Bauplatz, zum Angler und zur Schatzkiste am Entdeckerpfad. Vorlesen benutzt ausschließlich eine verfügbare lokale deutsche Stimme. Bildschirmtexteingaben sind kein automatisches Handschrifttraining.
+
+[Abschlussbericht v0.2 mit Architektur, Tests, Grenzen und iPhone-Testplan](V02_REPORT.md). Bestehende Welten behalten ihre Landschaft und Bauten; die neue Landschaftsedition gilt für neue Welten. Seite auf dem Handy neu laden, ohne Website-Daten zu löschen.

@@ -112,7 +112,7 @@ describe("Touchbesitz", () => {
     expect(action).not.toHaveBeenCalled();
     event(el, "pointerdown", 2);
     event(el, "pointerup", 2, 51, 51);
-    expect(action).not.toHaveBeenCalled();
+    expect(action).toHaveBeenCalledTimes(1);
     event(el, "click", 2, 51, 51, { detail: 1 });
     expect(action).toHaveBeenCalledTimes(1);
     event(el, "pointerdown", 3);
@@ -120,6 +120,9 @@ describe("Touchbesitz", () => {
     expect(action).toHaveBeenCalledTimes(1);
     event(el, "click", 0, 0, 0, { detail: 0 });
     expect(action).toHaveBeenCalledTimes(2);
+    event(el, "pointerdown", 4, 50, 50, { pointerType: "mouse" });
+    event(el, "click", 4, 50, 50, { detail: 1, pointerType: "mouse" });
+    expect(action).toHaveBeenCalledTimes(3);
   });
 });
 describe("Sichtbarkeit statt pauschaler Fokus-Pause", () => {

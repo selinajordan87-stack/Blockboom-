@@ -106,19 +106,19 @@
   {
     "id": "world-06",
     "domain": "Rechtschreibung",
-    "kind": "spelling",
+    "kind": "correction",
     "level": 1,
     "target": "Holz",
     "solution": "Holz",
     "variants": [],
-    "prompt": "Schreibe das Wort: Holz.",
+    "prompt": "Verbessere das Wort „Hols“. Schreibe es richtig.",
     "options": [],
     "hints": [
       "Aus Holz entstehen Bretter.",
       "Das Wort beginnt mit H und hat 4 Buchstaben."
     ],
     "syllables": "Holz",
-    "speech": "Schreibe das Wort: Holz.",
+    "speech": "Verbessere das Wort „Hols“. Schreibe es richtig.",
     "reward": 2
   },
   {
@@ -269,24 +269,20 @@
   },
   {
     "id": "world-14",
-    "domain": "Textverständnis",
-    "kind": "comprehension",
+    "domain": "Rechtschreibung",
+    "kind": "correction",
     "level": 2,
     "target": "Brücke",
     "solution": "Brücke",
     "variants": [],
-    "prompt": "Eine Brücke führt über das Wasser. Welches Wort kam im Satz vor?",
-    "options": [
-      "Brücke",
-      "Spitzhacke",
-      "Stamm"
-    ],
+    "prompt": "Verbessere das Wort „Brüke“. Schreibe es richtig.",
+    "options": [],
     "hints": [
       "Eine Brücke führt über das Wasser.",
       "Das Wort beginnt mit B und hat 6 Buchstaben."
     ],
     "syllables": "Brü-cke",
-    "speech": "Eine Brücke führt über das Wasser. Welches Wort kam im Satz vor?",
+    "speech": "Verbessere das Wort „Brüke“. Schreibe es richtig.",
     "reward": 2
   },
   {
@@ -418,19 +414,19 @@
   {
     "id": "world-21",
     "domain": "Rechtschreibung",
-    "kind": "spelling",
+    "kind": "correction",
     "level": 2,
     "target": "Spitzhacke",
     "solution": "Spitzhacke",
     "variants": [],
-    "prompt": "Schreibe das Wort: Spitzhacke.",
+    "prompt": "Verbessere das Wort „Spitzhake“. Schreibe es richtig.",
     "options": [],
     "hints": [
       "Mit der Spitzhacke bearbeitest du Stein.",
       "Das Wort beginnt mit S und hat 10 Buchstaben."
     ],
     "syllables": "Spitz-ha-cke",
-    "speech": "Schreibe das Wort: Spitzhacke.",
+    "speech": "Verbessere das Wort „Spitzhake“. Schreibe es richtig.",
     "reward": 2
   },
   {
@@ -581,26 +577,22 @@
   },
   {
     "id": "world-29",
-    "domain": "Textverständnis",
-    "kind": "comprehension",
+    "domain": "Rechtschreibung",
+    "kind": "correction",
     "level": 3,
     "target": "Flussbarsch",
     "solution": "Flussbarsch",
     "variants": [
       "Barsch"
     ],
-    "prompt": "Der Flussbarsch hat stachelige Rückenflossen. Welches Wort kam im Satz vor?",
-    "options": [
-      "Flussbarsch",
-      "Entdeckung",
-      "Angel"
-    ],
+    "prompt": "Verbessere das Wort „Flusbarsch“. Schreibe es richtig.",
+    "options": [],
     "hints": [
       "Der Flussbarsch hat stachelige Rückenflossen.",
       "Das Wort beginnt mit F und hat 11 Buchstaben."
     ],
     "syllables": "Fluss-barsch",
-    "speech": "Der Flussbarsch hat stachelige Rückenflossen. Welches Wort kam im Satz vor?",
+    "speech": "Verbessere das Wort „Flusbarsch“. Schreibe es richtig.",
     "reward": 2
   },
   {
@@ -749,22 +741,22 @@
   },
   {
     "id": "world-37",
-    "domain": "Schreibflüssigkeit",
-    "kind": "gap",
+    "domain": "Rechtschreibung",
+    "kind": "correction",
     "level": 3,
     "target": "Konstruktion",
     "solution": "Konstruktion",
     "variants": [
       "o"
     ],
-    "prompt": "Ergänze das Wort: K_nstruktion.",
+    "prompt": "Verbessere das Wort „Konstrukzion“. Schreibe es richtig.",
     "options": [],
     "hints": [
       "Eine Konstruktion besteht aus verbundenen Teilen.",
       "Das Wort beginnt mit K und hat 12 Buchstaben."
     ],
     "syllables": "Kon-struk-ti-on",
-    "speech": "Ergänze das Wort: K_nstruktion.",
+    "speech": "Verbessere das Wort „Konstrukzion“. Schreibe es richtig.",
     "reward": 2
   },
   {

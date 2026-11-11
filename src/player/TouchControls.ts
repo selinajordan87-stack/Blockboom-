@@ -1,4 +1,33 @@
 let lastPointerType = "mouse";
+const pendingTouchClicks = new Set<number>();
+let captureInstalled = false;
+function installClickCapture() {
+  if (captureInstalled || typeof document === "undefined") return;
+  captureInstalled = true;
+  document.addEventListener(
+    "pointerdown",
+    () => pendingTouchClicks.clear(),
+    true,
+  );
+  document.addEventListener(
+    "click",
+    (e) => {
+      if (e.detail === 0) return;
+      const id = (e as PointerEvent).pointerId;
+      const matches =
+        id > 0
+          ? pendingTouchClicks.has(id)
+          : pendingTouchClicks.size > 0 && lastPointerType !== "mouse";
+      if (matches) {
+        pendingTouchClicks.delete(id);
+        if (!(id > 0)) pendingTouchClicks.clear();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
+}
 /** One owning pointer per surface. Other fingers cannot replace or release it. */
 export class TouchControls {
   private owners = new Map<HTMLElement, number>();
@@ -10,6 +39,7 @@ export class TouchControls {
     private movement: (x: number, y: number) => void,
     private turn: (x: number, y: number) => void,
   ) {
+    installClickCapture();
     for (const surface of [joystick, lookArea]) this.bind(surface);
   }
   private bind(surface: HTMLElement) {
@@ -53,7 +83,10 @@ export class TouchControls {
     };
     const end = (e: PointerEvent) => {
       stop(e);
-      if (this.owners.get(surface) === e.pointerId) this.release(surface);
+      if (this.owners.get(surface) === e.pointerId) {
+        pendingTouchClicks.add(e.pointerId);
+        this.release(surface);
+      }
     };
     // Legacy touchcancel is a surface-local fallback; Pointer Events do the normal work.
     const cancel = (e: TouchEvent) => {
@@ -116,20 +149,23 @@ export class TouchControls {
 
 /** Only a tap starting on this button can activate it. Dragging in cannot. */
 export function bindTap(button: HTMLElement, action: () => void) {
+  installClickCapture();
   let owner: number | null = null,
     x = 0,
     y = 0,
-    lastTouch = -Infinity,
-    eligible = false;
+    handled = false;
   button.addEventListener("pointerdown", (e) => {
     lastPointerType = e.pointerType;
-    if (e.pointerType === "mouse") return;
+    if (e.pointerType === "mouse") {
+      handled = false;
+      return;
+    }
     e.stopPropagation();
     if (owner !== null) return;
     owner = e.pointerId;
     x = e.clientX;
     y = e.clientY;
-    eligible = false;
+    handled = false;
     try {
       button.setPointerCapture(e.pointerId);
     } catch {}
@@ -138,16 +174,18 @@ export function bindTap(button: HTMLElement, action: () => void) {
     if (owner !== e.pointerId) return;
     e.stopPropagation();
     owner = null;
-    lastTouch = performance.now();
-    eligible = Math.hypot(e.clientX - x, e.clientY - y) < 14;
-    // Activate on the native click, after the browser finishes this touch sequence.
-    // Opening a panel on pointerup can retarget its later click into the new panel.
+    handled = true;
+    pendingTouchClicks.add(e.pointerId);
+    // Some mobile touch sequences do not emit click at all. Complete a valid tap
+    // here; document capture swallows any later compatibility click, even if a
+    // newly opened dialog is now under the finger. No timing heuristic needed.
+    if (Math.hypot(e.clientX - x, e.clientY - y) < 14) action();
   });
   const cancel = (e: PointerEvent) => {
     if (owner === e.pointerId) {
       owner = null;
-      eligible = false;
-      lastTouch = performance.now();
+      handled = true;
+      pendingTouchClicks.add(e.pointerId);
     }
   };
   button.addEventListener("pointercancel", cancel);
@@ -155,13 +193,9 @@ export function bindTap(button: HTMLElement, action: () => void) {
     if (e.target === button && owner !== null) cancel(e);
   });
   button.addEventListener("click", (e) => {
-    if (e.detail !== 0 && lastPointerType !== "mouse") {
-      if (!eligible || performance.now() - lastTouch > 800) {
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-      eligible = false;
+    if (e.detail !== 0 && (handled || lastPointerType !== "mouse")) {
+      e.preventDefault();
+      return;
     }
     action();
   });
