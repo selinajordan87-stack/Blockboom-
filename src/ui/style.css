@@ -712,3 +712,222 @@ h1 i {
     display: none;
   }
 }
+
+/* v0.1.1: independent touch surfaces, safe areas and compact landscape HUD. */
+#hud,
+#joystick,
+#look,
+#hud button,
+#interruption button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+#joystick,
+#look,
+#hud button,
+#interruption button {
+  touch-action: none;
+}
+#rotate-tip {
+  display: none;
+}
+#interruption {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(330px, 85vw);
+  padding: 18px;
+  border-radius: 16px;
+  background: #173b32f5;
+  border: 1px solid #e6c88980;
+  box-shadow: 0 12px 45px #102d2850;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+#interruption b {
+  font-size: 14px;
+  line-height: 1.5;
+  flex: 1;
+}
+#continue {
+  background: #edbd65;
+  color: #203e31;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+@media (pointer: coarse) {
+  header {
+    left: calc(env(safe-area-inset-left) + 16px);
+    right: calc(env(safe-area-inset-right) + 16px);
+    top: calc(env(safe-area-inset-top) + 10px);
+  }
+  .top-right {
+    gap: 12px;
+  }
+  .top-right button {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  #joystick {
+    left: calc(env(safe-area-inset-left) + 20px);
+    bottom: calc(env(safe-area-inset-bottom) + 125px);
+    background: #143c3440;
+  }
+  .touch-actions {
+    right: calc(env(safe-area-inset-right) + 20px);
+    bottom: calc(env(safe-area-inset-bottom) + 125px);
+    gap: 12px;
+  }
+  footer {
+    bottom: calc(env(safe-area-inset-bottom) + 10px);
+  }
+  #look {
+    width: 50%;
+    top: 80px;
+    height: auto;
+    bottom: 100px;
+  }
+  .slot em {
+    display: none;
+  }
+  .panel-overlay {
+    padding: calc(env(safe-area-inset-top) + 12px)
+      calc(env(safe-area-inset-right) + 12px)
+      calc(env(safe-area-inset-bottom) + 12px)
+      calc(env(safe-area-inset-left) + 12px);
+  }
+  .panel {
+    max-height: calc(
+      100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px
+    );
+    padding: 16px 20px;
+  }
+  .panel h2 {
+    font-size: 25px;
+    margin: 12px 0 8px;
+  }
+  .panel p {
+    font-size: 13px;
+  }
+  .panel .hint {
+    font-size: 10px;
+    margin-top: 12px;
+  }
+  .panel #panel-content > button {
+    margin-top: 8px;
+  }
+  .panel-head button {
+    min-width: 46px;
+  }
+}
+@media (pointer: coarse) and (orientation: portrait) {
+  #rotate-tip {
+    display: block;
+    position: absolute;
+    right: 18px;
+    top: 120px;
+    font-size: 10px;
+    color: #fff4d5;
+    text-shadow: 0 1px 4px #123c31;
+  }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  .brand {
+    font-size: 20px;
+  }
+  .brand small,
+  .save-state,
+  .top-right button span {
+    display: none;
+  }
+  .location {
+    left: calc(env(safe-area-inset-left) + 18px);
+    top: calc(env(safe-area-inset-top) + 69px);
+    font-size: 11px;
+  }
+  .location small {
+    display: none;
+  }
+  #joystick {
+    width: 96px;
+    height: 96px;
+    bottom: calc(env(safe-area-inset-bottom) + 24px);
+    left: calc(env(safe-area-inset-left) + 18px);
+  }
+  .touch-actions {
+    display: grid;
+    grid-template-columns: 48px 48px;
+    gap: 10px;
+    bottom: calc(env(safe-area-inset-bottom) + 24px);
+    right: calc(env(safe-area-inset-right) + 18px);
+  }
+  .touch-actions button {
+    width: 48px;
+    height: 48px;
+    min-height: 48px;
+  }
+  #jump {
+    grid-column: 2;
+    order: 0;
+  }
+  .hotbar {
+    gap: 3px;
+    padding: 5px;
+  }
+  .hotbar .slot {
+    width: 44px;
+    height: 48px;
+    padding: 5px 2px;
+  }
+  .slot small {
+    font-size: 8px;
+    margin-top: 4px;
+  }
+  .block-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .mobile-help {
+    display: none;
+  }
+  #context {
+    bottom: calc(env(safe-area-inset-bottom) + 85px);
+    max-width: 50%;
+  }
+  #context-text {
+    display: none;
+  }
+  #mission-pin {
+    top: calc(env(safe-area-inset-top) + 95px);
+    left: calc(env(safe-area-inset-left) + 18px);
+    padding: 7px 10px;
+  }
+  #mission-pin span {
+    font-size: 7px;
+    margin-bottom: 4px;
+  }
+  #mission-pin b {
+    font-size: 11px;
+  }
+  .panel:has(.pause-options) {
+    width: 530px;
+  }
+  .pause-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 10px;
+  }
+  .pause-options h2,
+  .pause-options p {
+    grid-column: 1/-1;
+  }
+  .pause-options > .primary {
+    padding: 12px 16px;
+  }
+}

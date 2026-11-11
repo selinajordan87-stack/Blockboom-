@@ -1,4 +1,6 @@
 import "./ui/style.css";
+import { installLifecycle } from "./core/Lifecycle";
+import { TouchControls, bindTap } from "./player/TouchControls";
 import * as T from "three";
 import {
   World,
@@ -22,6 +24,7 @@ $("app").innerHTML = `
  <header><a class="brand" id="brand">BLOCK<span>BOOM</span><small>DEINE KLEINE GROSSE WELT</small></a><div class="top-right"><span class="save-state" id="save-state">Lokal gespeichert</span><button id="bag" aria-label="Inventar öffnen">▦ <span>Inventar</span></button><button id="menu" aria-label="Menü öffnen">☰</button></div></header>
  <div class="location"><i></i><span id="location">Wiesenland</span><small>ENTDECKEN · BAUEN · AUSPROBIEREN</small></div>
  <div id="mission-pin" hidden><span>FREIWILLIGER AUFTRAG</span><b>Fange einen Barsch.</b></div>
+ <div id="rotate-tip">↻ Im Querformat hast du mehr Platz.</div>
  <div class="crosshair">+</div><div id="target-label"></div>
  <div id="context"><span id="context-text"></span><button id="interact">E · Interagieren</button><button id="reset-boom" hidden>↻ Aufbau</button></div>
  <div id="toast" role="status"></div>
@@ -30,7 +33,8 @@ $("app").innerHTML = `
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
  <footer><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E benutzen · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">SANDBOX-ABENTEUER · v0.1</div><h1>BLOCK<span>BOOM</span><i>Eine Welt voller Möglichkeiten.</i></h1><p>Ein See voller Fische. Platz für deine Ideen.<br>Und ein guter Ort, um alles krachen zu lassen.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>01 / WIESENLAND</span><b>Dein Abenteuer<br>beginnt hier.</b><p>Schau dich um. Mach es zu deiner Welt.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">SANDBOX-ABENTEUER · v0.1.1</div><h1>BLOCK<span>BOOM</span><i>Eine Welt voller Möglichkeiten.</i></h1><p>Ein See voller Fische. Platz für deine Ideen.<br>Und ein guter Ort, um alles krachen zu lassen.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>01 / WIESENLAND</span><b>Dein Abenteuer<br>beginnt hier.</b><p>Schau dich um. Mach es zu deiner Welt.</p></div></section>
+<div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
 const canvas = $<HTMLCanvasElement>("world");
@@ -64,6 +68,7 @@ let reading = new ReadingEngine(),
   saved = safeLoad(),
   started = false,
   paused = false,
+  suspended = false,
   selected = 0;
 if (saved) {
   world.apply(saved.changes);
@@ -189,6 +194,7 @@ const ray = new T.Raycaster();
 let target: Cell | null = null,
   adjacent: Cell | null = null;
 function aim() {
+  picks++;
   ray.setFromCamera(new T.Vector2(0, 0), camera);
   const hit = ray.intersectObjects(view.group.children, false)[0];
   target = null;
@@ -270,12 +276,11 @@ function hotbar() {
     (b, i) =>
       `<button class="slot ${i === selected ? "selected" : ""}" aria-label="${b} auswählen" data-block="${i}"><span class="block-icon" style="--block:#${colors[b].toString(16)}"></span><small>${b}</small><em>${i + 1}</em></button>`,
   ).join("");
-  document.querySelectorAll<HTMLButtonElement>("[data-block]").forEach(
-    (b) =>
-      (b.onclick = () => {
-        selected = Number(b.dataset.block);
-        hotbar();
-      }),
+  document.querySelectorAll<HTMLButtonElement>("[data-block]").forEach((b) =>
+    bindTap(b, () => {
+      selected = Number(b.dataset.block);
+      hotbar();
+    }),
   );
 }
 hotbar();
@@ -283,8 +288,13 @@ const keys = new Set<string>();
 let joyX = 0,
   joyY = 0,
   jump = false;
+let touch: TouchControls | undefined;
+function canPlay() {
+  return started && !paused && !suspended && !document.hidden;
+}
 function clearInput() {
-  joyId = lookId = -1;
+  touch?.reset();
+  mouseDrag = false;
   keys.clear();
   joyX = joyY = 0;
   jump = false;
@@ -298,6 +308,7 @@ function openPanel(tag: string, html: string) {
   clearInput();
   unlock();
   fishing.cancel();
+  $("panel-content").classList.toggle("pause-options", tag === "DEINE WELT");
   $("panel-tag").textContent = tag;
   $("panel-content").innerHTML = html;
   $("modal").hidden = false;
@@ -330,6 +341,7 @@ function menu() {
   };
   $("quality").onclick = () => {
     settings.quality = settings.quality === 1 ? 1.5 : 1;
+    ratio = settings.quality;
     resize();
     save();
     menu();
@@ -342,12 +354,16 @@ function menu() {
   };
   save();
 }
-$("menu").onclick = menu;
-$("bag").onclick = () =>
+bindTap($("menu"), () => {
+  if (!suspended) menu();
+});
+bindTap($("bag"), () => {
+  if (!canPlay()) return;
   openPanel(
     "INVENTAR",
     `<h2>Deine Sammlung</h2><p>${inventory.total} Fische gefangen · Baumaterial unbegrenzt</p><div class="fish-list">${FISH.map((f) => `<div><span class="fish-symbol">≈</span><section><b>${f.name}</b><p>${f.description}</p></section><strong>${inventory.fish[f.name]}</strong></div>`).join("")}</div><p class="hint">Alle sechs Baustoffe findest du unten in der Blockleiste.</p>`,
   );
+});
 $("play").onclick = () => {
   started = true;
   $("start").hidden = true;
@@ -435,13 +451,18 @@ function interact() {
   } else if (nearBoom()) boom();
   else toast("Gehe zum Seesteg oder in die BOOM-Zone.");
 }
-$("interact").onclick = interact;
-$("place").onclick = build;
-$("break").onclick = destroy;
-$("jump").onpointerdown = (e) => {
-  e.preventDefault();
-  jump = true;
-};
+bindTap($("interact"), () => {
+  if (canPlay()) interact();
+});
+bindTap($("place"), () => {
+  if (canPlay()) build();
+});
+bindTap($("break"), () => {
+  if (canPlay()) destroy();
+});
+bindTap($("jump"), () => {
+  if (canPlay()) jump = true;
+});
 const particles: { mesh: T.Mesh; velocity: T.Vector3; life: number }[] = [];
 const particleMat = new T.MeshLambertMaterial({ color: 0xf5bb52 });
 function boom() {
@@ -501,12 +522,12 @@ window.addEventListener("keydown", (e) => {
   if (["Space", "KeyW", "KeyA", "KeyS", "KeyD"].includes(e.code))
     e.preventDefault();
   if (e.repeat) return;
-  if (e.code === "Escape") {
+  if (e.code === "Escape" && !suspended) {
     if (paused) closePanel();
     else menu();
     return;
   }
-  if (paused) return;
+  if (!canPlay()) return;
   keys.add(e.code);
   if (e.code === "KeyE") interact();
   if (e.code === "Equal" || e.code === "NumpadAdd") build();
@@ -519,25 +540,51 @@ window.addEventListener("keydown", (e) => {
   }
 });
 window.addEventListener("keyup", (e) => keys.delete(e.code));
-window.addEventListener("blur", () => {
+function interrupt(reason: string) {
   clearInput();
-  if (started && !paused) menu();
-});
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    clearInput();
+  save();
+  if (!started || paused || suspended) return;
+  suspended = true;
+  fishing.cancel();
+  $("interruption-text").textContent = reason;
+  $("interruption").hidden = false;
+}
+installLifecycle(window, document, {
+  blur: () => {
+    keys.clear();
+    mouseDrag = false;
+  },
+  resetInput: clearInput,
+  hide: () => interrupt("Du warst kurz weg. Bereit?"),
+  leave: () => {
     save();
-    if (started && !paused) menu();
-  }
+    interrupt("Willkommen zurück.");
+  },
 });
-window.addEventListener("pagehide", save);
+bindTap($("continue"), () => {
+  if (document.hidden) return;
+  clearInput();
+  suspended = false;
+  $("interruption").hidden = true;
+  last = performance.now();
+  accum = 0;
+});
+canvas.addEventListener("webglcontextlost", () => {
+  interrupt("3D wird wiederhergestellt …");
+  $("continue").setAttribute("disabled", "");
+});
+canvas.addEventListener("webglcontextrestored", () => {
+  $("interruption-text").textContent = "3D ist wieder bereit.";
+  $("continue").removeAttribute("disabled");
+  viewportDirty = true;
+});
 canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 let mouseDrag = false,
   dragged = false,
   lastX = 0,
   lastY = 0;
 canvas.addEventListener("pointerdown", (e) => {
-  if (!started || paused) return;
+  if (!canPlay()) return;
   if (e.pointerType !== "mouse") return;
   mouseDrag = true;
   dragged = false;
@@ -557,7 +604,7 @@ canvas.addEventListener("pointerdown", (e) => {
 });
 window.addEventListener("pointerup", () => (mouseDrag = false));
 document.addEventListener("mousemove", (e) => {
-  if (!started || paused) return;
+  if (!canPlay()) return;
   if (document.pointerLockElement === canvas)
     look(e.movementX, e.movementY, 0.0023);
   else if (mouseDrag) {
@@ -569,7 +616,7 @@ document.addEventListener("mousemove", (e) => {
 });
 // Pointer-lock fallback also supports double-click mining and Shift+double-click placing.
 canvas.addEventListener("dblclick", (e) => {
-  if (started && !paused && !document.pointerLockElement && !dragged) {
+  if (canPlay() && !document.pointerLockElement && !dragged) {
     if (e.shiftKey) build();
     else destroy();
   }
@@ -578,49 +625,28 @@ function look(x: number, y: number, s: number) {
   player.yaw -= x * s;
   player.pitch = Math.max(-1.45, Math.min(1.45, player.pitch - y * s));
 }
-let joyId = -1,
-  lookId = -1,
-  lx = 0,
-  ly = 0;
-const joystick = $("joystick");
-joystick.onpointerdown = (e) => {
-  joyId = e.pointerId;
-  joystick.setPointerCapture(e.pointerId);
-  moveJoy(e);
-};
-function moveJoy(e: PointerEvent) {
-  if (paused || e.pointerId !== joyId) return;
-  const r = joystick.getBoundingClientRect(),
-    x = e.clientX - r.left - r.width / 2,
-    y = e.clientY - r.top - r.height / 2,
-    scale = Math.max(1, Math.hypot(x, y) / 37);
-  joyX = x / scale / 37;
-  joyY = -y / scale / 37;
-  $("stick").style.transform = `translate(${x / scale}px,${y / scale}px)`;
-}
-joystick.onpointermove = moveJoy;
-joystick.onpointerup = joystick.onpointercancel = () => {
-  joyId = -1;
-  joyX = joyY = 0;
-  $("stick").style.transform = "";
-};
-const lookArea = $("look");
-lookArea.onpointerdown = (e) => {
-  lookId = e.pointerId;
-  lx = e.clientX;
-  ly = e.clientY;
-  lookArea.setPointerCapture(e.pointerId);
-};
-lookArea.onpointermove = (e) => {
-  if (e.pointerId !== lookId || paused) return;
-  look(e.clientX - lx, e.clientY - ly, 0.005);
-  lx = e.clientX;
-  ly = e.clientY;
-};
-lookArea.onpointerup = lookArea.onpointercancel = () => (lookId = -1);
-let ratio = 1;
+touch = new TouchControls(
+  $("joystick"),
+  $("look"),
+  canPlay,
+  (x, y) => {
+    joyX = x;
+    joyY = y;
+    $("stick").style.transform = `translate(${x * 34}px,${-y * 34}px)`;
+  },
+  (x, y) => look(x, y, 0.0035),
+);
+let ratio = Math.min(devicePixelRatio, settings.quality),
+  viewportDirty = true;
+let landscape = innerWidth > innerHeight;
 function resize() {
-  ratio = Math.min(devicePixelRatio, settings.quality);
+  ratio = Math.min(devicePixelRatio, settings.quality, ratio);
+  viewportDirty = true;
+  const nextLandscape = innerWidth > innerHeight;
+  if (nextLandscape !== landscape) {
+    clearInput();
+    landscape = nextLandscape;
+  }
   renderer.setPixelRatio(ratio);
   renderer.setSize(innerWidth, innerHeight);
   camera.aspect = innerWidth / innerHeight;
@@ -628,6 +654,11 @@ function resize() {
 }
 window.addEventListener("resize", resize);
 resize();
+const diagnostics = new URLSearchParams(location.search).has("diagnostics");
+let diagnosticsAt = 0,
+  renderedFrames = 0,
+  picks = 0;
+let lastAim = 0;
 let last = performance.now(),
   accum = 0,
   slow = 0,
@@ -635,9 +666,22 @@ let last = performance.now(),
   frameTime = 0;
 function frame(now: number) {
   requestAnimationFrame(frame);
-  const elapsed = Math.min((now - last) / 1000, 0.1);
+  const realElapsed = (now - last) / 1000;
+  const elapsed = Math.min(realElapsed, 0.1);
   last = now;
-  if (started && !paused) {
+  if (document.hidden) {
+    accum = 0;
+    return;
+  }
+  if (started && (paused || suspended)) {
+    accum = 0;
+    if (viewportDirty) {
+      renderer.render(scene, camera);
+      viewportDirty = false;
+    }
+    return;
+  }
+  if (canPlay()) {
     accum += elapsed;
     while (accum >= 1 / 120) {
       player.step(
@@ -651,7 +695,10 @@ function frame(now: number) {
     }
     camera.position.set(player.pos[0], player.pos[1] + 1.6, player.pos[2]);
     camera.rotation.set(player.pitch, player.yaw, 0);
-    aim();
+    if (now - lastAim >= 50) {
+      aim();
+      lastAim = now;
+    }
     const missed = fishing.tick(now);
     if (missed) toast("Der Fisch ist weitergezogen. Versuch es noch einmal!");
     const lake = nearLake(),
@@ -701,7 +748,7 @@ function frame(now: number) {
       particles.splice(i, 1);
     }
   }
-  bobber.visible = started && !paused && fishing.state !== "idle";
+  bobber.visible = canPlay() && fishing.state !== "idle";
   rod.visible = bobber.visible;
   bobber.position.y =
     0.62 +
@@ -710,8 +757,23 @@ function frame(now: number) {
   water.position.y = 0.38 + Math.sin(now * 0.001) * 0.025;
   view.update();
   renderer.render(scene, camera);
-  if (started && !paused) {
-    frameTime += elapsed;
+  renderedFrames++;
+  if (diagnostics && now - diagnosticsAt >= 1000) {
+    canvas.dataset.performance = JSON.stringify({
+      calls: renderer.info.render.calls,
+      triangles: renderer.info.render.triangles,
+      geometries: renderer.info.memory.geometries,
+      textures: renderer.info.memory.textures,
+      ratio,
+      particles: particles.length,
+      renderedFrames,
+      picks,
+    });
+    diagnosticsAt = now;
+  }
+  viewportDirty = false;
+  if (canPlay()) {
+    frameTime += realElapsed;
     frameCount++;
     if (frameTime > 3) {
       if (frameCount / frameTime < 28 && ratio > 0.8) {
