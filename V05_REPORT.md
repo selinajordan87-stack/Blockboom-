@@ -139,8 +139,13 @@ Bestehende Module wurden gezielt ergänzt: `Equipment.ts`, `Save.ts`, `World.ts`
 - `81bf993` – Implement NIGHTFALL day cycle survival defense and word combat
 - `e2d40c6` – Harden NIGHTFALL collisions mobile combat and regression coverage
 - `528bfa3` – Wait for actual night spawn in browser assertion
-- Abschließender Commit für gültige Tür-Vorräte und hergestellte Waffen per Q: siehe Git-Historie unmittelbar vor der Release-Dokumentation.
-- Noch keine Veröffentlichung von v0.5 bestätigt. Erst erfolgreicher Pages-Lauf und Abruf des neuen Live-Bundles schließen den Release ab.
+- `8d00dbd` – Preserve door supplies and respect crafted weapon shortcuts
+- `299cea4` – Document tested NIGHTFALL release and device acceptance plan
+- Alle vorherigen Commits bleiben erhalten. Veröffentlichung per Fast-Forward auf `main`, ohne Force-Push.
+- GitHub-Pages-Lauf [43312900214](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43312900214) für `299cea4`: Build und Deployment erfolgreich. Die öffentliche Seite liefert `assets/index-BRhEF1WY.js` mit sichtbarem `NIGHTFALL · v0.5.0`.
+- Das Live-Bundle wurde heruntergeladen und mit dem lokal geprüften Produktionsbundle verglichen. Beide besitzen SHA-256 `8b9dac20edc5ee8f25cd1557bff3a65335052079f0a762b7327fe86177da3bda`.
+- Zusätzliche Browserprüfung direkt gegen GitHub Pages: **15/15 bestanden** in 2,7 Minuten. Enthalten: vollständiger v0.4-Angelfang mit Fangbuch/Reload, drei Zombiearten, Verfolgung, normaler Waffenangriff, Wortmagie, Fehlerhilfe, Pausieren, echte Niederlage/Wiedereinstieg, Crafting/Kochen, Haustür, Tür-Abbau/Undo/Reload, v0.4-Sicherung, Dreifingerbedienung, drei Landscape-Tastaturansichten und Pages-Assets/Reload.
+- Live-Adresse: **https://selinajordan87-stack.github.io/Blockboom-/**. Echte iPhone-/Android-Abnahme bleibt ausdrücklich offen.
 
 ## Vorschläge für v0.6
 
