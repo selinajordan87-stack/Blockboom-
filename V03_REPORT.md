@@ -87,7 +87,7 @@ Weitere Abschnitte werden nach jeder Implementierungsphase ergänzt.
 - Produktionsbuild: bestanden. CSS rund 16,1 kB / 4,4 kB gzip; Spiellogik rund 89,7 kB / 29,8 kB gzip; Three.js rund 484,7 kB / 121,0 kB gzip.
 - Lokale Browserprüfung: 36/36 Fälle bestanden in einem vollständigen Lauf (circa 3,3 Minuten) mit Chromium und Software-WebGL gegen den gebauten Pages-Unterpfad `/Blockboom-/`, nicht nur gegen den Dev-Server. Darin: alle v0.2-Szenarien, Touch-Multitasking/Cancel/Blur, 360/390/430-Pixel-Portraits, 667×375/844×390/932×430-Landscape, Edition 3, Werkzeuganimation, FOV/Zoom, 15 Materialien, Mehrfach-Undo, Inventar, Save/Reload, alte Save-Migration, Lernen, drei Missionen, sichtbare Fische, Angeln, direkter Fang, BOOM und Pages-Assets.
 - Ein Zwischenlauf fand einen echten UI-Stapelungsfehler: Im mobilen Hochformat fing die Kamerafläche den Challenge-Button ab. Footer und Hotbar haben nun eine eigene höhere Ebene bei durchlässigen Leerflächen; der gezielte Regressionstest besteht.
-- WebKit/Safari und reale iPhone-/Android-Hardware wurden in dieser Umgebung nicht erfolgreich ausgeführt. Browseremulation ist kein Ersatz für die Geräteabnahme.
+- WebKit-Start wurde tatsächlich versucht, scheiterte jedoch vor dem App-Start an fehlenden Hostbibliotheken (`libgtk-4`, `libgraphene`, `libharfbuzz-icu`, `libmanette`, `libhyphen`, `libGLESv2`). Safari und reale iPhone-/Android-Hardware wurden daher nicht erfolgreich ausgeführt. Chromium-Emulation ist kein Ersatz für die Geräteabnahme.
 
 ## Performance-Befunde
 
@@ -141,4 +141,5 @@ BLOCKBOOM_TEST_URL=http://127.0.0.1:4204/Blockboom-/ npm run test:browser
 - `8c33de9`: v0.3-Audit und Sicherheitsgrenzen.
 - `d09541f`: strukturierte Chunkwelt, 15 Materialien, Mehrfach-Undo, First-Person-Werkzeuge und v0.3-Version.
 - `e6f2ec9`: 20 neue Aufgaben auf Niveau der sechsten Klasse und Lernregressionen.
-- Weitere QA-/Dokumentationscommits und der tatsächliche Pages-Status werden erst nach Abschluss und erfolgreicher Live-Prüfung eingetragen.
+- `85a4c89`: vollständige v0.3-Browserregression, mobile UI-Stapelung, Release-Dokumentation und visuelle Prüfbilder.
+- Der tatsächliche Pages-Status wird erst nach Merge, Push, Workflowabschluss und Live-Prüfung eingetragen.
