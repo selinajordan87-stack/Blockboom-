@@ -3,7 +3,7 @@ import { installLifecycle } from "./core/Lifecycle";
 import { TouchControls, bindTap } from "./player/TouchControls";
 import * as T from "three";
 import { BuildHistory } from "./building/History";
-import { enrich } from "./world/Enrich";
+import { enrich, revolutionize } from "./world/Enrich";
 import { TOOLS, defaultExpansion, readExpansion } from "./inventory/Equipment";
 import { Shoal, LivingFishing, type FishActor } from "./fishing/Shoal";
 import { FishView } from "./fishing/FishView";
@@ -25,6 +25,8 @@ import {
 } from "./world/World";
 import { WorldView, colors } from "./world/Renderer";
 import { Player } from "./player/Player";
+import { HeldTools } from "./player/HeldTools";
+import { WaterView } from "./world/WaterView";
 import { Inventory, FISH } from "./fishing/Fishing";
 import { ReadingEngine, mission } from "./learning/Learning";
 import { explode } from "./boom/Boom";
@@ -43,10 +45,10 @@ $("app").innerHTML = `
  <div id="toast" role="status"></div>
  <div id="look" aria-label="Zum Umsehen wischen"></div>
  <div id="joystick" aria-label="Bewegungsjoystick"><div id="stick"></div></div>
- <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
+ <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="zoom" aria-label="Zoom umschalten" aria-pressed="false">⌕</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
  <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E benutzen · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">LIVING WORLD · v0.2.0</div><h1>BLOCK<span>BOOM</span><i>Eine Welt voller Möglichkeiten.</i></h1><p>Ein See voller Fische. Platz für deine Ideen.<br>Und ein guter Ort, um alles krachen zu lassen.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>01 / WIESENLAND</span><b>Dein Abenteuer<br>beginnt hier.</b><p>Schau dich um. Mach es zu deiner Welt.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">SANDBOX REVOLUTION · v0.3.0</div><h1>BLOCK<span>BOOM</span><i>Deine Welt. Deine Werkzeuge.</i></h1><p>Erkunde neue Landschaften, baue überall<br>und nimm dein nächstes Abenteuer selbst in die Hand.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>03 / SANDBOX REVOLUTION</span><b>Eine Welt mit<br>mehr Tiefe.</b><p>15 Materialien. Echte Werkzeuge. Freies Gelände.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
@@ -64,12 +66,12 @@ try {
   throw new Error("WebGL unavailable");
 }
 const scene = new T.Scene();
-scene.background = new T.Color(0xb5dcdf);
-scene.fog = new T.Fog(0xb5dcdf, 24, 66);
+scene.background = new T.Color(0x9ed2df);
+scene.fog = new T.Fog(0xa9d3d5, 26, 68);
 const camera = new T.PerspectiveCamera(70, innerWidth / innerHeight, 0.08, 80);
 camera.rotation.order = "YXZ";
-scene.add(new T.HemisphereLight(0xeaf8ff, 0x7e8660, 2.1));
-const sun = new T.DirectionalLight(0xffefce, 2);
+scene.add(new T.HemisphereLight(0xeaf8ff, 0x66724f, 2.25));
+const sun = new T.DirectionalLight(0xffedc2, 2.15);
 sun.position.set(-12, 26, 9);
 scene.add(sun);
 const world = new World(),
@@ -87,8 +89,19 @@ let reading = new ReadingEngine(),
   materialPage = 0;
 const expansion = saved?.extension
   ? readExpansion(saved.extension)
-  : defaultExpansion(saved ? 1 : 2);
-if (expansion.edition === 2) enrich(world);
+  : defaultExpansion(saved ? 1 : 3);
+if (expansion.edition >= 2) enrich(world);
+if (expansion.edition === 3) revolutionize(world);
+camera.fov = expansion.view.fov;
+camera.updateProjectionMatrix();
+let zoomed = false;
+function updateFov() {
+  camera.fov = zoomed
+    ? Math.max(36, expansion.view.fov * 0.62)
+    : expansion.view.fov;
+  camera.updateProjectionMatrix();
+  $("zoom").setAttribute("aria-pressed", String(zoomed));
+}
 const history = new BuildHistory(),
   missions = new Missions(expansion);
 const learning = new LearningEngine(
@@ -128,28 +141,7 @@ function safeLoad() {
 const view = new WorldView(world, scene);
 view.update();
 const fishView = new FishView(shoal, scene);
-const water = new T.Mesh(
-  new T.CircleGeometry(1, 48),
-  new T.MeshPhongMaterial({
-    color: 0x4daeba,
-    transparent: true,
-    opacity: 0.3,
-    shininess: 65,
-    side: T.DoubleSide,
-  }),
-);
-water.scale.set(
-  expansion.edition === 2 ? 8.3 : 6.4,
-  expansion.edition === 2 ? 7.4 : 6.15,
-  1,
-);
-water.rotation.x = -Math.PI / 2;
-water.position.set(
-  expansion.edition === 2 ? -11 : -9.8,
-  0.38,
-  expansion.edition === 2 ? -6 : -4.9,
-);
-scene.add(water);
+const water = new WaterView(scene, expansion.edition);
 // A few distant block clouds and hand-built signs; all artwork is generated here.
 const cloudMaterial = new T.MeshLambertMaterial({ color: 0xf4f6e9 });
 const cube = new T.BoxGeometry(1, 1, 1);
@@ -192,7 +184,7 @@ function sign(text: string, x: number, z: number, color: string) {
   scene.add(post);
 }
 sign("SEESTEG", -11, 4, "#8bd4d7");
-sign("BAUPLATZ", 1, 5, "#b7d88b");
+sign("FREIES BAUEN", 1, 5, "#b7d88b");
 sign("BOOM-ZONE", 10, 16, "#efb453");
 sign("MARA · HOLZAUFTRAG", -3, 14, "#b7d88b");
 sign("ENTDECKERPFAD", 7, -1, "#e3bd77");
@@ -263,29 +255,8 @@ const bobber = new T.Mesh(
 bobber.position.set(-11, 0.62, -4);
 bobber.visible = false;
 scene.add(bobber);
-const rod = new T.Mesh(
-  new T.CylinderGeometry(0.025, 0.045, 2.2, 6),
-  new T.MeshLambertMaterial({ color: 0x805738 }),
-);
-rod.position.set(0.48, -0.5, -1);
-rod.rotation.x = -0.6;
-rod.rotation.z = -0.2;
-rod.visible = false;
-camera.add(rod);
 scene.add(camera);
-const held = new T.Group();
-camera.add(held);
-const handle = new T.Mesh(cube, new T.MeshLambertMaterial({ color: 0x9c713f }));
-handle.position.set(0.48, -0.52, -0.9);
-handle.scale.set(0.09, 0.65, 0.09);
-held.add(handle);
-const toolHead = new T.Mesh(
-  cube,
-  new T.MeshLambertMaterial({ color: 0xa4b9ba }),
-);
-toolHead.position.set(0.48, -0.2, -0.9);
-held.add(toolHead);
-let swing = 0;
+const heldTools = new HeldTools(camera);
 
 const ray = new T.Raycaster();
 let target: Cell | null = null,
@@ -370,8 +341,9 @@ function syncAim() {
 function build() {
   syncAim();
   if (adjacent && place(world, adjacent, TYPES[selected], player.pos)) {
+    heldTools.play("build");
     history.record(adjacent!, null, TYPES[selected]);
-    $("undo").removeAttribute("disabled");
+    syncUndo();
     save();
   } else
     toast(
@@ -379,12 +351,12 @@ function build() {
     );
 }
 function destroy() {
-  swing = 0.3;
+  heldTools.play("mine");
   syncAim();
   const previous = target ? world.get(...target) : undefined;
   if (target && remove(world, target, player.pos)) {
     history.record(target, previous!, null);
-    $("undo").removeAttribute("disabled");
+    syncUndo();
     if (previous && previous !== "Boom")
       expansion.materials[previous] = (expansion.materials[previous] || 0) + 1;
     missions.wood();
@@ -392,16 +364,19 @@ function destroy() {
   } else toast("Visiere einen Block in deiner Nähe an.");
 }
 function hotbar() {
+  const pageSize = 5;
+  const pageCount = Math.ceil(TYPES.length / pageSize);
+  materialPage = Math.max(0, Math.min(pageCount - 1, materialPage));
   $("hotbar").innerHTML =
-    TYPES.slice(materialPage * 5, materialPage * 5 + 5)
+    TYPES.slice(materialPage * pageSize, materialPage * pageSize + pageSize)
       .map(
         (b, i) =>
-          `<button class="slot ${i + materialPage * 5 === selected ? "selected" : ""}" aria-label="${b === "Laub" ? "Blätter" : b} auswählen" data-block="${i + materialPage * 5}"><span class="block-icon" style="--block:#${colors[b].toString(16)}"></span><small>${b === "Laub" ? "Blätter" : b}</small><em>${i + 1}</em></button>`,
+          `<button class="slot ${i + materialPage * pageSize === selected ? "selected" : ""}" aria-label="${b === "Laub" ? "Blätter" : b} auswählen" data-block="${i + materialPage * pageSize}"><span class="block-icon" style="--block:#${colors[b].toString(16).padStart(6, "0")}"></span><small>${b === "Laub" ? "Blätter" : b}</small><em>${i + 1}</em></button>`,
       )
       .join("") +
-    `<button class="slot" id="material-next" aria-label="Weitere Baustoffe">›<small>Mehr</small></button>`;
+    `<button class="slot" id="material-next" aria-label="Weitere Baustoffe">›<small>${materialPage + 1}/${pageCount}</small></button>`;
   bindTap($("material-next"), () => {
-    materialPage = 1 - materialPage;
+    materialPage = (materialPage + 1) % pageCount;
     hotbar();
   });
   document.querySelectorAll<HTMLButtonElement>("[data-block]").forEach((b) =>
@@ -454,7 +429,7 @@ function menu() {
       (settings.sound ? "an" : "aus") +
       '</button><button id="quality">Auflösung: ' +
       (settings.quality === 1 ? "sparsam" : "normal") +
-      '</button><button id="home">Zurück zum Startpunkt</button><p class="hint">Desktop: Zum Umsehen ins Spiel klicken. Falls die Maussperre fehlt: mit gedrückter Maus ziehen; die Tasten + und − bauen und entfernen. I öffnet das Inventar, 1–6 wählen Blöcke.</p>',
+      `</button><label class="range-setting">Sichtfeld <output id="fov-value">${Math.round(expansion.view.fov)}°</output><input id="fov" type="range" min="55" max="90" step="1" value="${expansion.view.fov}"></label><label class="range-setting">Kamera-Empfindlichkeit <output id="sensitivity-value">${Math.round(expansion.view.sensitivity * 100)}%</output><input id="sensitivity" type="range" min="55" max="160" step="5" value="${expansion.view.sensitivity * 100}"></label><button id="home">Zurück zum Startpunkt</button><p class="hint">Desktop: Zum Umsehen ins Spiel klicken. Falls die Maussperre fehlt: mit gedrückter Maus ziehen; die Tasten + und − bauen und entfernen. I öffnet das Inventar, 1–9 wählen Blöcke, X zoomt.</p>`,
   );
   const mode = document.createElement("label");
   mode.className = "mode-select";
@@ -488,6 +463,18 @@ function menu() {
     save();
     menu();
   };
+  $("fov").oninput = () => {
+    expansion.view.fov = Number($<HTMLInputElement>("fov").value);
+    $("fov-value").textContent = `${Math.round(expansion.view.fov)}°`;
+    updateFov();
+    save();
+  };
+  $("sensitivity").oninput = () => {
+    expansion.view.sensitivity =
+      Number($<HTMLInputElement>("sensitivity").value) / 100;
+    $("sensitivity-value").textContent = `${Math.round(expansion.view.sensitivity * 100)}%`;
+    save();
+  };
   $("home").onclick = () => {
     player.pos = [0, 16, 17];
     player.vy = 0;
@@ -518,7 +505,7 @@ function nearMission(id: MissionId) {
 function showInventory() {
   openPanel(
     "INVENTAR",
-    `<h2>Deine Sammlung</h2><p>${inventory.total} Fische · ${expansion.tokens} Sterne · Bauen bleibt frei</p><div class="inventory-tabs"><button id="fish-tab">Fangbuch</button><button id="material-tab">Material & Schätze</button></div><div id="inventory-body"></div>`,
+    `<h2>Deine Sammlung</h2><p>${inventory.total} Fische · ${expansion.tokens} Sterne · Bauen bleibt frei</p><div class="inventory-tabs"><button id="tool-tab">Werkzeuge</button><button id="material-tab">Material</button><button id="fish-tab">Fangbuch</button></div><div id="inventory-body"></div>`,
   );
   const fish = () => {
     $("inventory-body").innerHTML = `<div class="fish-list">${FISH.map((f) => {
@@ -533,11 +520,25 @@ function showInventory() {
     )}</div><p class="hint">Alte Fangzahlen bleiben erhalten. Größen und Fangmethoden werden ab v0.2 protokolliert.</p>`;
   };
   $("fish-tab").onclick = fish;
+  const tools = () => {
+    $("inventory-body").innerHTML = `<h3>Werkzeug wählen</h3><div class="inventory-tools">${TOOLS.map((tool) => `<button data-inventory-tool="${tool}" aria-pressed="${expansion.tool === tool}"><span>${toolIcon(tool)}</span>${tool}</button>`).join("")}</div><p class="hint">Abgebaute Materialien werden aufgenommen. Mit dem Bauwerkzeug legst du Blöcke wieder in der Welt ab.</p>`;
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-inventory-tool]")
+      .forEach((button) =>
+        bindTap(button, () => {
+          expansion.tool = button.dataset.inventoryTool as typeof expansion.tool;
+          equipment();
+          tools();
+          save();
+        }),
+      );
+  };
+  $("tool-tab").onclick = tools;
   $("material-tab").onclick = () => {
     $("inventory-body").innerHTML =
       `<h3>Gesammelte Vorräte</h3><p>Für Aufträge verwendbar. Freies Bauen hat unbegrenzte Baustoffe.</p><div class="material-grid">${TYPES.map((t) => `<span>${t === "Laub" ? "Blätter" : t}: <b>${expansion.materials[t] || 0}</b></span>`).join("")}</div><h3>Deine Schätze</h3><p>${expansion.badges.map(escapeHTML).join(" · ") || "Hier erscheinen deine Missionsabzeichen."}</p>`;
   };
-  fish();
+  tools();
 }
 bindTap($("journal"), () => {
   if (canPlay()) adventure.journal();
@@ -550,6 +551,17 @@ bindTap($("learn"), () => {
     offered = false;
   }
 });
+function syncUndo() {
+  const button = $<HTMLButtonElement>("undo");
+  button.disabled = !history.available;
+  button.textContent = history.available ? `↶ ${history.depth}` : "↶";
+  button.setAttribute(
+    "aria-label",
+    history.available
+      ? `${history.depth} Bauaktionen rückgängig möglich`
+      : "Keine Bauaktion rückgängig möglich",
+  );
+}
 bindTap($("undo"), () => {
   if (!canPlay()) return;
   const a = history.undo(world, player.pos);
@@ -562,15 +574,19 @@ bindTap($("undo"), () => {
       0,
       (expansion.materials[a.before] || 0) - 1,
     );
-  $("undo").setAttribute("disabled", "");
+  syncUndo();
   save();
-  toast("Letzte Bauaktion rückgängig.");
+  toast(
+    history.available
+      ? `Bauaktion rückgängig. Noch ${history.depth} möglich.`
+      : "Bauaktion rückgängig.",
+  );
 });
 function equipment() {
-  $("tool-toggle").textContent = expansion.tool;
+  $("tool-toggle").textContent = `${toolIcon(expansion.tool)} ${expansion.tool}`;
   $("tool-palette").innerHTML = TOOLS.map(
     (t) =>
-      `<button data-tool="${t}" aria-pressed="${expansion.tool === t}">${t}</button>`,
+      `<button data-tool="${t}" aria-pressed="${expansion.tool === t}"><span>${toolIcon(t)}</span>${t}</button>`,
   ).join("");
   document.querySelectorAll<HTMLButtonElement>("[data-tool]").forEach((b) =>
     bindTap(b, () => {
@@ -580,6 +596,23 @@ function equipment() {
       save();
     }),
   );
+  heldTools.equip(
+    expansion.tool,
+    expansion.badges.includes("Holzhelfer"),
+  );
+}
+function toolIcon(tool: (typeof TOOLS)[number]) {
+  return (
+    {
+      Bauwerkzeug: "▣",
+      Spitzhacke: "⛏",
+      Axt: "◢",
+      Schaufel: "♠",
+      Schwert: "⚔",
+      Angel: "⌁",
+      Holzknüppel: "╱",
+    } as const
+  )[tool];
 }
 bindTap($("tool-toggle"), () => {
   if (canPlay()) $("tool-palette").hidden = !$("tool-palette").hidden;
@@ -601,7 +634,7 @@ function caught(f: FishActor, method: "Angel" | "Holzknüppel") {
   save();
 }
 function strike() {
-  swing = 0.3;
+  heldTools.play("strike");
   syncAim();
   const hit = fishView.hit(ray, 3.4);
   const block = ray.intersectObjects(view.group.children, false)[0];
@@ -627,7 +660,7 @@ $("play").onclick = () => {
     player.pitch = -0.12;
   }
   toast(
-    "Willkommen! Folge den Schildern zum See, Bauplatz oder zur BOOM-Zone.",
+    "Willkommen! Du kannst überall bauen. Folge den Schildern zum See, Wald oder zur BOOM-Zone.",
   );
 };
 function nearLake() {
@@ -685,6 +718,7 @@ function missionPanel() {
 function cast() {
   expansion.tool = "Angel";
   equipment();
+  heldTools.play("cast");
   if (
     !fishing.cast(
       performance.now(),
@@ -709,6 +743,11 @@ function interact() {
   }
   if (["Spitzhacke", "Axt", "Schaufel"].includes(expansion.tool)) {
     destroy();
+    return;
+  }
+  if (expansion.tool === "Schwert") {
+    heldTools.play("strike");
+    toast("Das Schwert ist bereit. In dieser friedlichen Welt sind noch keine Gegner unterwegs.");
     return;
   }
   const nearby = (Object.keys(MISSIONS) as MissionId[]).find((id) =>
@@ -746,6 +785,11 @@ bindTap($("break"), () => {
 });
 bindTap($("jump"), () => {
   if (canPlay()) jump = true;
+});
+bindTap($("zoom"), () => {
+  if (!canPlay()) return;
+  zoomed = !zoomed;
+  updateFov();
 });
 const particles: { mesh: T.Mesh; velocity: T.Vector3; life: number }[] = [];
 const particleMat = new T.MeshLambertMaterial({ color: 0xf5bb52 });
@@ -829,6 +873,10 @@ window.addEventListener("keydown", (e) => {
     save();
   }
   if (e.code === "KeyZ") $("undo").click();
+  if (e.code === "KeyX") {
+    zoomed = !zoomed;
+    updateFov();
+  }
   if (/Digit[1-9]/.test(e.code)) {
     selected = Number(e.code.slice(-1)) - 1;
     materialPage = Math.floor(selected / 5);
@@ -890,6 +938,7 @@ canvas.addEventListener("pointerdown", (e) => {
     if (e.button === 0) {
       if (expansion.tool === "Holzknüppel") strike();
       else if (expansion.tool === "Angel") interact();
+      else if (expansion.tool === "Schwert") heldTools.play("strike");
       else destroy();
     }
     if (e.button === 2) build();
@@ -922,8 +971,11 @@ canvas.addEventListener("dblclick", (e) => {
   }
 });
 function look(x: number, y: number, s: number) {
-  player.yaw -= x * s;
-  player.pitch = Math.max(-1.45, Math.min(1.45, player.pitch - y * s));
+  player.yaw -= x * s * expansion.view.sensitivity;
+  player.pitch = Math.max(
+    -1.45,
+    Math.min(1.45, player.pitch - y * s * expansion.view.sensitivity),
+  );
 }
 touch = new TouchControls(
   $("joystick"),
@@ -1039,9 +1091,11 @@ function frame(now: number) {
       ? "Am Seesteg"
       : arena
         ? "BOOM-Testzone"
-        : player.pos[2] > 4 && Math.abs(player.pos[0]) < 6
-          ? "Dein Bauplatz"
-          : "Wiesenland";
+        : player.pos[0] < -12 && player.pos[2] > 8
+          ? "Dunkelwald"
+          : player.pos[2] < -13
+            ? "Felsenpfad"
+            : "Wiesenland";
     $("context").hidden =
       !lake && !arena && !localMission && expansion.tool === "Bauwerkzeug";
     $("context-text").textContent = lake
@@ -1089,28 +1143,27 @@ function frame(now: number) {
     }
   }
   bobber.visible = canPlay() && fishing.state !== "idle";
-  rod.visible = canPlay() && (bobber.visible || expansion.tool === "Angel");
-  held.visible =
-    canPlay() && !["Bauwerkzeug", "Angel"].includes(expansion.tool);
-  toolHead.visible = expansion.tool !== "Holzknüppel";
-  toolHead.scale.set(
-    expansion.tool === "Spitzhacke" ? 0.5 : 0.28,
-    expansion.tool === "Spitzhacke" ? 0.1 : 0.28,
-    0.1,
+  heldTools.visible = canPlay();
+  heldTools.equip(
+    expansion.tool,
+    expansion.badges.includes("Holzhelfer"),
   );
-  swing = Math.max(0, swing - elapsed);
-  held.rotation.z = Math.sin(swing * 12) * 0.2;
-  (handle.material as T.MeshLambertMaterial).color.set(
-    expansion.badges.includes("Holzhelfer") ? 0xe5b35a : 0x9c713f,
+  heldTools.update(
+    elapsed,
+    Math.abs(joyX) + Math.abs(joyY) > 0.08 ||
+      ["KeyW", "KeyA", "KeyS", "KeyD"].some((key) => keys.has(key)),
+    now / 1000,
   );
+  canvas.dataset.toolAction = heldTools.action;
+  canvas.dataset.activeTool = expansion.tool;
 
   bobber.position.x = shoal.bobber.x;
   bobber.position.z = shoal.bobber.z;
+  water.update(now);
   bobber.position.y =
-    0.62 +
+    water.level + 0.24 +
     Math.sin(now * (fishing.state === "bite" ? 0.025 : 0.003)) *
       (fishing.state === "bite" ? 0.17 : 0.025);
-  water.position.y = 0.38 + Math.sin(now * 0.001) * 0.025;
   view.update();
   renderer.render(scene, camera);
   renderedFrames++;
@@ -1120,7 +1173,10 @@ function frame(now: number) {
       triangles: renderer.info.render.triangles,
       geometries: renderer.info.memory.geometries,
       textures: renderer.info.memory.textures,
+      chunks: view.group.children.length,
       ratio,
+      fov: camera.fov,
+      toolAction: heldTools.action,
       particles: particles.length,
       renderedFrames,
       picks,

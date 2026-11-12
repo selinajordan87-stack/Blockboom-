@@ -268,6 +268,10 @@ footer {
     inset 0 5px 0 #ffffff25;
   transform: skewY(-7deg);
   border-radius: 2px;
+  background-image:
+    linear-gradient(135deg, #fff2 25%, transparent 25%),
+    linear-gradient(315deg, #0002 25%, transparent 25%);
+  background-size: 8px 8px;
 }
 .desktop-help {
   font-size: 10px;
@@ -939,6 +943,7 @@ button:disabled {
 #learn.offer {box-shadow:0 0 0 2px #efc16b;}
 #tool-palette {position:absolute;z-index:8;bottom:160px;left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#173b32f5;padding:12px;border-radius:14px;pointer-events:auto;max-width:95vw;}
 #tool-palette button {font-size:12px;padding:10px;min-width:88px;}
+#tool-palette button span {display:block;font-size:20px;margin-bottom:4px;color:#f1cc7c;}
 #tool-palette button[aria-pressed=true] {border-color:#efc16b;color:#efc16b;}
 .hotbar .slot {flex-shrink:0;}
 #material-next {font-size:22px;}
@@ -957,6 +962,13 @@ button:disabled {
 .mission-list small {display:block;font-size:11px;color:#c2d2b3;margin-top:8px;line-height:1.6;}
 .answer-choices {display:grid;gap:9px;}
 .material-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;}
+.inventory-tools {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+.inventory-tools button {text-align:left;min-height:52px;}
+.inventory-tools button span {display:inline-block;width:28px;color:#efcb83;font-size:20px;}
+.inventory-tools button[aria-pressed=true] {border-color:#efc16b;background:#efc16b18;color:#f4d28c;}
+.range-setting {display:grid;grid-template-columns:1fr auto;gap:5px 12px;align-items:center;margin:10px 0;color:#e7d7ab;font-size:12px;}
+.range-setting input {grid-column:1/-1;width:100%;padding:0!important;accent-color:#edbd65;}
+.range-setting output {color:#f1ca7d;font-weight:700;}
 #learning-feedback,#learning-aid {color:#f2d28b;line-height:1.7;}
 .challenge-domain {font-size:11px!important;letter-spacing:.5px;}
 .timer-option {display:flex;gap:10px;align-items:center;font-size:12px;color:#bdceb7;margin:15px 0;}
@@ -976,6 +988,7 @@ button:disabled {
  #tool-palette {bottom:110px;}
  .panel {max-height:calc(var(--usable-height,100dvh) - 20px);}
  .panel .mission-text {font-size:19px;}
+ .inventory-tools {grid-template-columns:repeat(3,minmax(0,1fr));}
 }
 /* Keep desktop interaction prompts above the expanded footer as well. */
 @media (pointer:fine) {#context {bottom:225px;}#tool-palette {bottom:225px;}}

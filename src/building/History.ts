@@ -6,16 +6,19 @@ import {
   type Block,
 } from "../world/World";
 export class BuildHistory {
-  private last: {
+  private actions: {
     cell: Cell;
     before: Block | null;
     after: Block | null;
-  } | null = null;
+  }[] = [];
+  constructor(private readonly limit = 20) {}
   record(cell: Cell, before: Block | null, after: Block | null) {
-    this.last = { cell: [...cell], before, after };
+    this.actions.push({ cell: [...cell], before, after });
+    if (this.actions.length > this.limit)
+      this.actions.splice(0, this.actions.length - this.limit);
   }
   undo(world: World, player: Cell) {
-    const a = this.last;
+    const a = this.actions.at(-1);
     if (!a) return null;
     if (
       (world.get(...a.cell) || null) !== a.after ||
@@ -23,10 +26,13 @@ export class BuildHistory {
     )
       return null;
     world.set(...a.cell, a.before);
-    this.last = null;
+    this.actions.pop();
     return a;
   }
   get available() {
-    return this.last !== null;
+    return this.actions.length > 0;
+  }
+  get depth() {
+    return this.actions.length;
   }
 }

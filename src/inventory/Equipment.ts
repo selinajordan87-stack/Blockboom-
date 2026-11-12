@@ -5,6 +5,7 @@ export const TOOLS = [
   "Spitzhacke",
   "Axt",
   "Schaufel",
+  "Schwert",
   "Angel",
   "Holzknüppel",
 ] as const;
@@ -21,7 +22,7 @@ export interface MissionState {
 }
 export interface Expansion {
   version: 1;
-  edition: 1 | 2;
+  edition: 1 | 2 | 3;
   tool: Tool;
   materials: Partial<Record<Block, number>>;
   catches: CatchRecord[];
@@ -29,8 +30,9 @@ export interface Expansion {
   tokens: number;
   badges: string[];
   missions: Record<string, MissionState>;
+  view: { fov: number; sensitivity: number };
 }
-export const defaultExpansion = (edition: 1 | 2 = 1): Expansion => ({
+export const defaultExpansion = (edition: 1 | 2 | 3 = 1): Expansion => ({
   version: 1,
   edition,
   tool: "Bauwerkzeug",
@@ -40,13 +42,14 @@ export const defaultExpansion = (edition: 1 | 2 = 1): Expansion => ({
   tokens: 0,
   badges: [],
   missions: {},
+  view: { fov: 70, sensitivity: 1 },
 });
 export function readExpansion(raw: unknown): Expansion {
   const d = defaultExpansion();
   if (!raw || typeof raw !== "object") return d;
   const r = raw as Partial<Expansion>;
   if (r.version !== 1) return d;
-  d.edition = r.edition === 2 ? 2 : 1;
+  d.edition = r.edition === 3 ? 3 : r.edition === 2 ? 2 : 1;
   d.tool = TOOLS.includes(r.tool as Tool) ? r.tool! : "Bauwerkzeug";
   const count = (v: unknown): v is number =>
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= 1e9;
@@ -97,5 +100,11 @@ export function readExpansion(raw: unknown): Expansion {
         completed: !!m.completed,
       };
   }
+  const fov = (r as Partial<Expansion>).view?.fov;
+  const sensitivity = (r as Partial<Expansion>).view?.sensitivity;
+  if (typeof fov === "number" && Number.isFinite(fov))
+    d.view.fov = Math.max(55, Math.min(90, fov));
+  if (typeof sensitivity === "number" && Number.isFinite(sensitivity))
+    d.view.sensitivity = Math.max(0.55, Math.min(1.6, sensitivity));
   return d;
 }

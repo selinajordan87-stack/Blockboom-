@@ -8,14 +8,22 @@ export const TYPES = [
   "Sand",
   "Ziegel",
   "Laub",
+  "Kopfstein",
+  "Ton",
+  "Moosstein",
+  "Dunkelholz",
+  "Kalkstein",
+  "Schiefer",
 ] as const;
-export type Block = (typeof TYPES)[number] | "Laub" | "Sand" | "Boom";
+export type Block = (typeof TYPES)[number] | "Boom";
 export type Cell = [number, number, number];
 export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
 export const LIMIT = 24;
 export class World {
   blocks = new Map<string, Block>();
   changes: Record<string, Block | null> = {};
+  /** Cells changed since the renderer last synchronized its chunk meshes. */
+  dirty = new Set<string>();
   revision = 0;
   get(x: number, y: number, z: number) {
     return this.blocks.get(key(x, y, z));
@@ -25,6 +33,7 @@ export class World {
     if (b) this.blocks.set(k, b);
     else this.blocks.delete(k);
     if (record) this.changes[k] = b;
+    this.dirty.add(k);
     this.revision++;
   }
   constructor() {
