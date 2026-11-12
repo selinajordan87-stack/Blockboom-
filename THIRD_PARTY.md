@@ -9,3 +9,5 @@ Entwicklungswerkzeuge: Vite (MIT), Vitest (MIT), TypeScript (Apache-2.0), @types
 Auch die v0.2-Fischmodelle, Figuren, Schatzkiste, Landschaftsergänzungen und Aufgabeninhalte wurden für dieses Projekt im Code beziehungsweise als eigene Texte erzeugt. Keine zusätzlichen fremden Assets oder Bibliotheken.
 
 Für v0.3 werden der kleine Oberflächenatlas, alle Pixelmuster, die neue Landschaft, Wasserlagen, First-Person-Hand, sieben Werkzeugmodelle und 20 zusätzlichen Lernaufgaben ebenfalls zur Laufzeit beziehungsweise im Projekt selbst erzeugt. Es kamen keine Bild-, Modell-, Sound- oder Laufzeitabhängigkeiten hinzu.
+
+Die acht Fischarten, Angelmodelle, Gewässerdetails und 60 Angelaufgaben aus v0.4 sowie Sonne/Mond/Sterne, Zombiefiguren, zusätzliche Waffen und Bauteile, Schreibkampftexte und synthetischen Umgebungsgeräusche aus v0.5 sind ebenfalls eigene Geometrien, Muster beziehungsweise Projekttexte. Es wurden keine zusätzlichen Drittanbieter-Assets oder Laufzeitbibliotheken verwendet.

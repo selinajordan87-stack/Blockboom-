@@ -171,3 +171,7 @@ Der aktuelle Stand erweitert die Welt um strukturierte Voxeloberflächen, selekt
 ## 17. Fishing Adventure v0.4
 
 Das Angelspiel besitzt nun acht sichtbare Arten, vier Gewässer, Ausrüstung, sichtbaren Kraftwurf, Schnur/Schwimmer, Biss und einen steuerbaren Drill sowie Fangentscheidung, 3D-Fangbuch, simulierte Regelhinweise und 60 zusätzliche Fachaufgaben. Architektur, Save-Sicherung, vollständige Testwerte, Leistungsgrenzen, Geräteplan und tatsächlicher Release-Status stehen im [v0.4-Bericht](V04_REPORT.md).
+
+## 18. NIGHTFALL v0.5
+
+Tag und Nacht, drei Zombiearten, Gesundheit/Nahrung, sichtbarer Waffenkampf, Basisbauteile, Werkbank und freiwillige Schreibkämpfe ergänzen das bestehende Sandbox- und Angelspiel. Die additive Speichererweiterung, Prüfungen, Leistungsgrenzen, verschobene Details, Geräteabnahme und Veröffentlichung stehen im [v0.5-Bericht](V05_REPORT.md).
