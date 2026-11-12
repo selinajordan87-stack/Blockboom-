@@ -433,7 +433,10 @@ function destroy() {
     history.record(target, previous!, null);
     syncUndo();
     if (previous && previous !== "Boom")
-      expansion.materials[previous] = (expansion.materials[previous] || 0) + 1;
+      {
+        const recovered=previous==="Tür offen"?"Tür":previous==="Tor offen"?"Tor":previous;
+        expansion.materials[recovered] = (expansion.materials[recovered] || 0) + 1;
+      }
     missions.wood();
     save();
   } else toast("Visiere einen Block in deiner Nähe an.");
@@ -724,11 +727,13 @@ bindTap($("undo"), () => {
     toast("Rückgängig ist hier gerade nicht möglich.");
     return;
   }
-  if (a.before && a.after === null)
-    expansion.materials[a.before] = Math.max(
+  if (a.before && a.after === null){
+    const recovered=a.before==="Tür offen"?"Tür":a.before==="Tor offen"?"Tor":a.before;
+    expansion.materials[recovered] = Math.max(
       0,
-      (expansion.materials[a.before] || 0) - 1,
+      (expansion.materials[recovered] || 0) - 1,
     );
+  }
   if(night.mode==="Survival"&&a.after&&a.before===null)
     expansion.materials[a.after]=(expansion.materials[a.after]||0)+1;
   syncUndo();
@@ -1236,7 +1241,9 @@ window.addEventListener("keydown", (e) => {
   if (e.code === "KeyR") nightUI.startBattle();
   if (e.code === "Space") jump = true;
   if (e.code === "KeyQ") {
-    expansion.tool = TOOLS[(TOOLS.indexOf(expansion.tool) + 1) % TOOLS.length];
+    const available = TOOLS.filter(tool=>night.mode==="Kreativ" ||
+      !["Holzschwert","Steinschwert","Steinaxt","Bogen"].includes(tool) || night.crafted.includes(tool));
+    expansion.tool = available[(available.indexOf(expansion.tool) + 1) % available.length];
     equipment();
     save();
   }
@@ -1544,6 +1551,8 @@ function frame(now: number) {
       $("interact").textContent = "E · Fangen";
     if (["Axt", "Spitzhacke", "Schaufel"].includes(expansion.tool))
       $("interact").textContent = "E · Abbauen";
+    if (["Schwert","Holzschwert","Steinschwert","Bogen"].includes(expansion.tool))
+      $("interact").textContent = "E · Angreifen";
     $("interact").classList.toggle("bite", fishing.state === "bite");
     if(target && ["Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(world.get(...target)||"")){
       $("context").hidden=false;$("interact").textContent=world.get(...target)==="Lagerkiste"?"E · Lagerkiste":"E · Öffnen / Schließen";

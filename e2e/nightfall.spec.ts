@@ -25,6 +25,10 @@ test("Survival-Werkbank verbraucht Material; Fisch kochen, essen und Reload",asy
   await seed(page);await nightMenu(page);await page.locator("#survival-mode").selectOption("Survival");await page.locator("#apply-night").click();
   await nightMenu(page);await page.locator("#open-crafting").click();await page.locator('[data-recipe="Bretter"]').click();await page.locator('[data-recipe="Holzschwert"]').click();await page.locator("#close").click();
   let state=await save(page);expect(state.extension.materials).toMatchObject({Holz:7,Bretter:2});expect(state.extension.nightfall.crafted).toContain("Holzschwert");
+  for(let i=0;i<11;i++){
+    await page.keyboard.press("KeyQ");
+    expect(["Bogen","Steinschwert","Steinaxt"]).not.toContain(await page.locator("#tool-toggle").textContent());
+  }
   await nightMenu(page);await page.locator("#open-food").click();await page.locator('[data-cook="Flussbarsch"]').click();await page.locator("#eat-fish").click();await page.locator("#close").click();
   state=await save(page);expect(state.fish.Flussbarsch).toBe(0);expect(state.extension.nightfall.supplies.Fischgericht).toBe(0);
   await page.reload();await page.locator("#play").click();state=await save(page);expect(state.extension.nightfall.crafted).toContain("Holzschwert");expect(state.extension.materials.Holz).toBe(7);
@@ -60,6 +64,15 @@ test("Haustür öffnet beide Zellen, Spieler geht hindurch und offene Tür bleib
 test("v0.4-Save erhält eine pre-v05-Sicherung und alle bisherigen Angelwerte",async({page})=>{
   const s=base();delete (s.extension as any).nightfall;await seed(page,s);await save(page);
   const backup=await page.evaluate(()=>JSON.parse(localStorage.getItem("blockboom.save.pre-v05")!));expect(backup.fish.Flussbarsch).toBe(1);expect(backup.extension.materials.Holz).toBe(10);expect(backup.extension.nightfall).toBeUndefined();
+});
+
+test("offene Tür abbauen und Undo erhalten einen gültigen Tür-Vorrat nach Reload",async({page})=>{
+  const s=base();s.position=[4.1,1.01,15.5];s.yaw=Math.PI;s.pitch=-.3;
+  Object.assign(s.extension.nightfall,{refuge:true});Object.assign(s.changes,{"4,1,17":"Tür offen","4,2,17":"Tür offen"});
+  await seed(page,s);await expect(page.locator("#target-label")).toContainText("Tür offen");
+  await page.keyboard.press("Minus");let state=await save(page);expect(state.extension.materials.Tür).toBe(1);expect(state.extension.materials["Tür offen"]).toBeUndefined();
+  await page.locator("#undo").click();state=await save(page);expect(state.extension.materials.Tür).toBe(0);
+  await page.keyboard.press("Minus");await page.reload();await page.locator("#play").click();state=await save(page);expect(state.extension.materials.Tür).toBe(1);
 });
 
 test("Nahkampf über sichtbare Waffe trifft einen echten Zombie und belohnt den Sieg",async({page})=>{
