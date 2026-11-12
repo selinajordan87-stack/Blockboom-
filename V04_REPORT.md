@@ -137,4 +137,6 @@ Buildgrößen des letzten geprüften Builds:
 - `ed7f80d` – Audit v0.4 fishing baseline and compatibility boundaries
 - `d54b48a` – Build interactive v0.4 fishing adventure
 - `80f2910` – Harden v0.4 mobile fishing and browser regression
-- Deploymentstatus wird erst nach erfolgreichem Push, GitHub-Actions-Lauf und Abruf des neuen Live-Bundles bestätigt. Bis dahin ist v0.4 **lokal getestet, aber noch nicht veröffentlicht**.
+- `356c072` – Document verified v0.4 release candidate
+- GitHub-Pages-Lauf `43304591460` für `356c072` ist erfolgreich. Die öffentliche Seite lieferte anschließend HTTP 200, `last-modified: Thu, 12 Nov 2026 20:52:57 GMT` und das neue Bundle `assets/index-B6xNo-vd.js`; darin wurden `v0.4.0`, `FISHING ADVENTURE`, Angel-Ausrüstung und Schnurspannung direkt geprüft.
+- Zusätzliche Live-Browserprüfung gegen `https://selinajordan87-stack.github.io/Blockboom-/`: **5/5 bestanden** (Pages-Unterpfad/Assets/Reload, v0.1-Migration, Angelset, mobiles `touchcancel`, vier gespeicherte Angelplätze). BLOCKBOOM v0.4.0 ist veröffentlicht; die reale iPhone-/Android-Abnahme bleibt wie oben beschrieben offen.
