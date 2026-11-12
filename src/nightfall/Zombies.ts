@@ -60,7 +60,8 @@ export class ZombieEngine {
   actors:Zombie[]=[]; cap=8; attackCooldown=0; private nextId=1; private wasNight=false;
   constructor(public world:World,public state:NightState,private rng= Math.random){}
   spawn(kind:ZombieKind,pos:Cell,player:Cell) {
-    if(this.actors.filter(z=>z.hp>0).length>=this.cap || Math.hypot(pos[0]-player[0],pos[2]-player[2])<6 || collides(this.world,pos))return null;
+    if(this.actors.filter(z=>z.hp>0).length>=this.cap || Math.hypot(pos[0]-player[0],pos[2]-player[2])<6 || collides(this.world,pos,1.75*ZOMBIES[kind].scale,.32*ZOMBIES[kind].scale))return null;
+    if(this.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-pos[0],z.pos[2]-pos[2])<1.4))return null;
     // No spawn under a roof, in trees, water, or on unsupported air.
     if(!solid(this.world.get(Math.floor(pos[0]),Math.floor(pos[1]-.01),Math.floor(pos[2]))))return null;
     for(let y=Math.ceil(pos[1]+1.8);y<=14;y++)if(this.world.get(Math.floor(pos[0]),y,Math.floor(pos[2])))return null;
@@ -85,9 +86,13 @@ export class ZombieEngine {
     if(night&&this.state.waveNight!==this.state.night){this.spawnWave(player);this.state.waveNight=this.state.night;}
     if(this.wasNight&&!night){this.actors.forEach(z=>z.state="retreat");}
     this.wasNight=night;
+    if(this.actors.length>this.cap)this.actors=this.actors.sort((a,b)=>Math.hypot(a.pos[0]-player[0],a.pos[2]-player[2])-Math.hypot(b.pos[0]-player[0],b.pos[2]-player[2])).slice(0,this.cap);
     for(const z of this.actors){
       z.age+=dt;z.cooldown=Math.max(0,z.cooldown-dt);z.hit=Math.max(0,z.hit-dt);z.repath-=dt;
       if(z.hp<=0){z.state="defeated";continue;}
+      if(this.world.get(Math.floor(z.pos[0]),Math.floor(z.pos[1]),Math.floor(z.pos[2]))==="Falle"){
+        this.damage(z,dt*12);if(z.hp<=0)continue;
+      }
       const spec=ZOMBIES[z.kind],distance=Math.hypot(player[0]-z.pos[0],player[1]-z.pos[1],player[2]-z.pos[2]);
       const see=lineOfSight(this.world,[z.pos[0],z.pos[1]+1.3,z.pos[2]],[player[0],player[1]+1.1,player[2]]);
       if(z.state!=="retreat")z.state=distance<1.6&&see?"attack":distance<18?(z.state==="idle"?"discover":"chase"):"wander";
@@ -106,7 +111,7 @@ export class ZombieEngine {
         for(const [axis,amount] of [[0,dx/len*step],[2,dz/len*step]] as const){
           const pos=[...z.pos] as Cell;pos[axis]+=amount;
           const y=ground(this.world,pos[0],pos[2],pos[1]);
-          if(y!==null&&Math.abs(y-pos[1])<.55){pos[1]=y+.001;if(!collides(this.world,pos))z.pos=pos;}
+          if(y!==null&&Math.abs(y-pos[1])<.55){pos[1]=y+.001;if(!collides(this.world,pos,1.75*spec.scale,.32*spec.scale))z.pos=pos;}
           else if(z.kind!=="fast" && z.cooldown===0){
             const c:Cell=[Math.floor(pos[0]+Math.sign(dx)*.4),Math.floor(z.pos[1]),Math.floor(pos[2]+Math.sign(dz)*.4)];
             if(damageDoor(this.world,this.state,c,z.kind==="heavy"?30:12))z.path=[];
@@ -115,7 +120,6 @@ export class ZombieEngine {
         }
         if(z.path[0]&&Math.hypot(z.pos[0]-z.path[0][0],z.pos[2]-z.path[0][2])<.25)z.path.shift();
       }
-      if(this.world.get(Math.floor(z.pos[0]),Math.floor(z.pos[1]),Math.floor(z.pos[2]))==="Falle")this.damage(z,dt*12);
     }
     this.actors=this.actors.filter(z=>z.hp>0||z.hit>0).filter(z=>z.state!=="retreat"||z.age<50);
   }

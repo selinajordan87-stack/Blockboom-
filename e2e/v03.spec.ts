@@ -78,9 +78,9 @@ test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await seed(page);
-  await expect(page.locator(".eyebrow")).toContainText("v0.4.0");
+  await expect(page.locator(".eyebrow")).toContainText("v0.5.0");
   await page.locator("#tool-toggle").click();
-  await expect(page.locator("[data-tool]")).toHaveCount(7);
+  await expect(page.locator("[data-tool]")).toHaveCount(11);
   await page.locator('[data-tool="Spitzhacke"]').click();
   await expect(page.locator("#world")).toHaveAttribute(
     "data-active-tool",
@@ -94,7 +94,7 @@ test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar
   await page.locator("#bag").click();
   await expect(page.locator(".fish-list")).toBeVisible();
   await page.locator("#tool-tab").click();
-  await expect(page.locator("[data-inventory-tool]")).toHaveCount(7);
+  await expect(page.locator("[data-inventory-tool]")).toHaveCount(11);
   await page.locator('[data-inventory-tool="Schwert"]').click();
   await page.locator("#close").click();
   await expect(page.locator("#world")).toHaveAttribute(

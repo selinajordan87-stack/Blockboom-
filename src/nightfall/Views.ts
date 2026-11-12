@@ -41,15 +41,18 @@ export class DefenseView {
   private dummy=new T.Object3D(); private geometry=new T.BoxGeometry(1,1,1);
   private material=new T.MeshLambertMaterial({color:0xffffff});
   private lights:T.PointLight[]=[];
+  private torches:number[][]=[];
   constructor(private world:World,scene:T.Scene) {
     this.group.name="NIGHTFALL build parts";scene.add(this.group);
     for(let i=0;i<3;i++){const light=new T.PointLight(0xffba64,0,8,2);scene.add(light);this.lights.push(light);}
   }
   update(origin:T.Vector3,night:boolean) {
     if(this.revision!==this.world.revision){
+      this.torches=[];
       const boxes:{cell:Cell;size:number[];position:number[];color:number}[]=[];
       for(const [id,block] of this.world.blocks){
         if(!special(block))continue;const cell=id.split(",").map(Number) as Cell;
+        if(block==="Fackel")this.torches.push(cell);
         const add=(size:number[],position:number[],color=0x9b754a)=>boxes.push({cell,size,position,color});
         if(block==="Tür"||block==="Tor") {add([.9,1,.14],[.5,.5,.5]);add([.07,.07,.12],[.83,.5,.61],0xf4d184);}
         else if(block.endsWith("offen"))add([.14,1,.9],[.08,.5,.5]);
@@ -69,7 +72,7 @@ export class DefenseView {
       }
       this.revision=this.world.revision;
     }
-    const torches=[...this.world.blocks].filter(([,b])=>b==="Fackel").map(([key])=>key.split(",").map(Number)).sort((a,b)=>Math.hypot(a[0]-origin.x,a[2]-origin.z)-Math.hypot(b[0]-origin.x,b[2]-origin.z));
+    const torches=this.torches.sort((a,b)=>Math.hypot(a[0]-origin.x,a[2]-origin.z)-Math.hypot(b[0]-origin.x,b[2]-origin.z));
     this.lights.forEach((light,i)=>{light.intensity=night&&torches[i]?2.6:0;if(torches[i])light.position.set(torches[i][0]+.5,torches[i][1]+.9,torches[i][2]+.5);});
   }
 }

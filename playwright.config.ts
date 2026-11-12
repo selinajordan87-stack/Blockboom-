@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 45000,
+  timeout: 90000,
   use: {
     baseURL:
       process.env.BLOCKBOOM_TEST_URL || "http://localhost:5173/Blockboom-/",

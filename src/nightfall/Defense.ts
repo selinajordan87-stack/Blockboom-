@@ -30,7 +30,11 @@ export function toggleDoor(world:World, cell:Cell, player:Cell) {
 export function damageDoor(world:World,state:NightState,cell:Cell,amount:number) {
   if(!["Tür","Tor"].includes(world.get(...cell) || "")) return false;
   const id=key(...cell); state.damage[id]=Math.min(100,(state.damage[id] || 0)+amount);
-  if(state.buildingDamage && state.damage[id]>=100) { world.set(...cell,null); return true; }
+  if(state.buildingDamage && state.damage[id]>=100) {
+    const block=world.get(...cell);
+    for(const dy of [-1,1])if(world.get(cell[0],cell[1]+dy,cell[2])===block)world.set(cell[0],cell[1]+dy,cell[2],null);
+    world.set(...cell,null); return true;
+  }
   return false;
 }
 export function repair(state:NightState,cell:Cell) { const id=key(...cell); if(!state.damage[id])return false;delete state.damage[id];return true; }

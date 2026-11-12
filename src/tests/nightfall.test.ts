@@ -8,6 +8,7 @@ import { RECIPES, cook, craft } from "../nightfall/Crafting";
 import { WritingBattle } from "../nightfall/Writing";
 import { readExpansion } from "../inventory/Equipment";
 import { decode } from "../storage/Save";
+import { Player } from "../player/Player";
 function flat(){const world=new World();world.blocks.clear();for(let x=-23;x<24;x++)for(let z=-23;z<24;z++)world.set(x,0,z,"Gras",false);return world;}
 
 it("durchläuft sechs Phasen kontinuierlich und zählt Nächte nur an Übergängen",()=>{
@@ -79,3 +80,31 @@ it("liest alte Saves additiv, validiert NIGHTFALL und speichert offene Türen",(
   const save={version:1,position:[0,1,0],yaw:0,pitch:0,changes:{"4,1,17":"Tür offen"},fish:{Rotauge:0,Flussbarsch:1,Hecht:0},extension:legacy};
   expect(decode(JSON.stringify(save))?.changes["4,1,17"]).toBe("Tür offen");
 });
+it("Treppen tragen die Figur auf halber Höhe und Leitern führen nach oben",()=>{
+  const w=flat();w.set(0,1,0,"Treppe");const p=new Player(w);p.pos=[.5,2.2,.2];
+  for(let i=0;i<200;i++)p.step(1/120,0,0,false);
+  expect(p.pos[1]).toBeCloseTo(1.5,2);expect(p.blocked(p.pos)).toBe(false);
+  w.set(2,1,2,"Leiter");w.set(2,2,2,"Leiter");p.pos=[2.5,1.01,2.5];
+  for(let i=0;i<50;i++)p.step(1/120,0,0,true);expect(p.pos[1]).toBeGreaterThan(1.8);
+});
+it("Bogen benötigt Pfeile im Survival, Mauern blockieren Fernkampftreffer",()=>{
+  const w=flat(),s=freshNight("Survival"),e=new ZombieEngine(w,s),z=e.spawn("heavy",[0,1,-9],[0,1,0])!;
+  expect(e.attack([0,1,0],[0,0,-1],"Bogen")).toBeNull();s.supplies.Pfeile=2;
+  expect(e.attack([0,1,0],[0,0,-1],"Bogen")).toBe(z);expect(s.supplies.Pfeile).toBe(1);
+  e.attackCooldown=0;w.set(0,2,-3,"Stein");const hp=z.hp;
+  expect(e.attack([0,1,0],[0,0,-1],"Bogen")).toBeNull();expect(z.hp).toBe(hp);
+});
+it("eine Falle besiegt nur ihren berührenden Gegner und keine entfernten Tiere",()=>{
+  const w=flat(),s=freshNight(),e=new ZombieEngine(w,s);s.time=.75;s.waveNight=0;
+  const z=e.spawn("normal",[8,1,8],[0,1,0])!;w.set(8,1,8,"Falle");z.pos=[8.5,1,8.5];
+  e.tick(.1,[8.5,1,8.5],()=>{});expect(z.hp).toBeLessThan(55);expect(s.defeated).toBe(0);
+});
+it("simuliert eine Stunde ohne wachsende Gegnerlisten oder ungültige Positionen",()=>{
+  const w=flat(),s=freshNight(),e=new ZombieEngine(w,s);e.cap=4;let maximum=0;
+  for(let i=0;i<36000;i++){
+    advanceDay(s,.1);e.tick(.1,[0,1,0],()=>{});maximum=Math.max(maximum,e.actors.length);
+    if(e.actors.some(z=>!z.pos.every(Number.isFinite)))throw Error("Ungültige Position");
+  }
+  expect(maximum).toBeLessThanOrEqual(4);expect(s.night).toBeGreaterThanOrEqual(3);expect(s.survived).toBeGreaterThanOrEqual(2);
+  e.cap=2;e.tick(.1,[0,1,0],()=>{});expect(e.actors.length).toBeLessThanOrEqual(2);
+},15000);

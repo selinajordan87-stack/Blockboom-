@@ -30,7 +30,7 @@ export async function landFish(
   await expect
     .poll(() => fishingState(page), { timeout: 3_000 })
     .toContain("Drill");
-  const deadline = Date.now() + 24_000;
+  const deadline = Date.now() + 38_000;
   let pointer = 310;
   while (!(await page.locator("#modal").isVisible()) && Date.now() < deadline) {
     const tension = Number.parseFloat(

@@ -53,7 +53,12 @@ export class Player {
     } else {
       if (this.vy < 0) {
         this.grounded = true;
-        this.pos[1] = Math.floor(this.pos[1] + 0.001) + 0.00001;
+        let low=p[1],high=this.pos[1];
+        for(let i=0;i<14;i++) {
+          const middle=(low+high)/2;
+          if(this.blocked([this.pos[0],middle,this.pos[2]]))low=middle;else high=middle;
+        }
+        this.pos[1]=high+.00001;
       }
       this.vy = 0;
     }

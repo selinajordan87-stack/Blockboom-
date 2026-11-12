@@ -81,6 +81,7 @@ test("mobile Angelaktion beendet touchcancel ohne Wurf, Hänger oder Pausenmenü
   await start(page);
   await page.locator("#tool-toggle").tap();
   await page.locator('[data-tool="Angel"]').tap();
+  await expect(page.locator("#fish-action")).toBeVisible();
   const box = (await page.locator("#fish-action").boundingBox())!;
   const cdp = await context.newCDPSession(page);
   const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };

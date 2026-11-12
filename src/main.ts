@@ -54,7 +54,7 @@ import { explode } from "./boom/Boom";
 import { load, persist, SAVE_KEY, type Save } from "./storage/Save";
 import { DayView, advanceDay, dayPhase, isNight } from "./nightfall/DayCycle";
 import { Vitals } from "./nightfall/State";
-import { ZombieEngine, WEAPONS } from "./nightfall/Zombies";
+import { ZombieEngine, WEAPONS, ZOMBIES } from "./nightfall/Zombies";
 import { DefenseView, ZombieView, NightAudio } from "./nightfall/Views";
 import { buildRefuge, toggleDoor, restoreNightDamage } from "./nightfall/Defense";
 import { NightUI } from "./nightfall/NightUI";
@@ -345,7 +345,8 @@ function aim() {
     (preview.material as T.MeshBasicMaterial).color.set(
       canPlace(world, adjacent, player.pos) ? 0xc1f5be : 0xf59a6a,
     );
-    $("target-label").textContent = world.get(...target) || "";
+    $("target-label").textContent = (world.get(...target) || "") +
+      (night.damage[target.join(",")]?` · Zustand ${Math.max(0,100-night.damage[target.join(",")])}%`:"");
   }
   if (expansion.tool === "Holzknüppel") {
     const fish = fishView.hit(ray, 3.4);
@@ -353,6 +354,13 @@ function aim() {
       $("target-label").textContent =
         `${fish.fish.species} · ${fish.fish.length} cm`;
     preview.visible = false;
+  }
+  if(WEAPONS[expansion.tool]){
+    const z=zombies.actors.find(z=>{
+      const point=new T.Vector3(z.pos[0],z.pos[1]+1,z.pos[2]);
+      return z.hp>0 && ray.ray.distanceToPoint(point)<.65 && point.distanceTo(camera.position)<8 && (!hit||point.distanceTo(camera.position)<hit.distance);
+    });
+    if(z)$("target-label").textContent=`${ZOMBIES[z.kind].name} · ${Math.ceil(z.hp)} LP`;
   }
 }
 function toast(text: string) {
@@ -489,6 +497,7 @@ function openPanel(tag: string, html: string, preserveFishing = false) {
   $("tool-palette").hidden = true;
 }
 function closePanel() {
+  if(pendingCatch){finishCatch("released");return;}
   $("modal").hidden = true;
   paused = false;
   if (!pendingCatch) fishView.hideShowcase();
@@ -1397,6 +1406,7 @@ let lastAim = 0;
 let learningOffer = 0,
   offered = false;
 let last = performance.now(),
+  zombieAccum = 0,
   accum = 0,
   slow = 0,
   frameCount = 0,
@@ -1412,7 +1422,7 @@ function frame(now: number) {
   }
   if (started && (paused || suspended)) {
     accum = 0;
-    if(paused && !suspended)nightUI.tick(elapsed);
+    if(paused && !suspended)nightUI.tick(realElapsed);
     if (viewportDirty) {
       renderer.render(scene, camera);
       viewportDirty = false;
@@ -1426,12 +1436,13 @@ function frame(now: number) {
     if(!wasNight&&isNight(night.time))toast(`Nacht ${night.night}: Bereite deine Verteidigung vor.`);
     vitals.tick(elapsed);gatherCooldown=Math.max(0,gatherCooldown-elapsed);
     zombies.cap=ratio<=1?4:8;
-    zombies.tick(elapsed,player.pos,damage=>{
+    zombieAccum+=elapsed;
+    if(zombieAccum>=.1){zombies.tick(Math.min(.2,zombieAccum),player.pos,damage=>{
       if(vitals.hit(damage)){
         canvas.classList.add("hurt");setTimeout(()=>canvas.classList.remove("hurt"),180);
         if(settings.sound)nightAudio.cue("zombie");
       }
-    });
+    });zombieAccum=0;}
     if(night.health<=0){
       save();openPanel("NEUER ANLAUF",'<h2>Kurze Verschnaufpause.</h2><p>Deine Welt und deine Ausrüstung warten auf dich. Am Startpunkt kannst du neu losziehen.</p><button id="respawn" class="primary">Sicher weitergehen</button>');
       $("respawn").onclick=()=>{vitals.respawn();player.pos=[0,16,17];player.vy=0;zombies.actors=[];closePanel();save();};
@@ -1648,7 +1659,7 @@ function frame(now: number) {
         target: fishing.target,
         spot: fishing.spot?.id || null,
       },
-      nightfall:{time:night.time,phase:dayPhase(night.time),health:night.health,hunger:night.hunger,mode:night.mode,cap:zombies.cap,night:night.night,zombies:zombies.actors.map(z=>({id:z.id,kind:z.kind,hp:z.hp,state:z.state,pos:z.pos}))},
+      nightfall:{time:night.time,phase:dayPhase(night.time),health:night.health,hunger:night.hunger,mode:night.mode,cap:zombies.cap,night:night.night,player:{pos:player.pos,yaw:player.yaw,pitch:player.pitch},zombies:zombies.actors.map(z=>({id:z.id,kind:z.kind,hp:z.hp,state:z.state,pos:z.pos}))},
       fish: shoal.actors.map((f) => ({
         id: f.id,
         species: f.species,

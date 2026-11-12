@@ -16,6 +16,7 @@
 #battle-answer {font:inherit;font-size:16px;line-height:1.55;width:100%;resize:vertical;min-height:74px;background:#f5f0dc;color:#18392f;border-radius:9px;padding:11px;border:2px solid #dbc98d;}
 #battle-feedback {color:#f4cf83;line-height:1.6;}#battle-clock {font-size:12px;color:#cee0ef;}
 #world.hurt {filter:sepia(.35) saturate(1.5);}
+#tool-palette {max-height:min(65dvh,330px);overflow-y:auto;touch-action:pan-y;}
 @media(pointer:coarse) {
  #survival-hud {top:65px;font-size:10px;padding:7px 10px;gap:9px;}
  #night-actions {right:calc(env(safe-area-inset-right) + 18px);top:calc(env(safe-area-inset-top) + 155px);flex-direction:column;align-items:flex-end;}
@@ -25,7 +26,7 @@
 @media(pointer:coarse) and (orientation:landscape) {
  #survival-hud {top:calc(env(safe-area-inset-top) + 15px);font-size:10px;}
  #night-actions {top:calc(env(safe-area-inset-top) + 80px);flex-direction:row;}
- #gather {display:none;}
+ #gather {font-size:10px;}
  #night-actions button {min-height:48px;padding:8px 12px;}
  .panel:has(#battle-form) {width:650px;}
  .panel:has(#battle-form) .mission-text {font-size:17px;}
