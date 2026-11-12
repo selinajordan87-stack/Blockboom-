@@ -111,7 +111,8 @@ export class LearningEngine {
       .sort(
         (a, b) =>
           (this.profile.results[a.id]?.due || 0) -
-            (this.profile.results[b.id]?.due || 0) || a.id.localeCompare(b.id),
+            (this.profile.results[b.id]?.due || 0) ||
+          this.content.indexOf(a) - this.content.indexOf(b),
       );
     const c = sorted[0];
     this.profile.recent = [...this.profile.recent, c.id].slice(-3);

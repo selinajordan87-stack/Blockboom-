@@ -167,3 +167,7 @@ Die bestehende Anwendung wurde modular erweitert, einschließlich Save-Kompatibi
 ## 16. Sandbox Revolution v0.3
 
 Der aktuelle Stand erweitert die Welt um strukturierte Voxeloberflächen, selektive Chunk-Neubauten, 15 Materialien, mehrfaches Undo, First-Person-Hand/Werkzeuge, FOV/Zoom, ein ausgebautes Inventar und 20 zusätzliche Aufgaben für die sechste Klasse. Save-Kompatibilität, Testbefunde, verschobene Survival-Funktionen und der tatsächliche Veröffentlichungsstatus stehen im [v0.3-Bericht](V03_REPORT.md).
+
+## 17. Fishing Adventure v0.4
+
+Das Angelspiel besitzt nun acht sichtbare Arten, vier Gewässer, Ausrüstung, sichtbaren Kraftwurf, Schnur/Schwimmer, Biss und einen steuerbaren Drill sowie Fangentscheidung, 3D-Fangbuch, simulierte Regelhinweise und 60 zusätzliche Fachaufgaben. Architektur, Save-Sicherung, vollständige Testwerte, Leistungsgrenzen, Geräteplan und tatsächlicher Release-Status stehen im [v0.4-Bericht](V04_REPORT.md).

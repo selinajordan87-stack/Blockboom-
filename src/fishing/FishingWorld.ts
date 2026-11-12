@@ -16,6 +16,14 @@ export function enrichFishingWorld(world: World) {
           (z + 0.5 - spot.center.z) / spot.radius.z,
         );
         if (distance > 1.08) continue;
+        // Established trees, ruins and markers become islands. Saved player
+        // changes are still applied after this base-world enrichment.
+        if (
+          Array.from({ length: 12 }, (_, index) => index + 1).some((y) =>
+            world.get(x, y, z),
+          )
+        )
+          continue;
         if (distance > 0.88) {
           world.set(x, 0, z, spot.id === "forest" ? "Ton" : "Sand", false);
           continue;

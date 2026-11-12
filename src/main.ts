@@ -443,6 +443,8 @@ function unlock() {
 function openPanel(tag: string, html: string, preserveFishing = false) {
   paused = true;
   clearInput();
+  clearTimeout(toastTimer);
+  $("toast").classList.remove("visible");
   unlock();
   if (!preserveFishing) fishing.cancel();
   $("panel-content").classList.toggle("pause-options", tag === "DEINE WELT");
@@ -552,7 +554,7 @@ function showInventory() {
         bestWeight = Math.max(0, ...records.map((c) => c.weight || 0)),
         last = records.at(-1),
         lastSpot = last?.spot ? spotById(last.spot).name : "früherer Spielstand";
-      return `<div><span class="fish-symbol">≈</span><section><b>${f.name}</b><p>${f.description}</p><small>${records.length ? `${records.length} gefangen · Rekord: ${best} cm${bestWeight ? ` / ${bestWeight} g` : ""}<br>Zuletzt: ${last?.method}${last?.bait ? ` mit ${last.bait}` : ""} · ${lastSpot}` : "Noch nicht im Fangbuch entdeckt."}</small><button data-fish-preview="${f.name}" ${records.length || expansion.angling.inspected.includes(f.name) ? "" : "disabled"}>3D ansehen</button></section><strong>${inventory.fish[f.name] || 0}<small> im Inventar</small></strong></div>`;
+      return `<div><span class="fish-symbol">≈</span><section><b>${f.name}</b><p>${f.description}</p><small>${records.length ? `${records.length} gefangen · Rekord: ${best} cm${bestWeight ? ` / ${bestWeight} g` : ""}<br>Zuletzt: ${last?.method}${last?.bait ? ` mit ${last.bait}` : ""} · ${lastSpot}` : "Noch nicht im Fangbuch entdeckt."}</small><button data-fish-preview="${f.name}" ${records.length || expansion.angling.inspected.includes(f.name) ? "" : "disabled"}>3D ansehen</button></section><div class="kept-count"><strong>${inventory.fish[f.name] || 0}</strong><small>im Inventar</small></div></div>`;
     }).join(
       "",
     )}</div><h3>Angel-Erfolge</h3><p>${expansion.angling.achievements.map(escapeHTML).join(" · ") || "Der erste Erfolg wartet am Wasser."}</p><p class="hint">Fangzahl umfasst zurückgesetzte und versorgte Fische. Die große Zahl rechts zeigt nur Fische im Inventar. Alte Fangzahlen bleiben erhalten.</p>`;
@@ -571,8 +573,14 @@ function showInventory() {
             { species, length: record?.length || FISH.find((entry) => entry.name === species)!.min },
             true,
           );
-          $("fish-preview-note").textContent =
-            `${species}: Die stilisierte 3D-Vorschau ist hinter dem halbtransparenten Fangbuch sichtbar.`;
+          viewportDirty = true;
+          const info = FISH.find((entry) => entry.name === species)!;
+          $("panel-tag").textContent = "3D-FANGBUCH";
+          $("panel-content").innerHTML = `<div class="landing-card"><div class="landing-space" aria-label="Dreidimensionale Vorschau von ${species}"></div><h2>${species}</h2><p>${escapeHTML(info.description)}</p><p><b>Merkmale:</b> ${escapeHTML(info.features)}</p><p><b>Lebensraum:</b> ${escapeHTML(info.habitat)}</p><p><b>Nahrung:</b> ${escapeHTML(info.food)}</p><button id="back-catchbook">← Zurück zum Fangbuch</button></div>`;
+          $("back-catchbook").onclick = () => {
+            fishView.hideShowcase();
+            showInventory();
+          };
         };
       });
   };
@@ -1513,6 +1521,14 @@ function frame(now: number) {
       particles: particles.length,
       renderedFrames,
       picks,
+      angling: {
+        state: fishing.state,
+        power: fishing.power,
+        tension: fishing.tension,
+        progress: fishing.progress,
+        target: fishing.target,
+        spot: fishing.spot?.id || null,
+      },
       fish: shoal.actors.map((f) => ({
         id: f.id,
         species: f.species,

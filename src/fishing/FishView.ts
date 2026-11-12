@@ -11,9 +11,12 @@ export class FishView {
   private meshes = new Map<Part, T.InstancedMesh>();
   private eyes: T.InstancedMesh;
   private dummy = new T.Object3D();
+  private hitPosition = new T.Vector3();
+  private hitOffset = new T.Vector3();
   private showcaseMaterials: T.Material[] = [];
   private showcaseUntil = 0;
   private geometries = makeGeometries();
+  private colors = new Map<string, T.Color>();
 
   constructor(
     public shoal: Shoal,
@@ -55,7 +58,7 @@ export class FishView {
     this.group.add(this.eyes);
     this.showcase.name = "3D-Fangansicht";
     this.showcase.visible = false;
-    this.showcase.position.set(-0.55, 0.1, -2.25);
+    this.showcase.position.set(0, 0.78, -2.25);
     if (camera) camera.add(this.showcase);
     this.update(0);
   }
@@ -103,7 +106,23 @@ export class FishView {
               : entry.instanceId
           ]?.alive,
       );
-    if (!hit || hit.instanceId === undefined) return null;
+    if (!hit || hit.instanceId === undefined) {
+      let closest: { fish: FishActor; distance: number } | null = null;
+      for (const fish of this.shoal.actors) {
+        if (!fish.alive) continue;
+        this.hitPosition.set(fish.x, fish.y, fish.z);
+        this.hitOffset.copy(this.hitPosition).sub(ray.ray.origin);
+        const distance = this.hitOffset.dot(ray.ray.direction);
+        if (distance < 0 || distance > range) continue;
+        const radius = Math.max(0.19, fish.length / 135);
+        if (
+          ray.ray.distanceSqToPoint(this.hitPosition) <= radius * radius &&
+          (!closest || distance < closest.distance)
+        )
+          closest = { fish, distance };
+      }
+      return closest;
+    }
     const index =
       hit.object === this.eyes ? Math.floor(hit.instanceId / 2) : hit.instanceId;
     return { fish: this.shoal.actors[index], distance: hit.distance };
@@ -176,7 +195,7 @@ export class FishView {
   ) {
     const info = fishInfo(fish.species);
     const length = fish.length / 62;
-    const heading = local ? 0 : fish.heading;
+    const heading = fish.heading;
     const forwardX = Math.sin(heading);
     const forwardZ = Math.cos(heading);
     const offset =
@@ -213,7 +232,10 @@ export class FishView {
     }
     if (part === "dorsal") {
       object.scale.set(0.2 * length, 0.3 * length, 0.32 * length);
-      if (fish.species === "Hecht") object.position.addScaledVector(new T.Vector3(forwardX, 0, forwardZ), -0.18 * length);
+      if (fish.species === "Hecht") {
+        object.position.x -= forwardX * 0.18 * length;
+        object.position.z -= forwardZ * 0.18 * length;
+      }
     }
     if (part === "fins")
       object.scale.set(0.63 * length, 0.04 * length, 0.2 * length);
@@ -226,10 +248,8 @@ export class FishView {
         marked ? bodyHeight * 1.02 : 0,
         marked ? 0.09 * length : 0,
       );
-      object.position.addScaledVector(
-        new T.Vector3(forwardX, 0, forwardZ),
-        -0.08 * length,
-      );
+      object.position.x -= forwardX * 0.08 * length;
+      object.position.z -= forwardZ * 0.08 * length;
     }
     if (!fish.alive && !local) object.scale.setScalar(0);
     object.updateMatrix();
@@ -243,15 +263,17 @@ export class FishView {
   ) {
     const info = fishInfo(fish.species);
     const length = fish.length / 62;
-    const heading = local ? 0 : fish.heading;
-    const forward = new T.Vector3(Math.sin(heading), 0, Math.cos(heading));
-    const right = new T.Vector3(Math.cos(heading), 0, -Math.sin(heading));
+    const heading = fish.heading;
+    const forwardX = Math.sin(heading),
+      forwardZ = Math.cos(heading),
+      rightX = Math.cos(heading),
+      rightZ = -Math.sin(heading);
     object.position.set(local ? 0 : fish.x, local ? 0 : fish.y, local ? 0 : fish.z);
-    object.position.addScaledVector(forward, 0.53 * length);
-    object.position.addScaledVector(
-      right,
-      side * 0.18 * length * Math.min(1.25, info.stout),
-    );
+    object.position.x += forwardX * 0.53 * length;
+    object.position.z += forwardZ * 0.53 * length;
+    const sideOffset = side * 0.18 * length * Math.min(1.25, info.stout);
+    object.position.x += rightX * sideOffset;
+    object.position.z += rightZ * sideOffset;
     object.position.y += 0.07 * length * info.stout;
     object.rotation.set(0, heading, 0);
     object.scale.setScalar(0.055 * length);
@@ -260,19 +282,27 @@ export class FishView {
   }
 
   private partColor(fish: FishActor, part: Part) {
+    const key = `${fish.species}:${part}`;
+    const cached = this.colors.get(key);
+    if (cached) return cached;
     const info = fishInfo(fish.species);
-    if (part === "tail" || part === "fins") return new T.Color(info.accent);
-    if (part === "dorsal") return new T.Color(info.color).multiplyScalar(0.62);
-    if (part === "marking")
-      return new T.Color(
+    let color: T.Color;
+    if (part === "tail" || part === "fins") color = new T.Color(info.accent);
+    else if (part === "dorsal")
+      color = new T.Color(info.color).multiplyScalar(0.62);
+    else if (part === "marking")
+      color = new T.Color(
         fish.species === "Forelle"
           ? 0x654843
           : fish.species === "Hecht"
             ? 0xd0d48f
             : 0x31483b,
       );
-    if (part === "head") return new T.Color(info.color).multiplyScalar(0.88);
-    return new T.Color(info.color);
+    else if (part === "head")
+      color = new T.Color(info.color).multiplyScalar(0.88);
+    else color = new T.Color(info.color);
+    this.colors.set(key, color);
+    return color;
   }
 
   private clearShowcase() {

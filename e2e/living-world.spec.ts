@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { landFish } from "./fishing-helper";
 const errors = new WeakMap<Page, string[]>();
 test.beforeEach(async ({ page }) => {
   const list: string[] = [];
@@ -95,7 +96,7 @@ test("neun Baustoffe, Bauen außerhalb des Bauplatzes, Undo und Reload", async (
   expect(s.extension.materials.Ziegel).toBe(1);
 });
 
-test("fünf sichtbare Arten bewegen sich; Angel entfernt ein wirkliches Tier", async ({
+test("acht sichtbare Arten bewegen sich; Angel drillt ein wirkliches Tier", async ({
   page,
 }) => {
   await seeded(page, [-11, 2.01, 2]);
@@ -107,7 +108,7 @@ test("fünf sichtbare Arten bewegen sich; Angel entfernt ein wirkliches Tier", a
   const before = await page
     .locator("#world")
     .evaluate((c) => JSON.parse((c as HTMLCanvasElement).dataset.performance!));
-  expect(new Set(before.fish.map((f: any) => f.species)).size).toBe(5);
+  expect(new Set(before.fish.map((f: any) => f.species)).size).toBe(8);
   await page.waitForTimeout(1200);
   const moved = await page
     .locator("#world")
@@ -115,10 +116,7 @@ test("fünf sichtbare Arten bewegen sich; Angel entfernt ein wirkliches Tier", a
   expect(moved.fish[0].x).not.toBe(before.fish[0].x);
   await page.locator("#interact").click();
   await page.locator("#accept").click();
-  await expect(page.locator("#interact")).toHaveText("Einholen!", {
-    timeout: 15000,
-  });
-  await page.locator("#interact").click();
+  await landFish(page);
   await expect(page.locator("#toast")).toContainText("Flussbarsch");
   const s = await snapshot(page);
   expect(s.fish.Flussbarsch).toBe(1);
@@ -132,7 +130,7 @@ test("fünf sichtbare Arten bewegen sich; Angel entfernt ein wirkliches Tier", a
 test("direkter Fang trifft ein sichtbares Fischmodell in Reichweite", async ({
   page,
 }) => {
-  await seeded(page, [-10, 0.01, -3]);
+  await seeded(page, [-10, -0.99, -3]);
   await page.locator("#tool-toggle").click();
   await page.locator('[data-tool="Holzknüppel"]').click();
   let yaw = 0,
@@ -150,7 +148,7 @@ test("direkter Fang trifft ein sichtbares Fischmodell in Reichweite", async ({
       );
     const f = data.fish
       .filter(
-        (f: any) => f.alive && Math.hypot(f.x + 10, f.z + 3, f.y - 1.61) < 3.3,
+        (f: any) => f.alive && Math.hypot(f.x + 10, f.z + 3, f.y - 0.61) < 3.3,
       )
       .sort(
         (a: any, b: any) =>
@@ -159,7 +157,7 @@ test("direkter Fang trifft ein sichtbares Fischmodell in Reichweite", async ({
       )[0];
     expect(f).toBeTruthy();
     const nextYaw = Math.atan2(-(f.x + 10), -(f.z + 3)),
-      nextPitch = Math.atan2(f.y - 1.61, Math.hypot(f.x + 10, f.z + 3));
+      nextPitch = Math.atan2(f.y - 0.61, Math.hypot(f.x + 10, f.z + 3));
     const dx = (yaw - nextYaw) / 0.0035,
       dy = (pitch - nextPitch) / 0.0035,
       n = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / 60));
@@ -183,11 +181,8 @@ test("direkter Fang trifft ein sichtbares Fischmodell in Reichweite", async ({
     yaw = nextYaw;
     pitch = nextPitch;
     await page.keyboard.press("KeyE");
-    if (
-      (await page.locator("#toast").textContent())?.includes(
-        "Holzknüppel · Sammlung",
-      )
-    ) {
+    if (await page.locator("#release-fish").isVisible()) {
+      await page.locator("#release-fish").click();
       success = true;
       break;
     }
@@ -240,10 +235,7 @@ test("Fischmission und Schatzmission: Fang, drei Rätsel, Abschluss und Save", a
   await page.locator("#close").click();
   await page.locator("#interact").click();
   await page.locator("#cast").click();
-  await expect(page.locator("#interact")).toHaveText("Einholen!", {
-    timeout: 15000,
-  });
-  await page.locator("#interact").click();
+  await landFish(page);
   await mission(page, "fish");
   await answer(page, "Barsch");
   await page.locator("#mission-claim").click();
@@ -409,6 +401,6 @@ test.describe("Kompatibilitätsklick auf Touchgeräten", () => {
     await expect(page.locator("#modal")).toBeVisible();
     await page.locator("#cast").tap();
     await expect(page.locator("#modal")).toBeHidden();
-    await expect(page.locator("#interact")).toHaveText("Angel im Wasser");
+    await expect(page.locator("#fish-action")).toHaveText("Halten: Auswerfen");
   });
 });

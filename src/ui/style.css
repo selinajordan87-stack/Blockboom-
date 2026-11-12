@@ -521,6 +521,9 @@ h1 i {
 .fish-list strong {
   color: #f1c771;
 }
+.kept-count { text-align: center; min-width: 48px; }
+.kept-count strong { display: block; font-size: 18px; }
+.kept-count small { display: block; font-size: 8px; color: #a9c0ae; }
 .fish-symbol {
   font-size: 36px;
   color: #92c3b1;
@@ -556,8 +559,23 @@ h1 i {
   background: #0c2c272c;
 }
 .gear-summary p { margin: 5px 0; font-size: 11px; }
+.panel-overlay:has(.landing-card) {
+  backdrop-filter: none;
+  background: #102c284f;
+}
+.panel:has(.landing-card) {
+  background: linear-gradient(
+    to bottom,
+    #173b32fa 0,
+    #173b32fa 52px,
+    #173b3230 52px,
+    #173b3230 182px,
+    #173b32fa 182px,
+    #173b32fa 100%
+  );
+}
 .landing-card { text-align: center; }
-.landing-space { height: 105px; }
+.landing-space { height: 130px; }
 .landing-card .catch-size {
   color: #f0ce83;
   font-size: 18px;

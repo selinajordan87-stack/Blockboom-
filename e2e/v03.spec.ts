@@ -38,7 +38,7 @@ async function saved(page: Page) {
   return value;
 }
 
-test("neue Welt startet als Edition 3 mit begrenztem Renderbudget", async ({
+test("neue Welt migriert auf Edition 4 mit begrenztem Renderbudget", async ({
   page,
 }) => {
   await page.goto("./?diagnostics=1");
@@ -65,20 +65,20 @@ test("neue Welt startet als Edition 3 mit begrenztem Renderbudget", async ({
   );
   expect(metrics.chunks).toBeLessThanOrEqual(32);
   expect(metrics.calls).toBeLessThanOrEqual(80);
-  expect(metrics.triangles).toBeLessThan(20_000);
-  expect(metrics.textures).toBeLessThanOrEqual(8);
+  expect(metrics.triangles).toBeLessThan(24_000);
+  expect(metrics.textures).toBeLessThanOrEqual(12);
   const state = await saved(page);
-  expect(state.extension.edition).toBe(3);
+  expect(state.extension.edition).toBe(4);
   await page.screenshot({ path: `${artifactDir}/v03-world.png` });
 });
 
-test("v0.3: sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar", async ({
+test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await seed(page);
-  await expect(page.locator(".eyebrow")).toContainText("v0.3.0");
+  await expect(page.locator(".eyebrow")).toContainText("v0.4.0");
   await page.locator("#tool-toggle").click();
   await expect(page.locator("[data-tool]")).toHaveCount(7);
   await page.locator('[data-tool="Spitzhacke"]').click();
@@ -142,8 +142,8 @@ test("15 Materialien, mehrere Undo-Schritte und Reload", async ({
   await page.locator("#play").click();
   state = await saved(page);
   expect(Object.values(state.changes).filter((block) => block === "Schiefer")).toHaveLength(1);
-  // Loading an old v0.1 save creates additive defaults and never rewrites its world edition.
-  expect(state.extension.edition).toBe(1);
+  // Loading an old v0.1 save keeps its deltas and migrates only additive systems.
+  expect(state.extension.edition).toBe(4);
   expect(state.extension.view).toEqual({ fov: 70, sensitivity: 1 });
 });
 

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { landFish } from "./fishing-helper";
 const artifactDir = process.env.BLOCKBOOM_ARTIFACT_DIR || "artifacts";
 const blank = (position = [0, 1.01, 17], yaw = 0, pitch = 0) => ({
   version: 1,
@@ -81,16 +82,15 @@ test("Angeln, freiwillige Mission, Sammlung und Neuladen", async ({ page }) => {
     "„Fange einen Barsch.“",
   );
   await page.locator("#accept").click();
-  // Fix random source after casting: only fish selection uses this value.
-  await page.evaluate(() => (Math.random = () => 0.6));
-  await expect(page.locator("#interact")).toHaveText("Einholen!", {
-    timeout: 10000,
-  });
-  await page.locator("#interact").click();
+  await landFish(page, "keep", `${artifactDir}/fishing-landing.png`);
   await expect(page.locator("#toast")).toContainText("Auftrag geschafft");
   await page.locator("#bag").click();
   await expect(page.locator(".fish-list")).toContainText("Flussbarsch");
   await page.screenshot({ path: `${artifactDir}/fish-collection.png` });
+  await page.locator('[data-fish-preview="Flussbarsch"]').click();
+  await expect(page.locator("#panel-tag")).toHaveText("3D-FANGBUCH");
+  await page.screenshot({ path: `${artifactDir}/catchbook-3d.png` });
+  await page.locator("#back-catchbook").click();
   await page.locator("#close").click();
   const s = await getSave(page);
   expect(s.fish.Flussbarsch).toBe(1);
@@ -201,11 +201,7 @@ test("Touch: Blöcke setzen/entfernen, Barsch fangen und BOOM zurücksetzen", as
   await seed(page, blank([-11, 2.01, 2], 0, -0.2));
   await page.locator("#interact").tap();
   await page.locator("#accept").tap();
-  await page.evaluate(() => (Math.random = () => 0.6));
-  await expect(page.locator("#interact")).toHaveText("Einholen!", {
-    timeout: 10000,
-  });
-  await page.locator("#interact").tap();
+  await landFish(page);
   await expect(page.locator("#toast")).toContainText("Auftrag geschafft");
   await seed(page, blank([14, 1.01, 17], 0, -0.15));
   await page.locator("#interact").tap();
