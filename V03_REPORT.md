@@ -1,6 +1,8 @@
 # BLOCKBOOM v0.3 – Sandbox Revolution
 
-Stand: Entwicklungsbranch `feature/v03-sandbox-revolution`
+**Release-Status:** v0.3.0 ist auf `main` veröffentlicht. Der GitHub-Pages-Workflow und 36/36 Browserfälle gegen die tatsächliche Live-Adresse sind erfolgreich. Die separate reale iPhone-/Android-Abnahme bleibt offen.
+
+Stand: `main`, Anwendungscode auf `b8e650a54d24b2608589bc502d438cae509226d9`
 
 ## Phase 0 – Audit und Sicherheitsgrenzen
 
@@ -86,6 +88,7 @@ Weitere Abschnitte werden nach jeder Implementierungsphase ergänzt.
 - Vitest: 37/37 bestanden. Enthalten sind alte Save-/Bau-/Fang-/Missionsfälle sowie Atlas-UVs, selektive Chunk-Entsorgung, 15 Materialien, Mehrfach-Undo, Editionsschutz, View-Migration, Werkzeugmodelle/-animation und 60 eindeutige Lernaufgaben.
 - Produktionsbuild: bestanden. CSS rund 16,1 kB / 4,4 kB gzip; Spiellogik rund 89,7 kB / 29,8 kB gzip; Three.js rund 484,7 kB / 121,0 kB gzip.
 - Lokale Browserprüfung: 36/36 Fälle bestanden in einem vollständigen Lauf (circa 3,3 Minuten) mit Chromium und Software-WebGL gegen den gebauten Pages-Unterpfad `/Blockboom-/`, nicht nur gegen den Dev-Server. Darin: alle v0.2-Szenarien, Touch-Multitasking/Cancel/Blur, 360/390/430-Pixel-Portraits, 667×375/844×390/932×430-Landscape, Edition 3, Werkzeuganimation, FOV/Zoom, 15 Materialien, Mehrfach-Undo, Inventar, Save/Reload, alte Save-Migration, Lernen, drei Missionen, sichtbare Fische, Angeln, direkter Fang, BOOM und Pages-Assets.
+- Live-Browserprüfung: dieselben 36/36 Fälle bestanden direkt gegen `https://selinajordan87-stack.github.io/Blockboom-/` in circa 3,6 Minuten.
 - Ein Zwischenlauf fand einen echten UI-Stapelungsfehler: Im mobilen Hochformat fing die Kamerafläche den Challenge-Button ab. Footer und Hotbar haben nun eine eigene höhere Ebene bei durchlässigen Leerflächen; der gezielte Regressionstest besteht.
 - WebKit-Start wurde tatsächlich versucht, scheiterte jedoch vor dem App-Start an fehlenden Hostbibliotheken (`libgtk-4`, `libgraphene`, `libharfbuzz-icu`, `libmanette`, `libhyphen`, `libGLESv2`). Safari und reale iPhone-/Android-Hardware wurden daher nicht erfolgreich ausgeführt. Chromium-Emulation ist kein Ersatz für die Geräteabnahme.
 
@@ -142,4 +145,8 @@ BLOCKBOOM_TEST_URL=http://127.0.0.1:4204/Blockboom-/ npm run test:browser
 - `d09541f`: strukturierte Chunkwelt, 15 Materialien, Mehrfach-Undo, First-Person-Werkzeuge und v0.3-Version.
 - `e6f2ec9`: 20 neue Aufgaben auf Niveau der sechsten Klasse und Lernregressionen.
 - `85a4c89`: vollständige v0.3-Browserregression, mobile UI-Stapelung, Release-Dokumentation und visuelle Prüfbilder.
-- Der tatsächliche Pages-Status wird erst nach Merge, Push, Workflowabschluss und Live-Prüfung eingetragen.
+- `b8e650a`: abschließende lokale Qualitätsprüfung und dokumentierter WebKit-Hostblocker.
+
+Der Feature-Branch wurde ausschließlich per Fast-Forward nach `main` übernommen und normal, ohne Force-Push, veröffentlicht. Workflow [43276777884](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43276777884) bestand Build und Deployment. Die Live-Adresse antwortete mit HTTP 200 und lieferte das mit dem lokalen Build identische Anwendungsbundle `index-C8K7tUZZ.js`, CSS `index-ODsplFnq.css` und Three.js-Chunk `three-Cu5CBrRq.js`. Die GitHub-Actions-Hinweise zur erzwungenen Node-24-Ausführung älterer offizieller Actions sind Warnungen, keine fehlgeschlagenen Schritte.
+
+Live: https://selinajordan87-stack.github.io/Blockboom-/
