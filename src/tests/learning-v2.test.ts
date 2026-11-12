@@ -7,9 +7,9 @@ import {
 } from "../learning/Engine";
 import { defaultExpansion } from "../inventory/Equipment";
 import { Missions } from "../missions/Missions";
-it("enthält 40 eindeutige deutsche Aufgaben und Auswahl variiert mit langsamer Progression", () => {
+it("enthält mindestens 40 eindeutige deutsche Aufgaben und Auswahl variiert mit langsamer Progression", () => {
   expect(CHALLENGES.length).toBeGreaterThanOrEqual(40);
-  expect(new Set(CHALLENGES.map((c) => c.id)).size).toBe(40);
+  expect(new Set(CHALLENGES.map((c) => c.id)).size).toBe(CHALLENGES.length);
   const e = new LearningEngine();
   expect(e.profile.mode).toBe("Lern-Challenge");
   let last = "";
