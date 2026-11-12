@@ -1,5 +1,5 @@
 import * as T from "three";
-import type { Tool } from "../inventory/Equipment";
+import { TOOLS, type Tool } from "../inventory/Equipment";
 
 type Action = "idle" | "strike" | "mine" | "build" | "cast";
 
@@ -27,15 +27,7 @@ export class HeldTools {
     this.root.scale.setScalar(0.72);
     camera.add(this.root);
     this.makeArm();
-    for (const tool of [
-      "Bauwerkzeug",
-      "Spitzhacke",
-      "Axt",
-      "Schaufel",
-      "Schwert",
-      "Angel",
-      "Holzknüppel",
-    ] as const)
+    for (const tool of TOOLS)
       this.models.set(tool, this.makeTool(tool));
     this.equip("Bauwerkzeug", false);
   }
@@ -86,17 +78,22 @@ export class HeldTools {
       this.rodTip.position.set(0, 1.7, -0.36);
       this.rodTip.name = "bewegliche Rutenspitze";
       rod.add(this.rodTip);
-    } else if (tool === "Schwert") {
-      this.box(group, [0.07, 0.82, 0.035], [0, 0.67, -0.04], 0xbacbd0);
+    } else if (["Schwert","Holzschwert","Steinschwert"].includes(tool)) {
+      this.box(group, [0.07, 0.82, 0.035], [0, 0.67, -0.04], tool==="Holzschwert"?0xb38a53:tool==="Steinschwert"?0x8f969e:0xbacbd0);
       this.box(group, [0.34, 0.07, 0.08], [0, 0.27, 0], 0xc99a4e);
       this.box(group, [0.08, 0.34, 0.08], [0, 0.08, 0], this.handleMaterial);
+    } else if(tool === "Bogen") {
+      this.box(group,[.055,.8,.065],[.1,.48,0],0x9d713f,[0,0,-.25]);
+      this.box(group,[.055,.8,.065],[.1,1.1,0],0x9d713f,[0,0,.25]);
+      this.box(group,[.015,1.36,.015],[-.06,.8,0],0xe1d2a0);
+      this.box(group,[.035,.035,.7],[0,.65,-.23],0xa98b59);
     } else {
       this.box(group, [0.075, 0.78, 0.075], [0, 0.43, 0], this.handleMaterial, [0, 0, -0.06]);
       if (tool === "Spitzhacke") {
         this.box(group, [0.62, 0.1, 0.11], [0, 0.8, 0], 0x9cabb0);
         this.box(group, [0.1, 0.2, 0.11], [-0.27, 0.72, 0], 0x9cabb0, [0, 0, -0.45]);
       }
-      if (tool === "Axt") {
+      if (tool === "Axt" || tool === "Steinaxt") {
         this.box(group, [0.34, 0.3, 0.08], [0.12, 0.72, 0], 0xaab9b9, [0, 0, -0.18]);
       }
       if (tool === "Schaufel") {

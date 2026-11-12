@@ -8,7 +8,7 @@ import { enrich, revolutionize } from "../world/Enrich";
 import { TYPES, World, place } from "../world/World";
 
 it("bietet 15 Baustoffe und macht mehrere Aktionen in umgekehrter Reihenfolge rückgängig", () => {
-  expect(TYPES).toHaveLength(15);
+  expect(TYPES).toHaveLength(25);
   expect(TYPES).toEqual(
     expect.arrayContaining(["Kopfstein", "Ton", "Moosstein", "Dunkelholz", "Kalkstein", "Schiefer"]),
   );
@@ -57,7 +57,7 @@ it("erzeugt neue Landschaft nur für Edition 3 und entfernt dort die Bauplatzmar
 });
 
 it("stellt Hand und jedes Werkzeug als eigenes animierbares Modell dar", () => {
-  expect(TOOLS).toHaveLength(7);
+  expect(TOOLS).toHaveLength(11);
   const camera = new T.PerspectiveCamera();
   const held = new HeldTools(camera);
   expect(camera.getObjectByName("right hand")).toBeTruthy();

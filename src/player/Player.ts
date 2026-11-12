@@ -1,4 +1,5 @@
 import { World, LIMIT, type Cell } from "../world/World";
+import { collides } from "../nightfall/Defense";
 export class Player {
   pos: Cell = [0, 1.02, 17];
   yaw = 0;
@@ -9,15 +10,7 @@ export class Player {
   blocked(p: Cell) {
     if (Math.abs(p[0]) > LIMIT - 0.35 || Math.abs(p[2]) > LIMIT - 0.35)
       return true;
-    for (let x = Math.floor(p[0] - 0.28); x <= Math.floor(p[0] + 0.28); x++)
-      for (
-        let y = Math.floor(p[1] + 0.000001);
-        y <= Math.floor(p[1] + 1.74);
-        y++
-      )
-        for (let z = Math.floor(p[2] - 0.28); z <= Math.floor(p[2] + 0.28); z++)
-          if (this.world.get(x, y, z)) return true;
-    return false;
+    return collides(this.world,p);
   }
   safeSpawn() {
     if (this.blocked(this.pos) || this.pos[1] < -2) {
@@ -40,12 +33,18 @@ export class Player {
       const p = [...this.pos] as Cell;
       p[axis] += d;
       if (!this.blocked(p)) this.pos = p;
+      else if (this.grounded) {
+        p[1]+=.51;
+        if(!this.blocked(p))this.pos=p;
+      }
     }
     if (jump && this.grounded) {
       this.vy = 7;
       this.grounded = false;
     }
     this.vy -= 20 * dt;
+    const onLadder = [-.3,0,.3].some(dx=>[-.3,0,.3].some(dz=>this.world.get(Math.floor(this.pos[0]+dx),Math.floor(this.pos[1]),Math.floor(this.pos[2]+dz))==="Leiter"));
+    if(onLadder)this.vy=jump||forward>0?3:Math.max(-2,this.vy);
     const p = [...this.pos] as Cell;
     p[1] += this.vy * dt;
     if (!this.blocked(p)) {

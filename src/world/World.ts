@@ -14,8 +14,9 @@ export const TYPES = [
   "Dunkelholz",
   "Kalkstein",
   "Schiefer",
+  "Tür", "Tor", "Zaun", "Leiter", "Treppe", "Fackel", "Falle", "Lagerkiste", "Barriere", "Mauer",
 ] as const;
-export type Block = (typeof TYPES)[number] | "Boom";
+export type Block = (typeof TYPES)[number] | "Boom" | "Tür offen" | "Tor offen";
 export type Cell = [number, number, number];
 export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
 export const LIMIT = 24;

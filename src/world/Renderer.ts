@@ -1,5 +1,6 @@
 import * as T from "three";
 import { World, type Block } from "./World";
+import { special } from "../nightfall/Defense";
 
 export const colors: Record<Block, number> = {
   Gras: 0x78b957,
@@ -18,6 +19,7 @@ export const colors: Record<Block, number> = {
   Dunkelholz: 0x4f372b,
   Kalkstein: 0xc8c4aa,
   Schiefer: 0x53616e,
+  Tür:0x976b3d,"Tür offen":0x976b3d,Tor:0x87613b,"Tor offen":0x87613b,Zaun:0x997445,Leiter:0xb89764,Treppe:0x8e9a99,Fackel:0xf5bd5d,Falle:0x788a72,Lagerkiste:0xa37b45,Barriere:0x6d7157,Mauer:0x727d83,
 };
 
 const CHUNK = 12;
@@ -41,6 +43,7 @@ const tile: Record<Block, number> = {
   Kalkstein: 14,
   Schiefer: 15,
   Boom: 17,
+  Tür:5,"Tür offen":5,Tor:5,"Tor offen":5,Zaun:4,Leiter:4,Treppe:3,Fackel:4,Falle:4,Lagerkiste:5,Barriere:4,Mauer:10,
 };
 
 function tileFor(block: Block, normal: readonly number[]) {
@@ -247,7 +250,7 @@ export class WorldView {
       for (let z = minZ; z < minZ + CHUNK; z++)
         for (let y = -3; y <= 14; y++) {
           const block = this.world.get(x, y, z);
-          if (!block || (block === "Glas") !== glassLayer) continue;
+          if (!block || special(block) || (block === "Glas") !== glassLayer) continue;
           this.blockFaces(data, x, y, z, block);
         }
     if (!data.i.length) return;
@@ -279,7 +282,7 @@ export class WorldView {
         y + face.n[1],
         z + face.n[2],
       );
-      if (neighbor && (neighbor !== "Glas" || block === "Glas")) continue;
+      if (neighbor && !special(neighbor) && (neighbor !== "Glas" || block === "Glas")) continue;
       const offset = data.p.length / 3;
       let color = new T.Color(colors[block]);
       if (block === "Gras" && face.n[1] === 0)

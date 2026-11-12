@@ -4,6 +4,34 @@
   background: #a9d6da;
   font-synthesis: none;
 }
+/* NIGHTFALL: compact status and separate combat controls. */
+#survival-hud {position:absolute;top:76px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;padding:9px 13px;border:1px solid #a6c5d13b;border-radius:12px;background:#122c3ad9;font-size:12px;color:#e5f0e6;z-index:4;white-space:nowrap;}
+#health-label {color:#f4b69d;}#hunger-label {color:#e8cf83;}#wave-label {color:#c7d9a4;}
+#night-actions {position:absolute;right:max(22px,env(safe-area-inset-right));top:150px;display:flex;gap:9px;z-index:5;pointer-events:auto;}
+#attack {background:#8a5141e8;font-size:22px;min-width:56px;min-height:56px;}
+#word-battle {background:#405e83eb;}#gather {font-size:11px;}
+.night-settings {display:grid;grid-template-columns:1fr 1fr;gap:12px;}.night-settings label {display:grid;gap:6px;font-size:12px;color:#e2cc9c;}
+.recipe-list {display:grid;gap:9px;}.recipe-list button {text-align:left;}.recipe-list small {display:block;font-size:11px;font-weight:normal;color:#c5d6bf;margin-top:7px;}
+.storage-row {display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;align-items:center;font-size:12px;}.storage-row button{padding:8px;font-size:11px;}
+#battle-answer {font:inherit;font-size:16px;line-height:1.55;width:100%;resize:vertical;min-height:74px;background:#f5f0dc;color:#18392f;border-radius:9px;padding:11px;border:2px solid #dbc98d;}
+#battle-feedback {color:#f4cf83;line-height:1.6;}#battle-clock {font-size:12px;color:#cee0ef;}
+#world.hurt {filter:sepia(.35) saturate(1.5);}
+@media(pointer:coarse) {
+ #survival-hud {top:65px;font-size:10px;padding:7px 10px;gap:9px;}
+ #night-actions {right:calc(env(safe-area-inset-right) + 18px);top:calc(env(safe-area-inset-top) + 155px);flex-direction:column;align-items:flex-end;}
+ #night-actions button {min-height:48px;max-width:130px;}
+ .angling-active #night-actions {display:none;}
+}
+@media(pointer:coarse) and (orientation:landscape) {
+ #survival-hud {top:calc(env(safe-area-inset-top) + 15px);font-size:10px;}
+ #night-actions {top:calc(env(safe-area-inset-top) + 80px);flex-direction:row;}
+ #gather {display:none;}
+ #night-actions button {min-height:48px;padding:8px 12px;}
+ .panel:has(#battle-form) {width:650px;}
+ .panel:has(#battle-form) .mission-text {font-size:17px;}
+ .panel:has(#battle-form) h2 {font-size:21px;}
+}
+@media(max-width:430px){.night-settings{grid-template-columns:1fr;}#survival-hud{max-width:95vw;gap:7px;}.toolrow{max-width:100vw;}.toolrow button{font-size:10px;padding:6px 7px;}}
 * {
   box-sizing: border-box;
 }

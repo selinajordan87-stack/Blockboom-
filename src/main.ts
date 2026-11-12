@@ -52,6 +52,12 @@ import { Inventory, FISH } from "./fishing/Fishing";
 import { ReadingEngine, mission } from "./learning/Learning";
 import { explode } from "./boom/Boom";
 import { load, persist, SAVE_KEY, type Save } from "./storage/Save";
+import { DayView, advanceDay, dayPhase, isNight } from "./nightfall/DayCycle";
+import { Vitals } from "./nightfall/State";
+import { ZombieEngine, WEAPONS } from "./nightfall/Zombies";
+import { DefenseView, ZombieView, NightAudio } from "./nightfall/Views";
+import { buildRefuge, toggleDoor, restoreNightDamage } from "./nightfall/Defense";
+import { NightUI } from "./nightfall/NightUI";
 const $ = <E extends HTMLElement = HTMLElement>(id: string) =>
   document.getElementById(id) as E;
 $("app").innerHTML = `
@@ -61,6 +67,8 @@ $("app").innerHTML = `
  <div class="location"><i></i><span id="location">Wiesenland</span><small>ENTDECKEN · BAUEN · AUSPROBIEREN</small></div>
  <div id="mission-pin" hidden><span>FREIWILLIGER AUFTRAG</span><b>Fange einen Barsch.</b></div>
  <div id="rotate-tip">↻ Im Querformat hast du mehr Platz.</div>
+ <div id="survival-hud"><span id="day-label">Mittag</span><span id="health-label">♥ 100</span><span id="hunger-label">◉ 100</span><span id="wave-label"></span></div>
+ <div id="night-actions"><button id="attack" aria-label="Angreifen">⚔</button><button id="word-battle" aria-label="Schreibkampf">✦ Wortmagie</button><button id="gather" aria-label="Beeren sammeln">Sammeln</button></div>
  <div class="crosshair">+</div><div id="target-label"></div>
  <div id="context"><span id="context-text"></span><button id="interact">E · Interagieren</button><button id="local-mission" hidden>Auftrag</button><button id="reset-boom" hidden>↻ Aufbau</button></div>
  <div id="toast" role="status"></div>
@@ -70,7 +78,7 @@ $("app").innerHTML = `
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="zoom" aria-label="Zoom umschalten" aria-pressed="false">⌕</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
  <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="tackle">≈ Angelset</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E halten zum Angeln · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">FISHING ADVENTURE · v0.4.0</div><h1>BLOCK<span>BOOM</span><i>Dein Wasser. Dein Abenteuer.</i></h1><p>Entdecke vier Gewässer, beobachte echte Fischschwärme<br>und meistere Auswurf, Biss und Drill.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>04 / FISHING ADVENTURE</span><b>Acht Arten.<br>Ein echter Drill.</b><p>Ausrüstung, Angelplätze, Fangbuch und Fischwissen.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">NIGHTFALL · v0.5.0</div><h1>BLOCK<span>BOOM</span><i>Am Tag dein Plan. Nachts dein Abenteuer.</i></h1><p>Baue, angle und bereite deinen Unterschlupf vor.<br>Wenn die Sonne sinkt, erwacht die Nacht.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>☾ Überleben</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>05 / NIGHTFALL</span><b>Deine Basis.<br>Deine Nacht.</b><p>Kämpfe, weiche aus oder wirke Wortmagie.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
@@ -92,7 +100,8 @@ scene.background = new T.Color(0x9ed2df);
 scene.fog = new T.Fog(0xa9d3d5, 26, 68);
 const camera = new T.PerspectiveCamera(70, innerWidth / innerHeight, 0.08, 80);
 camera.rotation.order = "YXZ";
-scene.add(new T.HemisphereLight(0xeaf8ff, 0x66724f, 2.25));
+const ambient = new T.HemisphereLight(0xeaf8ff, 0x66724f, 2.25);
+scene.add(ambient);
 const sun = new T.DirectionalLight(0xffedc2, 2.15);
 sun.position.set(-12, 26, 9);
 scene.add(sun);
@@ -115,6 +124,12 @@ let preferredFish: import("./fishing/Fishing").FishName | undefined;
 const expansion = saved?.extension
   ? readExpansion(saved.extension)
   : defaultExpansion(saved ? 1 : 4);
+if (!saved) {expansion.nightfall.mode = "Survival";expansion.nightfall.refuge=true;}
+try {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if(raw && !JSON.parse(raw).extension?.nightfall && !localStorage.getItem(SAVE_KEY+".pre-v05"))
+    localStorage.setItem(SAVE_KEY+".pre-v05",raw);
+} catch {}
 if (expansion.edition < 4) {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
@@ -126,6 +141,11 @@ if (expansion.edition < 4) {
 if (expansion.edition >= 2) enrich(world);
 if (expansion.edition >= 3) revolutionize(world);
 if (expansion.edition >= 4) enrichFishingWorld(world);
+if (expansion.nightfall.refuge) buildRefuge(world);
+const night = expansion.nightfall;
+const vitals = new Vitals(night);
+const zombies = new ZombieEngine(world,night);
+const nightAudio = new NightAudio();
 camera.fov = expansion.view.fov;
 camera.updateProjectionMatrix();
 let zoomed = false;
@@ -178,6 +198,10 @@ const fishView = new FishView(shoal, scene, camera);
 const water = new WaterView(scene, expansion.edition);
 const fishingWaters = new FishingWaters(scene);
 const fishingView = new FishingView(scene);
+const dayView = new DayView(scene,sun,ambient);
+const zombieView = new ZombieView(scene);
+const defenseView = new DefenseView(world,scene);
+defenseView.update(camera.position,isNight(night.time));
 // A few distant block clouds and hand-built signs; all artwork is generated here.
 const cloudMaterial = new T.MeshLambertMaterial({ color: 0xf4f6e9 });
 const cube = new T.BoxGeometry(1, 1, 1);
@@ -296,7 +320,7 @@ let target: Cell | null = null,
 function aim() {
   picks++;
   ray.setFromCamera(new T.Vector2(0, 0), camera);
-  const hit = ray.intersectObjects(view.group.children, false)[0];
+  const hit = ray.intersectObjects([...view.group.children,...defenseView.group.children], false)[0];
   target = null;
   adjacent = null;
   preview.visible = false;
@@ -304,7 +328,9 @@ function aim() {
   $("target-label").textContent = "";
   if (hit && hit.distance <= 6 && hit.face) {
     const p = hit.point.clone().addScaledVector(hit.face.normal, -0.01);
-    target = [Math.floor(p.x), Math.floor(p.y), Math.floor(p.z)];
+    target = hit.instanceId!==undefined && hit.object.userData.cells
+      ? hit.object.userData.cells[hit.instanceId] as Cell
+      : [Math.floor(p.x), Math.floor(p.y), Math.floor(p.z)];
     adjacent = target.map(
       (v, i) => v + hit.face!.normal.getComponent(i),
     ) as Cell;
@@ -367,14 +393,23 @@ function syncAim() {
   camera.rotation.set(player.pitch, player.yaw, 0);
   camera.updateMatrixWorld();
   view.update();
+  defenseView.update(camera.position,isNight(night.time));
   view.group.updateMatrixWorld(true);
   aim();
 }
 function build() {
   syncAim();
-  if (adjacent && place(world, adjacent, TYPES[selected], player.pos)) {
+  const material=TYPES[selected];
+  const tall=material==="Tür"||material==="Tor";
+  const upper:Cell|null=adjacent&&tall?[adjacent[0],adjacent[1]+1,adjacent[2]]:null;
+  const cost=tall?2:1;
+  if(night.mode==="Survival"&&(expansion.materials[material]||0)<cost){toast(`${material} fehlt. Sammle Material oder nutze die Werkbank im Menü.`);return;}
+  if(upper&&!canPlace(world,upper,player.pos)){toast("Für Tür oder Tor brauchst du zwei freie Blöcke übereinander.");return;}
+  if (adjacent && place(world, adjacent, material, player.pos)) {
     heldTools.play("build");
-    history.record(adjacent!, null, TYPES[selected]);
+    history.record(adjacent!, null, material);
+    if(upper){world.set(...upper,material);history.record(upper,null,material);}
+    if(night.mode==="Survival")expansion.materials[material]=(expansion.materials[material]||0)-cost;
     syncUndo();
     save();
   } else
@@ -457,6 +492,7 @@ function closePanel() {
   $("modal").hidden = true;
   paused = false;
   if (!pendingCatch) fishView.hideShowcase();
+  nightUI.battle = null;
 }
 $("close").onclick = closePanel;
 function menu() {
@@ -472,6 +508,7 @@ function menu() {
   mode.className = "mode-select";
   mode.innerHTML = `Spielmodus <select id="game-mode">${["Entspannt", "Abenteuer", "Lern-Challenge"].map((m) => `<option ${learning.profile.mode === m ? "selected" : ""}>${m}</option>`).join("")}</select>`;
   $("panel-content").append(mode);
+  const nightButton=document.createElement("button");nightButton.id="night-menu";nightButton.textContent="☾ NIGHTFALL · Werkbank · Proviant";nightButton.onclick=()=>nightUI.settings();$("panel-content").append(nightButton);
   $("game-mode").onchange = () => {
     learning.profile.mode = ($("game-mode") as HTMLSelectElement).value as Mode;
     try {
@@ -525,6 +562,12 @@ bindTap($("menu"), () => {
 });
 bindTap($("bag"), () => {
   if (canPlay()) showInventory();
+});
+const nightUI = new NightUI(night,vitals,zombies,expansion.materials,inventory.fish,world,{
+  open:openPanel,close:closePanel,save,toast,position:()=>player.pos,
+  equip:name=>{if(TOOLS.includes(name as typeof expansion.tool)){expansion.tool=name as typeof expansion.tool;equipment();}
+    if(night.crafted.includes("Rutenstück")&&!expansion.angling.unlocked.includes("Spinnrute"))expansion.angling.unlocked.push("Spinnrute");},
+  effect:pos=>combatEffect(pos),refresh:()=>{viewportDirty=true;},
 });
 const adventure = new AdventureUI(learning, missions, {
   open: openPanel,
@@ -592,6 +635,9 @@ function showInventory() {
       .forEach((button) =>
         bindTap(button, () => {
           expansion.tool = button.dataset.inventoryTool as typeof expansion.tool;
+          if(night.mode==="Survival"&&["Holzschwert","Steinschwert","Steinaxt","Bogen"].includes(expansion.tool)&&!night.crafted.includes(expansion.tool)){
+            expansion.tool="Holzknüppel";toast("Stelle dieses Werkzeug zuerst an der Werkbank her.");
+          }
           equipment();
           tools();
           save();
@@ -674,6 +720,8 @@ bindTap($("undo"), () => {
       0,
       (expansion.materials[a.before] || 0) - 1,
     );
+  if(night.mode==="Survival"&&a.after&&a.before===null)
+    expansion.materials[a.after]=(expansion.materials[a.after]||0)+1;
   syncUndo();
   save();
   toast(
@@ -691,6 +739,10 @@ function equipment() {
   ).join("");
   document.querySelectorAll<HTMLButtonElement>("[data-tool]").forEach((b) =>
     bindTap(b, () => {
+      const next=b.dataset.tool!;
+      if(night.mode==="Survival"&&["Holzschwert","Steinschwert","Steinaxt","Bogen"].includes(next)&&!night.crafted.includes(next)){
+        toast("Dieses Werkzeug stellst du an der Werkbank her. Grundwerkzeuge bleiben verfügbar.");return;
+      }
       expansion.tool = b.dataset.tool as typeof expansion.tool;
       equipment();
       $("tool-palette").hidden = true;
@@ -712,6 +764,7 @@ function toolIcon(tool: (typeof TOOLS)[number]) {
       Schwert: "⚔",
       Angel: "⌁",
       Holzknüppel: "╱",
+      Holzschwert: "⚔",Steinschwert:"⚔",Steinaxt:"◢",Bogen:"⌒",
     } as const
   )[tool];
 }
@@ -892,17 +945,24 @@ function prepareFishing(
   toast("Halte die große Angel-Taste, wähle die Wurfkraft und lasse sie los.");
 }
 function interact() {
+  syncAim();
+  if(target){
+    const block=world.get(...target);
+    if(["Tür","Tür offen","Tor","Tor offen"].includes(block||"")){
+      if(toggleDoor(world,target,player.pos)){save();toast("Tür oder Tor umgestellt.");}else toast("Halte den Durchgang zum Schließen frei.");return;
+    }
+    if(block==="Lagerkiste"){nightUI.chest();return;}
+  }
   if (expansion.tool === "Holzknüppel") {
     strike();
     return;
   }
-  if (["Spitzhacke", "Axt", "Schaufel"].includes(expansion.tool)) {
+  if (["Spitzhacke", "Axt", "Steinaxt", "Schaufel"].includes(expansion.tool)) {
     destroy();
     return;
   }
-  if (expansion.tool === "Schwert") {
-    heldTools.play("strike");
-    toast("Das Schwert ist bereit. In dieser friedlichen Welt sind noch keine Gegner unterwegs.");
+  if (["Schwert","Holzschwert","Steinschwert","Bogen"].includes(expansion.tool)) {
+    attack();
     return;
   }
   const nearby = (Object.keys(MISSIONS) as MissionId[]).find((id) =>
@@ -1023,6 +1083,30 @@ bindTap($("zoom"), () => {
   zoomed = !zoomed;
   updateFov();
 });
+bindTap($("attack"),()=>{if(canPlay())attack();});
+bindTap($("word-battle"),()=>{if(canPlay())nightUI.startBattle();});
+let gatherCooldown=0;
+bindTap($("gather"),()=>{
+  if(!canPlay())return;
+  const p=player.pos;
+  const tree=[...world.blocks].some(([id,b])=>{if(b!=="Laub")return false;const [x,,z]=id.split(",").map(Number);return Math.hypot(x-p[0],z-p[2])<5;});
+  if(!tree){toast("Suche Beeren in der Nähe von Bäumen.");return;}
+  if(gatherCooldown>0){toast("Die Pflanzen brauchen noch etwas Zeit. Erkunde einen anderen Bereich.");return;}
+  night.supplies.Beeren=(night.supplies.Beeren||0)+2;gatherCooldown=25;save();toast("Zwei Beeren gesammelt. Proviant findest du im NIGHTFALL-Menü.");
+});
+function attack(){
+  if(!WEAPONS[expansion.tool]){toast("Wähle den Holzknüppel, ein Schwert, eine Axt oder den Bogen.");return;}
+  heldTools.play("strike");camera.getWorldDirection(castDirection);
+  const target=zombies.attack(player.pos,[castDirection.x,castDirection.y,castDirection.z],expansion.tool);
+  if(target){combatEffect(target.pos);if(settings.sound)nightAudio.cue("hit");save();}
+  else if(expansion.tool==="Holzknüppel")strike();
+}
+function combatEffect(pos:Cell){
+  for(let i=0;i<8 && particles.length<48;i++){
+    const mesh=new T.Mesh(cube,particleMat);mesh.scale.setScalar(.09);mesh.position.set(pos[0],pos[1]+1,pos[2]);scene.add(mesh);
+    particles.push({mesh,velocity:new T.Vector3((Math.random()-.5)*3,1+Math.random()*2,(Math.random()-.5)*3),life:.45});
+  }
+}
 const particles: { mesh: T.Mesh; velocity: T.Vector3; life: number }[] = [];
 const particleMat = new T.MeshLambertMaterial({ color: 0xf5bb52 });
 function boom() {
@@ -1139,6 +1223,8 @@ window.addEventListener("keydown", (e) => {
   if (e.code === "Equal" || e.code === "NumpadAdd") build();
   if (e.code === "Minus" || e.code === "NumpadSubtract") destroy();
   if (e.code === "KeyI") $("bag").click();
+  if (e.code === "KeyF") attack();
+  if (e.code === "KeyR") nightUI.startBattle();
   if (e.code === "Space") jump = true;
   if (e.code === "KeyQ") {
     expansion.tool = TOOLS[(TOOLS.indexOf(expansion.tool) + 1) % TOOLS.length];
@@ -1212,9 +1298,9 @@ canvas.addEventListener("pointerdown", (e) => {
   lastY = e.clientY;
   if (document.pointerLockElement === canvas) {
     if (e.button === 0) {
-      if (expansion.tool === "Holzknüppel") strike();
+      if (expansion.tool === "Holzknüppel") attack();
       else if (expansion.tool === "Angel") anglingPress();
-      else if (expansion.tool === "Schwert") heldTools.play("strike");
+      else if (WEAPONS[expansion.tool] && !["Spitzhacke","Axt","Steinaxt"].includes(expansion.tool)) attack();
       else destroy();
     }
     if (e.button === 2) build();
@@ -1326,6 +1412,7 @@ function frame(now: number) {
   }
   if (started && (paused || suspended)) {
     accum = 0;
+    if(paused && !suspended)nightUI.tick(elapsed);
     if (viewportDirty) {
       renderer.render(scene, camera);
       viewportDirty = false;
@@ -1333,6 +1420,31 @@ function frame(now: number) {
     return;
   }
   if (canPlay()) {
+    const wasNight=isNight(night.time);
+    advanceDay(night,elapsed);
+    if(wasNight&&!isNight(night.time)){restoreNightDamage(night);toast("Die Sonne kehrt zurück. Die Nacht ist überstanden.");save();}
+    if(!wasNight&&isNight(night.time))toast(`Nacht ${night.night}: Bereite deine Verteidigung vor.`);
+    vitals.tick(elapsed);gatherCooldown=Math.max(0,gatherCooldown-elapsed);
+    zombies.cap=ratio<=1?4:8;
+    zombies.tick(elapsed,player.pos,damage=>{
+      if(vitals.hit(damage)){
+        canvas.classList.add("hurt");setTimeout(()=>canvas.classList.remove("hurt"),180);
+        if(settings.sound)nightAudio.cue("zombie");
+      }
+    });
+    if(night.health<=0){
+      save();openPanel("NEUER ANLAUF",'<h2>Kurze Verschnaufpause.</h2><p>Deine Welt und deine Ausrüstung warten auf dich. Am Startpunkt kannst du neu losziehen.</p><button id="respawn" class="primary">Sicher weitergehen</button>');
+      $("respawn").onclick=()=>{vitals.respawn();player.pos=[0,16,17];player.vy=0;zombies.actors=[];closePanel();save();};
+      return;
+    }
+    if(night.defeated>=1&&!expansion.badges.includes("Nachtwächter"))expansion.badges.push("Nachtwächter");
+    if(night.survived>=1&&!expansion.badges.includes("Morgenlicht"))expansion.badges.push("Morgenlicht");
+    $("day-label").textContent=`${isNight(night.time)?"☾":"☀"} ${dayPhase(night.time)}`;
+    $("health-label").textContent=night.mode==="Kreativ"?"♥ ∞":`♥ ${Math.ceil(night.health)}`;
+    $("hunger-label").textContent=`◉ ${Math.ceil(night.hunger)}`;
+    $("wave-label").textContent=zombies.actors.length?`${zombies.actors.filter(z=>z.hp>0).length} Zombies`:"";
+    $("word-battle").hidden=!zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<12);
+    $("attack").hidden=!WEAPONS[expansion.tool];
     accum += elapsed;
     while (accum >= 1 / 120) {
       player.step(
@@ -1422,6 +1534,9 @@ function frame(now: number) {
     if (["Axt", "Spitzhacke", "Schaufel"].includes(expansion.tool))
       $("interact").textContent = "E · Abbauen";
     $("interact").classList.toggle("bite", fishing.state === "bite");
+    if(target && ["Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(world.get(...target)||"")){
+      $("context").hidden=false;$("interact").textContent=world.get(...target)==="Lagerkiste"?"E · Lagerkiste":"E · Öffnen / Schließen";
+    }
     const showAngling =
       (expansion.tool === "Angel" && !!spot) || fishing.state !== "idle";
     $("angling-hud").hidden = !showAngling;
@@ -1469,6 +1584,10 @@ function frame(now: number) {
     camera.position.set(23, 18, 29);
     camera.lookAt(-2, 0, -2);
   }
+  dayView.update(night.time,camera.position);
+  zombieView.update(zombies);
+  defenseView.update(camera.position,isNight(night.time));
+  if(canPlay())nightAudio.tick(elapsed,isNight(night.time),zombies.actors.length,settings.sound);
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.life -= elapsed;
@@ -1529,6 +1648,7 @@ function frame(now: number) {
         target: fishing.target,
         spot: fishing.spot?.id || null,
       },
+      nightfall:{time:night.time,phase:dayPhase(night.time),health:night.health,hunger:night.hunger,mode:night.mode,cap:zombies.cap,night:night.night,zombies:zombies.actors.map(z=>({id:z.id,kind:z.kind,hp:z.hp,state:z.state,pos:z.pos}))},
       fish: shoal.actors.map((f) => ({
         id: f.id,
         species: f.species,

@@ -50,7 +50,7 @@ export function decode(raw: string | null): Save | null {
         c[1] < -3 ||
         c[1] > 14 ||
         !(
-          b === null || [...TYPES, "Laub", "Sand", "Boom"].includes(b as string)
+          b === null || [...TYPES, "Laub", "Sand", "Boom", "Tür offen", "Tor offen"].includes(b as string)
         )
       )
         return null;
