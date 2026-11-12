@@ -10,7 +10,10 @@ async function save(page:Page){await page.locator("#menu").click();await page.lo
 
 test("Tag/Nacht, drei Zombiearten, echte Verfolgung und friedlicher Modus",async({page})=>{
   const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));const s=base();s.extension.nightfall={...s.extension.nightfall,time:.75,...{night:5}};await seed(page,s);
-  await page.waitForFunction(()=>!!document.querySelector<HTMLCanvasElement>("#world")?.dataset.performance);
+  await expect.poll(async()=>{
+    const raw=await page.locator("#world").getAttribute("data-performance");
+    return raw?JSON.parse(raw).nightfall.zombies.length:0;
+  },{timeout:12000}).toBeGreaterThan(0);
   const before=await metrics(page);expect(before.nightfall.zombies.length).toBeGreaterThan(0);expect(new Set(before.nightfall.zombies.map((z:any)=>z.kind))).toEqual(new Set(["normal","fast","heavy"]));
   await page.waitForTimeout(1600);const after=await metrics(page);expect(after.nightfall.zombies[0].pos).not.toEqual(before.nightfall.zombies[0].pos);
   await page.screenshot({path:"artifacts/v05/zombie-night.png"});
