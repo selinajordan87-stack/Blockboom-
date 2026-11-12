@@ -19,6 +19,7 @@ export class HeldTools {
     this.root.name = "first-person arm";
     this.root.position.set(0.44, -0.48, -0.82);
     this.root.rotation.set(-0.08, -0.08, -0.12);
+    this.root.scale.setScalar(0.72);
     camera.add(this.root);
     this.makeArm();
     for (const tool of [

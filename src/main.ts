@@ -538,7 +538,7 @@ function showInventory() {
     $("inventory-body").innerHTML =
       `<h3>Gesammelte Vorräte</h3><p>Für Aufträge verwendbar. Freies Bauen hat unbegrenzte Baustoffe.</p><div class="material-grid">${TYPES.map((t) => `<span>${t === "Laub" ? "Blätter" : t}: <b>${expansion.materials[t] || 0}</b></span>`).join("")}</div><h3>Deine Schätze</h3><p>${expansion.badges.map(escapeHTML).join(" · ") || "Hier erscheinen deine Missionsabzeichen."}</p>`;
   };
-  tools();
+  fish();
 }
 bindTap($("journal"), () => {
   if (canPlay()) adventure.journal();
@@ -583,7 +583,8 @@ bindTap($("undo"), () => {
   );
 });
 function equipment() {
-  $("tool-toggle").textContent = `${toolIcon(expansion.tool)} ${expansion.tool}`;
+  $("tool-toggle").textContent = expansion.tool;
+  $("tool-toggle").dataset.icon = toolIcon(expansion.tool);
   $("tool-palette").innerHTML = TOOLS.map(
     (t) =>
       `<button data-tool="${t}" aria-pressed="${expansion.tool === t}"><span>${toolIcon(t)}</span>${t}</button>`,

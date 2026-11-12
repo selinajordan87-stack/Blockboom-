@@ -1,6 +1,6 @@
-# BLOCKBOOM · Living World v0.2.0
+# BLOCKBOOM · Sandbox Revolution v0.3.0
 
-Lokales 3D-Sandbox-Spiel: bauen, angeln, sammeln und in der BOOM-Zone experimentieren. Eine freiwillige Lesemission, keine Anmeldung oder Cloud.
+Lokales 3D-Voxel-Sandbox-Spiel: frei bauen und abbauen, Werkzeuge ausrüsten, angeln, sammeln, Lern-Challenges lösen und in der BOOM-Zone experimentieren. Keine Anmeldung, Cloud oder Werbung.
 
 ```bash
 npm ci
@@ -18,9 +18,9 @@ npx playwright test
 
 Die Browsertests erwarten einen laufenden Dev-Server und Chromium unter `/usr/bin/chromium`. Für andere Systeme den Pfad in `playwright.config.ts` anpassen oder den Playwright-Browser verwenden.
 
-Desktop: WASD, Maus, Leertaste, Linksklick entfernen, Rechtsklick bauen, E interagieren, I Inventar, Esc Menü, 1–6 Blockwahl. Ins Spiel klicken aktiviert die Maussperre. Fallback: Maus gedrückt ziehen, + bauen, − entfernen (Doppelklick entfernt, Umschalt+Doppelklick baut).
+Desktop: WASD, Maus, Leertaste, Linksklick entfernen, Rechtsklick bauen, E interagieren, I Inventar, Esc Menü, Q Werkzeug, Z Undo und X Zoom. 1–9 wählen Baustoffe; „Mehr“ wechselt die Materialseite. Ins Spiel klicken aktiviert die Maussperre. Fallback: Maus gedrückt ziehen, + bauen, − entfernen.
 
-Touch: Joystick links, rechts wischen, ↑ springen, − entfernen, + bauen. Aktionen am See und in der Testzone erscheinen automatisch.
+Touch: Joystick links, rechts wischen, ↑ springen, ⌕ zoomen, − entfernen, + bauen. Beide Daumen werden unabhängig verarbeitet. Aktionen am See und in der Testzone erscheinen automatisch; Querformat wird empfohlen.
 
 Spielstände bleiben im lokalen Browserspeicher dieser Adresse. Automatisch alle 10 Sekunden, nach Änderungen und beim Verlassen; manuell im Menü. Inkonsistente oder unbekannte Versionen werden als `blockboom.save.backup` gesichert, bevor ein neues Spiel gespeichert wird. Browserdaten löschen entfernt den Spielstand. Ein privates Browserfenster bietet keine dauerhafte Speicherung.
 
@@ -31,8 +31,10 @@ Die Veröffentlichung für `selinajordan87-stack/Blockboom-` ist freigegeben; de
 Mobile-Rescue-Update: [Fehlerursache, Regressionstests und iPhone-Abnahme](MOBILE_RESCUE_REPORT.md). Die endgültige mobile Abnahme erfolgt auf einem echten iPhone.
 
 
-v0.2 ergänzt sichtbare Fische (fünf Arten), sechs direkt wählbare Werkzeuge, neun Baustoffe, Undo, Fangbuch, 40 Challenges und drei Lernmissionen. „Mehr“ wechselt die Materialseite, Q das Werkzeug, Z macht die letzte Bauaktion rückgängig. Baumaterial zum freien Bauen bleibt unbegrenzt; gesammelte Vorräte zählen separat für Aufträge. Die neuen Lernresultate bleiben lokal in einem eigenen Speicherbereich.
+v0.3 ergänzt strukturierte prozedurale Voxeloberflächen, selektiv neu gebaute Welt-Chunks, eine abwechslungsreichere Landschaft für neue Welten, eine sichtbare First-Person-Hand und sieben unterscheidbare Werkzeuge mit Animation. Es gibt 15 Baustoffe, bis zu 20 Undo-Schritte pro Sitzung, ein Werkzeug-/Material-/Fischinventar, einstellbares Sichtfeld und Kameraempfindlichkeit sowie mobilen Zoom. Baumaterial zum freien Bauen bleibt unbegrenzt; gesammelte Vorräte zählen separat für Aufträge.
 
-Standardmodus ist Lern-Challenge. Aufgaben sind Angebote und öffnen sich nicht selbst. „Aufträge“ führt zu Mara am Bauplatz, zum Angler und zur Schatzkiste am Entdeckerpfad. Vorlesen benutzt ausschließlich eine verfügbare lokale deutsche Stimme. Bildschirmtexteingaben sind kein automatisches Handschrifttraining.
+Standardmodus ist Lern-Challenge. Die bisherigen 40 Aufgaben und ihre Fortschritte bleiben erhalten; 20 Aufgaben auf höherem Niveau ergänzen Mathematik, Grammatik, Naturwissenschaft, Bauwissen und logisches Denken. Aufgaben sind Angebote und öffnen sich nicht selbst. „Aufträge“ führt zu Mara, zum Angler und zur Schatzkiste. Vorlesen benutzt ausschließlich eine verfügbare lokale deutsche Stimme. Bildschirmtexteingaben sind kein automatisches Handschrifttraining.
 
 [Abschlussbericht v0.2 mit Architektur, Tests, Grenzen und iPhone-Testplan](V02_REPORT.md). Bestehende Welten behalten ihre Landschaft und Bauten; die neue Landschaftsedition gilt für neue Welten. Seite auf dem Handy neu laden, ohne Website-Daten zu löschen.
+
+[Releasebericht v0.3 mit Architektur, Tests, Performance und Geräte-Testplan](V03_REPORT.md). v0.1-/v0.2-Spielstände behalten Save-Key, Weltedition, Bauten, Fische, Missionen und Lernfortschritt. Die neue Edition-3-Basiskarte wird nur für neue Spielstände erzeugt.

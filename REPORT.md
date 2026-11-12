@@ -163,3 +163,7 @@ Die belegte Kopplung von sichtbarem `window.blur` an das manuelle Pausenmenü wu
 ## 15. Living World & Learning Challenge v0.2
 
 Die bestehende Anwendung wurde modular erweitert, einschließlich Save-Kompatibilität, fünf lebenden Fischarten, freiem Bauen/Undo, Inventar/Werkzeugen und drei vollständigen Lernmissionen. Verbindlicher Umfang, Testergebnisse, Einschränkungen, Commit-Historie und tatsächlicher Release-Status stehen im [v0.2-Bericht](V02_REPORT.md).
+
+## 16. Sandbox Revolution v0.3
+
+Der aktuelle Stand erweitert die Welt um strukturierte Voxeloberflächen, selektive Chunk-Neubauten, 15 Materialien, mehrfaches Undo, First-Person-Hand/Werkzeuge, FOV/Zoom, ein ausgebautes Inventar und 20 zusätzliche Aufgaben für die sechste Klasse. Save-Kompatibilität, Testbefunde, verschobene Survival-Funktionen und der tatsächliche Veröffentlichungsstatus stehen im [v0.3-Bericht](V03_REPORT.md).
