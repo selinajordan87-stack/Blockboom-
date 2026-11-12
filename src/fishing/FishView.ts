@@ -164,7 +164,9 @@ export class FishView {
       mesh.renderOrder = 110;
       this.showcase.add(mesh);
     }
-    for (const side of [-1, 1]) {
+    // The showcase presents a clear side view; only the camera-facing eye is
+    // drawn so the far eye cannot shine through the depth-independent model.
+    for (const side of [-1]) {
       const material = new T.MeshBasicMaterial({
         color: 0xfff1cf,
         depthTest: false,

@@ -136,5 +136,5 @@ Buildgrößen des letzten geprüften Builds:
 
 - `ed7f80d` – Audit v0.4 fishing baseline and compatibility boundaries
 - `d54b48a` – Build interactive v0.4 fishing adventure
-- Abschluss-/QA-Commit: wird nach finaler Dokumentation eingetragen.
+- `80f2910` – Harden v0.4 mobile fishing and browser regression
 - Deploymentstatus wird erst nach erfolgreichem Push, GitHub-Actions-Lauf und Abruf des neuen Live-Bundles bestätigt. Bis dahin ist v0.4 **lokal getestet, aber noch nicht veröffentlicht**.

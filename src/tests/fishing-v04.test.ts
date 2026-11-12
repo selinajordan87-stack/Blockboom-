@@ -118,7 +118,7 @@ describe("Fishing Adventure v0.4", () => {
     ).toBe(true);
     fish.showShowcase(shoal.actors[0], true);
     expect(fish.showcase.visible).toBe(true);
-    expect(fish.showcase.children.length).toBe(8);
+    expect(fish.showcase.children.length).toBe(7);
   });
 
   it("wendet simulierte Regeln transparent an und schaltet Ausrüstung durchs Spielen frei", () => {
