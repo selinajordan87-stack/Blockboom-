@@ -1,91 +1,299 @@
 import * as T from "three";
-import { FISH } from "./Fishing";
+import { FISH, fishInfo } from "./Fishing";
 import { Shoal, type FishActor } from "./Shoal";
+
+type Part = "body" | "head" | "tail" | "dorsal" | "fins" | "marking";
+
+/** Eight anatomically distinct voxel species rendered in seven shared draw calls. */
 export class FishView {
   group = new T.Group();
-  private meshes: T.InstancedMesh[] = [];
+  showcase = new T.Group();
+  private meshes = new Map<Part, T.InstancedMesh>();
+  private eyes: T.InstancedMesh;
   private dummy = new T.Object3D();
+  private showcaseMaterials: T.Material[] = [];
+  private showcaseUntil = 0;
+  private geometries = makeGeometries();
+
   constructor(
     public shoal: Shoal,
     scene: T.Scene,
+    camera?: T.Camera,
   ) {
+    this.group.name = "living voxel fish";
     scene.add(this.group);
-    const geometry = new T.BoxGeometry(1, 1, 1);
-    const colors = [0xc5d8de, 0x7eaa4f, 0x6c8864, 0xc9a24c, 0xd5adad];
-    for (let i = 0; i < FISH.length; i++)
-      for (let part = 0; part < 4; part++) {
-        const mesh = new T.InstancedMesh(
-          geometry,
-          new T.MeshLambertMaterial({
-            color:
-              part === 0
-                ? colors[i]
-                : part === 1
-                  ? 0xdc9955
-                  : part === 2
-                    ? 0x324c3a
-                    : colors[i],
-          }),
-          3,
-        );
-        mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
-        mesh.frustumCulled = true;
-        mesh.boundingSphere = new T.Sphere(new T.Vector3(-10, 0.14, -5), 7.5);
-        mesh.userData = { species: i, part };
-        this.meshes.push(mesh);
-        this.group.add(mesh);
-      }
-    this.update();
+    const count = shoal.actors.length;
+    for (const part of [
+      "body",
+      "head",
+      "tail",
+      "dorsal",
+      "fins",
+      "marking",
+    ] as const) {
+      const mesh = new T.InstancedMesh(
+        this.geometries[part],
+        new T.MeshLambertMaterial({ color: 0xffffff, vertexColors: true }),
+        count,
+      );
+      mesh.name = `Fischteil ${part}`;
+      mesh.userData.part = part;
+      mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
+      mesh.boundingSphere = new T.Sphere(new T.Vector3(0, 0, 0), 38);
+      this.meshes.set(part, mesh);
+      this.group.add(mesh);
+    }
+    this.eyes = new T.InstancedMesh(
+      this.geometries.eye,
+      new T.MeshBasicMaterial({ color: 0xf7e8c9 }),
+      count * 2,
+    );
+    this.eyes.name = "Fischaugen";
+    this.eyes.userData.part = "eyes";
+    this.eyes.instanceMatrix.setUsage(T.DynamicDrawUsage);
+    this.eyes.boundingSphere = new T.Sphere(new T.Vector3(0, 0, 0), 38);
+    this.group.add(this.eyes);
+    this.showcase.name = "3D-Fangansicht";
+    this.showcase.visible = false;
+    this.showcase.position.set(-0.55, 0.1, -2.25);
+    if (camera) camera.add(this.showcase);
+    this.update(0);
   }
-  update() {
-    for (const mesh of this.meshes) {
-      const { species, part } = mesh.userData;
-      for (let j = 0; j < 3; j++) {
-        const f = this.shoal.actors[species * 3 + j],
-          d = this.dummy;
-        const length = f.length / 90;
-        d.position.set(f.x, f.y, f.z);
-        d.rotation.set(0, f.heading, 0);
-        d.scale.set(1, 1, 1);
-        const offset =
-          part === 1 ? -0.43 : part === 2 ? 0.02 : part === 3 ? 0.25 : 0;
-        d.position.x += Math.sin(f.heading) * offset * length;
-        d.position.z += Math.cos(f.heading) * offset * length;
-        const stout = species === 3 ? 1.5 : species === 2 ? 0.65 : 1;
-        d.scale.set(
-          (part === 0 ? 0.28 : part === 1 ? 0.32 : 0.06) * length,
-          (part === 0 ? 0.22 * stout : part === 2 ? 0.33 : 0.13) * length,
-          (part === 0 ? 0.75 : 0.17) * length,
-        );
-        if (part === 1)
-          d.rotation.y += Math.sin(this.shoal.time * 7 + f.phase) * 0.35;
-        if (!f.alive) d.scale.setScalar(0);
-        d.updateMatrix();
-        mesh.setMatrixAt(j, d.matrix);
+
+  update(time = this.shoal.time) {
+    for (const [part, mesh] of this.meshes) {
+      for (let index = 0; index < this.shoal.actors.length; index++) {
+        const fish = this.shoal.actors[index];
+        this.fishMatrix(this.dummy, fish, part, time);
+        mesh.setMatrixAt(index, this.dummy.matrix);
+        mesh.setColorAt(index, this.partColor(fish, part));
       }
       mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    }
+    for (let index = 0; index < this.shoal.actors.length; index++) {
+      const fish = this.shoal.actors[index];
+      for (let side = -1; side <= 1; side += 2) {
+        this.eyeMatrix(this.dummy, fish, side);
+        this.eyes.setMatrixAt(index * 2 + (side === -1 ? 0 : 1), this.dummy.matrix);
+      }
+    }
+    this.eyes.instanceMatrix.needsUpdate = true;
+    if (this.showcase.visible) {
+      this.showcase.rotation.y = Math.sin(time * 0.7) * 0.28;
+      this.showcase.rotation.x = Math.sin(time * 0.4) * 0.04;
+      if (this.showcaseUntil && performance.now() > this.showcaseUntil)
+        this.hideShowcase();
     }
   }
+
   hit(
     ray: T.Raycaster,
     range: number,
   ): { fish: FishActor; distance: number } | null {
     const hit = ray
-      .intersectObjects(this.meshes, false)
+      .intersectObjects([...this.meshes.values(), this.eyes], false)
       .find(
-        (h) =>
-          h.distance <= range &&
-          h.instanceId !== undefined &&
+        (entry) =>
+          entry.distance <= range &&
+          entry.instanceId !== undefined &&
           this.shoal.actors[
-            (h.object.userData.species as number) * 3 + h.instanceId!
-          ].alive,
+            entry.object === this.eyes
+              ? Math.floor(entry.instanceId / 2)
+              : entry.instanceId
+          ]?.alive,
       );
-    if (!hit) return null;
-    return {
-      fish: this.shoal.actors[
-        hit.object.userData.species * 3 + hit.instanceId!
-      ],
-      distance: hit.distance,
-    };
+    if (!hit || hit.instanceId === undefined) return null;
+    const index =
+      hit.object === this.eyes ? Math.floor(hit.instanceId / 2) : hit.instanceId;
+    return { fish: this.shoal.actors[index], distance: hit.distance };
   }
+
+  showShowcase(fish: Pick<FishActor, "species" | "length">, persistent = false) {
+    this.clearShowcase();
+    const info = fishInfo(fish.species);
+    const actor: FishActor = {
+      id: -1,
+      species: fish.species,
+      spot: "small",
+      length: fish.length,
+      weight: 0,
+      x: 0,
+      y: 0,
+      z: 0,
+      heading: Math.PI / 2,
+      alive: true,
+      respawn: 0,
+      phase: 0,
+    };
+    for (const part of [
+      "body",
+      "head",
+      "tail",
+      "dorsal",
+      "fins",
+      "marking",
+    ] as const) {
+      const material = new T.MeshLambertMaterial({
+        color: this.partColor(actor, part),
+        depthTest: false,
+        depthWrite: false,
+      });
+      const mesh = new T.Mesh(this.geometries[part], material);
+      this.showcaseMaterials.push(material);
+      this.fishMatrix(mesh, actor, part, 0, true);
+      mesh.renderOrder = 110;
+      this.showcase.add(mesh);
+    }
+    for (const side of [-1, 1]) {
+      const material = new T.MeshBasicMaterial({
+        color: 0xfff1cf,
+        depthTest: false,
+        depthWrite: false,
+      });
+      const eye = new T.Mesh(this.geometries.eye, material);
+      this.showcaseMaterials.push(material);
+      this.eyeMatrix(eye, actor, side, true);
+      eye.renderOrder = 111;
+      this.showcase.add(eye);
+    }
+    this.showcase.scale.setScalar(1.35 / Math.max(0.8, info.stout));
+    this.showcase.visible = true;
+    this.showcaseUntil = persistent ? 0 : performance.now() + 5200;
+  }
+
+  hideShowcase() {
+    this.showcase.visible = false;
+    this.showcaseUntil = 0;
+  }
+
+  private fishMatrix(
+    object: T.Object3D,
+    fish: FishActor,
+    part: Part,
+    time: number,
+    local = false,
+  ) {
+    const info = fishInfo(fish.species);
+    const length = fish.length / 62;
+    const heading = local ? 0 : fish.heading;
+    const forwardX = Math.sin(heading);
+    const forwardZ = Math.cos(heading);
+    const offset =
+      part === "head"
+        ? 0.43
+        : part === "tail"
+          ? -0.49
+          : part === "dorsal"
+            ? -0.03
+            : part === "fins"
+              ? 0.08
+              : 0;
+    object.position.set(
+      (local ? 0 : fish.x) + forwardX * offset * length,
+      (local ? 0 : fish.y) + (part === "dorsal" ? 0.16 : part === "fins" ? -0.07 : 0) * length,
+      (local ? 0 : fish.z) + forwardZ * offset * length,
+    );
+    object.rotation.set(0, heading, 0);
+    const bodyWidth = 0.34 * length * Math.min(1.35, info.stout);
+    const bodyHeight = 0.25 * length * info.stout;
+    if (part === "body")
+      object.scale.set(bodyWidth, bodyHeight, 0.72 * length);
+    if (part === "head") {
+      const longHead = fish.species === "Hecht" || fish.species === "Zander";
+      object.scale.set(
+        bodyWidth * (longHead ? 0.85 : 0.96),
+        bodyHeight * 0.85,
+        length * (longHead ? 0.34 : 0.25),
+      );
+    }
+    if (part === "tail") {
+      object.scale.set(0.38 * length, 0.42 * length, 0.3 * length);
+      object.rotation.y += Math.sin(time * 7 + fish.phase) * 0.38;
+    }
+    if (part === "dorsal") {
+      object.scale.set(0.2 * length, 0.3 * length, 0.32 * length);
+      if (fish.species === "Hecht") object.position.addScaledVector(new T.Vector3(forwardX, 0, forwardZ), -0.18 * length);
+    }
+    if (part === "fins")
+      object.scale.set(0.63 * length, 0.04 * length, 0.2 * length);
+    if (part === "marking") {
+      const marked = ["Flussbarsch", "Zander", "Forelle", "Hecht"].includes(
+        fish.species,
+      );
+      object.scale.set(
+        marked ? bodyWidth * 1.03 : 0,
+        marked ? bodyHeight * 1.02 : 0,
+        marked ? 0.09 * length : 0,
+      );
+      object.position.addScaledVector(
+        new T.Vector3(forwardX, 0, forwardZ),
+        -0.08 * length,
+      );
+    }
+    if (!fish.alive && !local) object.scale.setScalar(0);
+    object.updateMatrix();
+  }
+
+  private eyeMatrix(
+    object: T.Object3D,
+    fish: FishActor,
+    side: number,
+    local = false,
+  ) {
+    const info = fishInfo(fish.species);
+    const length = fish.length / 62;
+    const heading = local ? 0 : fish.heading;
+    const forward = new T.Vector3(Math.sin(heading), 0, Math.cos(heading));
+    const right = new T.Vector3(Math.cos(heading), 0, -Math.sin(heading));
+    object.position.set(local ? 0 : fish.x, local ? 0 : fish.y, local ? 0 : fish.z);
+    object.position.addScaledVector(forward, 0.53 * length);
+    object.position.addScaledVector(
+      right,
+      side * 0.18 * length * Math.min(1.25, info.stout),
+    );
+    object.position.y += 0.07 * length * info.stout;
+    object.rotation.set(0, heading, 0);
+    object.scale.setScalar(0.055 * length);
+    if (!fish.alive && !local) object.scale.setScalar(0);
+    object.updateMatrix();
+  }
+
+  private partColor(fish: FishActor, part: Part) {
+    const info = fishInfo(fish.species);
+    if (part === "tail" || part === "fins") return new T.Color(info.accent);
+    if (part === "dorsal") return new T.Color(info.color).multiplyScalar(0.62);
+    if (part === "marking")
+      return new T.Color(
+        fish.species === "Forelle"
+          ? 0x654843
+          : fish.species === "Hecht"
+            ? 0xd0d48f
+            : 0x31483b,
+      );
+    if (part === "head") return new T.Color(info.color).multiplyScalar(0.88);
+    return new T.Color(info.color);
+  }
+
+  private clearShowcase() {
+    this.showcase.clear();
+    for (const material of this.showcaseMaterials) material.dispose();
+    this.showcaseMaterials.length = 0;
+  }
+}
+
+function makeGeometries() {
+  const tail = new T.ConeGeometry(0.5, 0.8, 3);
+  tail.rotateX(Math.PI / 2);
+  const dorsal = new T.ConeGeometry(0.5, 0.8, 3);
+  dorsal.rotateZ(Math.PI);
+  return {
+    body: new T.BoxGeometry(1, 1, 1),
+    head: new T.BoxGeometry(1, 1, 1),
+    tail,
+    dorsal,
+    fins: new T.BoxGeometry(1, 1, 1),
+    marking: new T.BoxGeometry(1, 1, 1),
+    eye: new T.SphereGeometry(1, 6, 4),
+  };
 }

@@ -1,4 +1,5 @@
 import contents from "./challenges.json";
+import fishingContents from "./fishing-challenges.json";
 export type Mode = "Entspannt" | "Abenteuer" | "Lern-Challenge";
 export interface Challenge {
   id: string;
@@ -14,8 +15,11 @@ export interface Challenge {
   syllables: string;
   speech: string;
   reward: number;
+  /** Fachliche Schwierigkeit und verlangte Schreibmenge werden getrennt. */
+  knowledge?: number;
+  writing?: number;
 }
-export const CHALLENGES: Challenge[] = contents;
+export const CHALLENGES: Challenge[] = [...contents, ...fishingContents];
 export interface Result {
   attempts: number;
   history: boolean[];

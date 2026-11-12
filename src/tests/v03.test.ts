@@ -75,7 +75,7 @@ it("stellt Hand und jedes Werkzeug als eigenes animierbares Modell dar", () => {
 });
 
 it("ergänzt anspruchsvollere Inhalte, ohne bestehende Challenge-IDs zu ersetzen", () => {
-  expect(CHALLENGES).toHaveLength(60);
+  expect(CHALLENGES).toHaveLength(120);
   expect(CHALLENGES.some((c) => c.id === "world-01")).toBe(true);
   for (const domain of [
     "Mathematik",

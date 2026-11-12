@@ -1,7 +1,7 @@
 import { readExpansion, type Expansion } from "../inventory/Equipment";
 import { TYPES, type Block, type Cell, LIMIT } from "../world/World";
 import { emptyProgress, type LearningProgress } from "../learning/Learning";
-import { type FishName } from "../fishing/Fishing";
+import { FISH } from "../fishing/Fishing";
 export interface Save {
   version: 1;
   extension?: Expansion;
@@ -62,7 +62,9 @@ export function decode(raw: string | null): Save | null {
       )
     )
       return null;
-    for (const f of ["Karpfen", "Forelle"])
+    for (const f of FISH.map((fish) => fish.name).filter(
+      (name) => !["Rotauge", "Flussbarsch", "Hecht"].includes(name),
+    ))
       if (
         s.fish[f] !== undefined &&
         (!Number.isSafeInteger(s.fish[f]) || s.fish[f] < 0)
@@ -70,9 +72,7 @@ export function decode(raw: string | null): Save | null {
         return null;
     s.fish = Object.fromEntries(
       Object.entries(s.fish).filter(([name]) =>
-        ["Rotauge", "Flussbarsch", "Hecht", "Karpfen", "Forelle"].includes(
-          name,
-        ),
+        FISH.some((fish) => fish.name === name),
       ),
     );
     if (s.extension !== undefined) s.extension = readExpansion(s.extension);

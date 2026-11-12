@@ -15,6 +15,11 @@ export class HeldTools {
   private actionLength = 0.36;
   private handMaterial = material(0xd8a77d);
   private handleMaterial = material(0x8a5c35);
+  private rodTip = new T.Object3D();
+  private reel = new T.Group();
+  private fishingState = "idle";
+  private fishingTension = 0;
+  private fishingReeling = false;
   constructor(camera: T.Camera) {
     this.root.name = "first-person arm";
     this.root.position.set(0.44, -0.48, -0.82);
@@ -67,8 +72,20 @@ export class HeldTools {
       this.box(group, [0.28, 0.28, 0.28], [0, 0.2, -0.02], 0x5dc0b3);
       this.box(group, [0.17, 0.03, 0.17], [0, 0.36, -0.02], 0xe5d38e);
     } else if (tool === "Angel") {
-      this.box(group, [0.055, 1.15, 0.055], [0, 0.68, -0.02], this.handleMaterial, [-0.28, 0, -0.08]);
-      this.box(group, [0.1, 0.1, 0.06], [0.04, 0.43, 0], 0xd4aa55);
+      const rod = new T.Group();
+      rod.name = "dreidimensionale Angelrute";
+      rod.rotation.set(-0.22, 0, -0.06);
+      group.add(rod);
+      this.box(rod, [0.075, 0.55, 0.075], [0, 0.36, 0], this.handleMaterial);
+      this.box(rod, [0.052, 0.58, 0.052], [0, 0.9, -0.08], 0x526a55, [-0.13, 0, 0]);
+      this.box(rod, [0.035, 0.55, 0.035], [0, 1.42, -0.25], 0x67836a, [-0.19, 0, 0]);
+      this.reel.name = "animierte Angelkurbel";
+      this.box(this.reel, [0.15, 0.15, 0.08], [0.08, 0.47, 0.01], 0xd4aa55);
+      this.box(this.reel, [0.22, 0.035, 0.035], [0.16, 0.47, 0.08], 0xe2c875);
+      rod.add(this.reel);
+      this.rodTip.position.set(0, 1.7, -0.36);
+      this.rodTip.name = "bewegliche Rutenspitze";
+      rod.add(this.rodTip);
     } else if (tool === "Schwert") {
       this.box(group, [0.07, 0.82, 0.035], [0, 0.67, -0.04], 0xbacbd0);
       this.box(group, [0.34, 0.07, 0.08], [0, 0.27, 0], 0xc99a4e);
@@ -101,6 +118,15 @@ export class HeldTools {
     this.actionLength = action === "cast" ? 0.55 : 0.36;
     this.actionLeft = this.actionLength;
   }
+  fishingPose(state: string, tension: number, reeling: boolean) {
+    this.fishingState = state;
+    this.fishingTension = tension;
+    this.fishingReeling = reeling;
+  }
+  getRodTipWorld(target: T.Vector3) {
+    this.root.updateWorldMatrix(true, true);
+    return this.rodTip.getWorldPosition(target);
+  }
   update(dt: number, moving: boolean, elapsed: number) {
     this.actionLeft = Math.max(0, this.actionLeft - dt);
     if (!this.actionLeft) this.action = "idle";
@@ -108,9 +134,23 @@ export class HeldTools {
     const strike = this.action === "idle" ? 0 : Math.sin(progress * Math.PI);
     const walk = moving ? Math.sin(elapsed * 8) * 0.018 : 0;
     this.root.position.set(0.44, -0.48 + Math.abs(walk), -0.82 + walk);
-    this.root.rotation.x = -0.08 - strike * (this.action === "cast" ? 0.65 : 0.3);
+    const fishingLift =
+      this.fishingState === "charging"
+        ? 0.32
+        : this.fishingState === "drill"
+          ? -0.16 - this.fishingTension * 0.22
+          : this.fishingState === "landed"
+            ? -0.34
+            : 0;
+    this.root.rotation.x =
+      -0.08 - strike * (this.action === "cast" ? 0.65 : 0.3) + fishingLift;
     this.root.rotation.y = -0.08 - strike * 0.18;
     this.root.rotation.z = -0.12 - strike * (this.action === "build" ? 0.22 : 0.62);
+    if (this.fishingState === "bite")
+      this.root.rotation.z += Math.sin(elapsed * 18) * 0.035;
+    if (this.fishingReeling) this.reel.rotation.z -= dt * 12;
+    this.rodTip.position.z =
+      -0.36 - (this.fishingState === "drill" ? this.fishingTension * 0.23 : 0);
   }
   set visible(value: boolean) {
     this.root.visible = value;

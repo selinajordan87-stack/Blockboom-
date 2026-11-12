@@ -5,8 +5,29 @@ import * as T from "three";
 import { BuildHistory } from "./building/History";
 import { enrich, revolutionize } from "./world/Enrich";
 import { TOOLS, defaultExpansion, readExpansion } from "./inventory/Equipment";
-import { Shoal, LivingFishing, type FishActor } from "./fishing/Shoal";
+import { Shoal, type FishActor } from "./fishing/Shoal";
 import { FishView } from "./fishing/FishView";
+import { AnglingEngine, type AnglingEvent } from "./fishing/AnglingEngine";
+import {
+  BAITS,
+  HOOKS,
+  LINES,
+  RIGS,
+  RODS,
+  SPOTS,
+  simulatedRule,
+  spotById,
+  updateAchievements,
+  updateUnlocks,
+  type AnglingSpot,
+} from "./fishing/AnglingData";
+import {
+  FishingWaters,
+  discoverySpot,
+  enrichFishingWorld,
+  nearAnglingSpot,
+} from "./fishing/FishingWorld";
+import { FishingView } from "./fishing/FishingView";
 import {
   LearningEngine,
   loadProfile,
@@ -43,12 +64,13 @@ $("app").innerHTML = `
  <div class="crosshair">+</div><div id="target-label"></div>
  <div id="context"><span id="context-text"></span><button id="interact">E · Interagieren</button><button id="local-mission" hidden>Auftrag</button><button id="reset-boom" hidden>↻ Aufbau</button></div>
  <div id="toast" role="status"></div>
+ <div id="angling-hud" hidden aria-live="polite"><b id="angling-state">Bereit zum Auswerfen</b><label>Wurfkraft <span class="meter"><i id="cast-power"></i></span></label><label>Schnurspannung <span class="meter tension"><i id="line-tension"></i></span></label><label>Drill <span class="meter progress"><i id="drill-progress"></i></span></label><button id="fish-action" aria-label="Angelaktion gedrückt halten">Halten: Auswerfen</button><small id="angling-help">Gedrückt halten, Kraft wählen, dann loslassen.</small></div>
  <div id="look" aria-label="Zum Umsehen wischen"></div>
  <div id="joystick" aria-label="Bewegungsjoystick"><div id="stick"></div></div>
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="zoom" aria-label="Zoom umschalten" aria-pressed="false">⌕</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
- <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E benutzen · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
+ <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="tackle">≈ Angelset</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E halten zum Angeln · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">SANDBOX REVOLUTION · v0.3.0</div><h1>BLOCK<span>BOOM</span><i>Deine Welt. Deine Werkzeuge.</i></h1><p>Erkunde neue Landschaften, baue überall<br>und nimm dein nächstes Abenteuer selbst in die Hand.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>03 / SANDBOX REVOLUTION</span><b>Eine Welt mit<br>mehr Tiefe.</b><p>15 Materialien. Echte Werkzeuge. Freies Gelände.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">FISHING ADVENTURE · v0.4.0</div><h1>BLOCK<span>BOOM</span><i>Dein Wasser. Dein Abenteuer.</i></h1><p>Entdecke vier Gewässer, beobachte echte Fischschwärme<br>und meistere Auswurf, Biss und Drill.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>≈ Angeln</span><span>✦ BOOM!</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>04 / FISHING ADVENTURE</span><b>Acht Arten.<br>Ein echter Drill.</b><p>Ausrüstung, Angelplätze, Fangbuch und Fischwissen.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
@@ -78,7 +100,7 @@ const world = new World(),
   player = new Player(world),
   inventory = new Inventory(),
   shoal = new Shoal(),
-  fishing = new LivingFishing(shoal);
+  fishing = new AnglingEngine(shoal);
 let reading = new ReadingEngine(),
   settings = { sound: false, quality: 1.5 },
   saved = safeLoad(),
@@ -87,11 +109,23 @@ let reading = new ReadingEngine(),
   suspended = false,
   selected = 0,
   materialPage = 0;
+let pendingCatch: { fish: FishActor; method: "Angel" | "Holzknüppel" } | null =
+  null;
+let preferredFish: import("./fishing/Fishing").FishName | undefined;
 const expansion = saved?.extension
   ? readExpansion(saved.extension)
-  : defaultExpansion(saved ? 1 : 3);
+  : defaultExpansion(saved ? 1 : 4);
+if (expansion.edition < 4) {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw && !localStorage.getItem(SAVE_KEY + ".pre-v04"))
+      localStorage.setItem(SAVE_KEY + ".pre-v04", raw);
+  } catch {}
+  expansion.edition = 4;
+}
 if (expansion.edition >= 2) enrich(world);
-if (expansion.edition === 3) revolutionize(world);
+if (expansion.edition >= 3) revolutionize(world);
+if (expansion.edition >= 4) enrichFishingWorld(world);
 camera.fov = expansion.view.fov;
 camera.updateProjectionMatrix();
 let zoomed = false;
@@ -140,8 +174,10 @@ function safeLoad() {
 }
 const view = new WorldView(world, scene);
 view.update();
-const fishView = new FishView(shoal, scene);
+const fishView = new FishView(shoal, scene, camera);
 const water = new WaterView(scene, expansion.edition);
+const fishingWaters = new FishingWaters(scene);
+const fishingView = new FishingView(scene);
 // A few distant block clouds and hand-built signs; all artwork is generated here.
 const cloudMaterial = new T.MeshLambertMaterial({ color: 0xf4f6e9 });
 const cube = new T.BoxGeometry(1, 1, 1);
@@ -189,6 +225,9 @@ sign("BOOM-ZONE", 10, 16, "#efb453");
 sign("MARA · HOLZAUFTRAG", -3, 14, "#b7d88b");
 sign("ENTDECKERPFAD", 7, -1, "#e3bd77");
 sign("WALDRUINE", -16, 19, "#b7d88b");
+sign("WALDSEE", -13, 12, "#77c6b1");
+sign("FLUSS", 14, -8, "#74c9dc");
+sign("GEHEIMTEICH", 4, -15, "#d5b66d");
 for (const [x, z, color] of [
   [-3, 14, 0xe1a663],
   [-9, 3, 0x78a9b0],
@@ -248,13 +287,6 @@ const outline = new T.LineSegments(
 );
 outline.visible = false;
 scene.add(outline);
-const bobber = new T.Mesh(
-  new T.SphereGeometry(0.12, 8, 6),
-  new T.MeshBasicMaterial({ color: 0xf7b35e }),
-);
-bobber.position.set(-11, 0.62, -4);
-bobber.visible = false;
-scene.add(bobber);
 scene.add(camera);
 const heldTools = new HeldTools(camera);
 
@@ -397,6 +429,8 @@ function canPlay() {
 }
 function clearInput() {
   touch?.reset();
+  fishing.setReeling(false);
+  anglingPointer = null;
   mouseDrag = false;
   keys.clear();
   joyX = joyY = 0;
@@ -406,11 +440,11 @@ function clearInput() {
 function unlock() {
   if (document.pointerLockElement) document.exitPointerLock();
 }
-function openPanel(tag: string, html: string) {
+function openPanel(tag: string, html: string, preserveFishing = false) {
   paused = true;
   clearInput();
   unlock();
-  fishing.cancel();
+  if (!preserveFishing) fishing.cancel();
   $("panel-content").classList.toggle("pause-options", tag === "DEINE WELT");
   $("panel-tag").textContent = tag;
   $("panel-content").innerHTML = html;
@@ -420,6 +454,7 @@ function openPanel(tag: string, html: string) {
 function closePanel() {
   $("modal").hidden = true;
   paused = false;
+  if (!pendingCatch) fishView.hideShowcase();
 }
 $("close").onclick = closePanel;
 function menu() {
@@ -508,16 +543,38 @@ function showInventory() {
     `<h2>Deine Sammlung</h2><p>${inventory.total} Fische · ${expansion.tokens} Sterne · Bauen bleibt frei</p><div class="inventory-tabs"><button id="tool-tab">Werkzeuge</button><button id="material-tab">Material</button><button id="fish-tab">Fangbuch</button></div><div id="inventory-body"></div>`,
   );
   const fish = () => {
-    $("inventory-body").innerHTML = `<div class="fish-list">${FISH.map((f) => {
+    $("inventory-body").innerHTML = `<p id="fish-preview-note" class="hint">Wähle „3D ansehen“, um Körperform und Flossen in der Fangansicht zu vergleichen.</p><div class="fish-list catchbook">${FISH.map((f) => {
       const records = expansion.catches.filter((c) => c.species === f.name),
         best = Math.max(
           expansion.best[f.name] || 0,
           ...records.map((c) => c.length),
-        );
-      return `<div><span class="fish-symbol">≈</span><section><b>${f.name}</b><p>${f.description}</p><small>${best ? `Rekord: ${best} cm · letzter Fang: ${records.at(-1)?.method}` : "Noch kein Größenrekord erfasst."}</small></section><strong>${inventory.fish[f.name] || 0}</strong></div>`;
+        ),
+        bestWeight = Math.max(0, ...records.map((c) => c.weight || 0)),
+        last = records.at(-1),
+        lastSpot = last?.spot ? spotById(last.spot).name : "früherer Spielstand";
+      return `<div><span class="fish-symbol">≈</span><section><b>${f.name}</b><p>${f.description}</p><small>${records.length ? `${records.length} gefangen · Rekord: ${best} cm${bestWeight ? ` / ${bestWeight} g` : ""}<br>Zuletzt: ${last?.method}${last?.bait ? ` mit ${last.bait}` : ""} · ${lastSpot}` : "Noch nicht im Fangbuch entdeckt."}</small><button data-fish-preview="${f.name}" ${records.length || expansion.angling.inspected.includes(f.name) ? "" : "disabled"}>3D ansehen</button></section><strong>${inventory.fish[f.name] || 0}<small> im Inventar</small></strong></div>`;
     }).join(
       "",
-    )}</div><p class="hint">Alte Fangzahlen bleiben erhalten. Größen und Fangmethoden werden ab v0.2 protokolliert.</p>`;
+    )}</div><h3>Angel-Erfolge</h3><p>${expansion.angling.achievements.map(escapeHTML).join(" · ") || "Der erste Erfolg wartet am Wasser."}</p><p class="hint">Fangzahl umfasst zurückgesetzte und versorgte Fische. Die große Zahl rechts zeigt nur Fische im Inventar. Alte Fangzahlen bleiben erhalten.</p>`;
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-fish-preview]")
+      .forEach((button) => {
+        button.onclick = () => {
+          const species = button.dataset.fishPreview as
+            | import("./fishing/Fishing").FishName
+            | undefined;
+          if (!species) return;
+          const record = expansion.catches
+            .filter((entry) => entry.species === species)
+            .at(-1);
+          fishView.showShowcase(
+            { species, length: record?.length || FISH.find((entry) => entry.name === species)!.min },
+            true,
+          );
+          $("fish-preview-note").textContent =
+            `${species}: Die stilisierte 3D-Vorschau ist hinter dem halbtransparenten Fangbuch sichtbar.`;
+        };
+      });
   };
   $("fish-tab").onclick = fish;
   const tools = () => {
@@ -540,6 +597,41 @@ function showInventory() {
   };
   fish();
 }
+function gearOptions(
+  items: readonly { id: string; description: string }[],
+  selectedGear: string,
+) {
+  return items
+    .map((item) => {
+      const unlocked = expansion.angling.unlocked.includes(item.id);
+      return `<option value="${escapeHTML(item.id)}" ${selectedGear === item.id ? "selected" : ""} ${unlocked ? "" : "disabled"}>${escapeHTML(item.id)}${unlocked ? "" : " · gesperrt"}</option>`;
+    })
+    .join("");
+}
+function showTackle() {
+  const a = expansion.angling;
+  openPanel(
+    "ANGEL-AUSRÜSTUNG",
+    `<h2>Dein Angelset</h2><p>Rute, Montage, Schnur, Haken und Köder beeinflussen, welche Fische anbeißen und wie sicher der Drill wird.</p><div class="tackle-grid"><label>Rute<select id="rod-select">${gearOptions(RODS, a.loadout.rod)}</select></label><label>Montage<select id="rig-select">${gearOptions(RIGS, a.loadout.rig)}</select></label><label>Schnur<select id="line-select">${gearOptions(LINES, a.loadout.line)}</select></label><label>Haken<select id="hook-select">${gearOptions(HOOKS, a.loadout.hook)}</select></label><label>Köder<select id="bait-select">${gearOptions(BAITS, a.loadout.bait)}</select></label><label>Simulierte Jahreszeit<select id="season-select">${["Frühling", "Sommer", "Herbst", "Winter"].map((season) => `<option ${a.season === season ? "selected" : ""}>${season}</option>`).join("")}</select></label></div><label class="rule-toggle"><input id="rules-enabled" type="checkbox" ${a.rulesEnabled ? "checked" : ""}> Optionale Schonzeit- und Mindestmaß-Simulation anzeigen</label><div class="gear-summary"><h3>Aktuelle Wirkung</h3><p>${RODS.find((item) => item.id === a.loadout.rod)?.description}</p><p>${RIGS.find((item) => item.id === a.loadout.rig)?.description}</p><p>${LINES.find((item) => item.id === a.loadout.line)?.description}</p><p>${BAITS.find((item) => item.id === a.loadout.bait)?.description}</p></div><h3>Entdeckte Angelplätze</h3><p>${SPOTS.map((spot) => `${a.spots.includes(spot.id) ? "●" : "○"} ${spot.name}`).join(" · ")}</p><p class="hint">Neue Ausrüstung wird auch durch Angeln und Erkunden freigeschaltet – nicht nur durch Lernaufgaben. Die Regelprüfung ist eine Spielsimulation und ersetzt weder Fischereischein noch reale Gewässerordnung.</p><button class="primary" id="equip-save">Ausrüsten</button>`,
+  );
+  $("equip-save").onclick = () => {
+    a.loadout.rod = $<HTMLSelectElement>("rod-select").value as typeof a.loadout.rod;
+    a.loadout.rig = $<HTMLSelectElement>("rig-select").value as typeof a.loadout.rig;
+    a.loadout.line = $<HTMLSelectElement>("line-select").value as typeof a.loadout.line;
+    a.loadout.hook = $<HTMLSelectElement>("hook-select").value as typeof a.loadout.hook;
+    a.loadout.bait = $<HTMLSelectElement>("bait-select").value as typeof a.loadout.bait;
+    a.season = $<HTMLSelectElement>("season-select").value as typeof a.season;
+    a.rulesEnabled = $<HTMLInputElement>("rules-enabled").checked;
+    expansion.tool = "Angel";
+    equipment();
+    save();
+    closePanel();
+    toast(`${a.loadout.rod}, ${a.loadout.rig}, ${a.loadout.bait}: bereit.`);
+  };
+}
+bindTap($("tackle"), () => {
+  if (canPlay()) showTackle();
+});
 bindTap($("journal"), () => {
   if (canPlay()) adventure.journal();
 });
@@ -619,20 +711,79 @@ bindTap($("tool-toggle"), () => {
   if (canPlay()) $("tool-palette").hidden = !$("tool-palette").hidden;
 });
 equipment();
-function caught(f: FishActor, method: "Angel" | "Holzknüppel") {
-  inventory.add(f.species);
+function recordCatch(
+  f: FishActor,
+  method: "Angel" | "Holzknüppel",
+  disposition: "released" | "kept",
+) {
+  if (disposition === "kept") inventory.add(f.species);
   expansion.best[f.species] = Math.max(
     expansion.best[f.species] || 0,
     f.length,
   );
-  expansion.catches.push({ species: f.species, length: f.length, method });
-  expansion.catches = expansion.catches.slice(-100);
+  expansion.catches.push({
+    species: f.species,
+    length: f.length,
+    weight: f.weight,
+    method,
+    bait: method === "Angel" ? expansion.angling.loadout.bait : undefined,
+    spot: f.spot,
+    disposition,
+  });
+  expansion.catches = expansion.catches.slice(-500);
+  if (disposition === "kept") expansion.angling.kept++;
+  else expansion.angling.released++;
   missions.caught(f.species);
   const complete = reading.catch(f.species);
+  const unlocks = updateUnlocks(expansion.angling, expansion.catches.length);
+  const achievements = updateAchievements(expansion.angling, expansion.catches);
   toast(
-    `${f.species} · ${f.length} cm · ${method} · Sammlung: ${inventory.fish[f.species]}${complete ? " · Auftrag geschafft! Stark!" : ""}`,
+    `${f.species} · ${f.length} cm · ${disposition === "kept" ? "versorgt" : "zurückgesetzt"}${complete ? " · Auftrag geschafft! Stark!" : ""}${unlocks.length ? ` · Neu: ${unlocks.join(", ")}` : ""}${achievements.length ? ` · Abzeichen: ${achievements.join(", ")}` : ""}`,
   );
   save();
+}
+function finishCatch(disposition: "released" | "kept") {
+  if (!pendingCatch) return;
+  const { fish, method } = pendingCatch;
+  recordCatch(fish, method, disposition);
+  if (method === "Angel") fishing.finishLanded(disposition === "released");
+  else if (disposition === "released") shoal.release(fish);
+  pendingCatch = null;
+  fishView.hideShowcase();
+  $("close").hidden = false;
+  closePanel();
+}
+function presentCatch(fish: FishActor, method: "Angel" | "Holzknüppel") {
+  pendingCatch = { fish, method };
+  fishView.showShowcase(fish, true);
+  const info = FISH.find((entry) => entry.name === fish.species)!;
+  const rule = simulatedRule(
+    fish.species,
+    fish.length,
+    expansion.angling.season,
+  );
+  const mayKeep = !expansion.angling.rulesEnabled || rule.allowed;
+  openPanel(
+    "DEIN FANG",
+    `<div class="landing-card"><div class="landing-space" aria-label="Dreidimensionale Fangansicht"></div><h2>${fish.species}</h2><p class="catch-size">${fish.length} cm · ${fish.weight} g · ${method}</p><p>${escapeHTML(info.description)}</p><div id="fish-facts" hidden><h3>Untersuchen</h3><p><b>Erkennbar:</b> ${escapeHTML(info.features)}</p><p><b>Lebensraum:</b> ${escapeHTML(info.habitat)}</p><p><b>Nahrung:</b> ${escapeHTML(info.food)}</p></div><div class="catch-decisions"><button id="inspect-fish">Untersuchen</button><button id="release-fish">Zurücksetzen</button><button class="primary" id="keep-fish" ${mayKeep ? "" : "disabled"}>Versorgen</button></div>${expansion.angling.rulesEnabled ? `<div class="simulated-rule ${rule.allowed ? "allowed" : "protected"}"><b>${rule.allowed ? "In der Simulation entnahmefähig" : "In der Simulation zurücksetzen"}</b><p>${rule.reasons.map(escapeHTML).join(" ") || "Simuliertes Mindestmaß und Schonzeit passen."}</p></div>` : ""}<p class="hint">${escapeHTML(rule.disclaimer)} Die Versorgung bleibt bewusst sachlich und ohne grafische Verletzungsdarstellung.</p></div>`,
+    true,
+  );
+  $("close").hidden = true;
+  $("inspect-fish").onclick = () => {
+    expansion.angling.inspected = [
+      ...new Set([...expansion.angling.inspected, fish.species]),
+    ];
+    $("fish-facts").hidden = false;
+    save();
+  };
+  $("release-fish").onclick = () => finishCatch("released");
+  $("keep-fish").onclick = () => {
+    if (!mayKeep) return;
+    $("panel-content").classList.add("non-graphic-care");
+    $("keep-fish").textContent = "Fisch wird sachlich versorgt …";
+    $<HTMLButtonElement>("keep-fish").disabled = true;
+    window.setTimeout(() => finishCatch("kept"), 650);
+  };
 }
 function strike() {
   heldTools.play("strike");
@@ -642,7 +793,7 @@ function strike() {
   if (hit && (!block || block.distance > hit.distance)) {
     const f = shoal.catch(hit.fish.id);
     if (f) {
-      caught(f, "Holzknüppel");
+      presentCatch(f, "Holzknüppel");
       fishView.update();
       return;
     }
@@ -665,10 +816,10 @@ $("play").onclick = () => {
   );
 };
 function nearLake() {
-  return (
-    Math.hypot(player.pos[0] + 11, player.pos[2] - 2) < 4.2 &&
-    Math.abs(player.pos[1] - 2) < 3
-  );
+  return currentSpot()?.id === "small";
+}
+function currentSpot() {
+  return nearAnglingSpot(player.pos[0], player.pos[1], player.pos[2]);
 }
 function nearBoom() {
   return (
@@ -690,11 +841,15 @@ function missionPanel() {
       reading.accept();
       save();
       closePanel();
-      cast();
+      prepareFishing("Flussbarsch");
     };
   $("cast").onclick = () => {
     closePanel();
-    cast();
+    prepareFishing(
+      ($<HTMLSelectElement>("fish-target")?.value || undefined) as
+        | import("./fishing/Fishing").FishName
+        | undefined,
+    );
   };
   if ($("read"))
     $("read").onclick = () => {
@@ -716,26 +871,17 @@ function missionPanel() {
         );
     };
 }
-function cast() {
+function prepareFishing(
+  target?: import("./fishing/Fishing").FishName,
+) {
   expansion.tool = "Angel";
   equipment();
-  heldTools.play("cast");
-  if (
-    !fishing.cast(
-      performance.now(),
-      reading.active ||
-        (missions.state("fish").accepted && !missions.state("fish").completed)
-        ? "Flussbarsch"
-        : (($<HTMLSelectElement>("fish-target")?.value || undefined) as
-            import("./fishing/Fishing").FishName | undefined),
-    )
-  ) {
-    toast(
-      "Gerade ist kein passender Fisch frei. Versuche eine andere Art oder warte kurz.",
-    );
-    return;
-  }
-  toast("Angel ausgeworfen … beobachte den Schwimmer.");
+  preferredFish =
+    reading.active ||
+    (missions.state("fish").accepted && !missions.state("fish").completed)
+      ? "Flussbarsch"
+      : target;
+  toast("Halte die große Angel-Taste, wähle die Wurfkraft und lasse sie los.");
 }
 function interact() {
   if (expansion.tool === "Holzknüppel") {
@@ -758,16 +904,93 @@ function interact() {
     adventure.mission(nearby);
     return;
   }
-  if (nearLake()) {
-    if (fishing.state === "bite") {
-      const f = fishing.reel(performance.now());
-      if (f) caught(f, "Angel");
-    } else if (fishing.state === "idle") missionPanel();
-    else toast("Noch ist es ruhig am Schwimmer …");
+  const spot = currentSpot();
+  if (spot) {
+    if (spot.id === "small" && fishing.state === "idle") missionPanel();
+    else if (fishing.state === "idle") prepareFishing();
+    else toast("Nutze die große Angel-Taste für Biss und Drill.");
   } else if (nearBoom()) boom();
   else if (expansion.tool === "Bauwerkzeug") build();
   else toast("Gehe zum Seesteg oder in die BOOM-Zone.");
 }
+const rodTipWorld = new T.Vector3();
+const castDirection = new T.Vector3();
+let anglingPointer: number | null = null;
+function anglingPress(now = performance.now()) {
+  if (!canPlay() || expansion.tool !== "Angel") return;
+  const spot = currentSpot();
+  if (fishing.state === "idle") {
+    if (!spot) {
+      toast("Stelle dich an einen entdeckbaren Angelplatz am Ufer.");
+      return;
+    }
+    fishing.beginCharge(now);
+    return;
+  }
+  if (fishing.state === "bite") {
+    if (fishing.hook(now)) {
+      fishing.setReeling(true);
+      toast("Sitzt! Halte zum Kurbeln, löse kurz bei hoher Spannung.");
+    }
+    return;
+  }
+  if (fishing.state === "drill") fishing.setReeling(true);
+}
+function anglingRelease(now = performance.now()) {
+  if (fishing.state === "charging") {
+    const spot = currentSpot();
+    if (!spot) {
+      fishing.cancel();
+      toast("Der Wurf wurde abgebrochen: Geh wieder ans Ufer.");
+      return;
+    }
+    camera.getWorldDirection(castDirection);
+    heldTools.getRodTipWorld(rodTipWorld);
+    if (
+      fishing.releaseCast(
+        now,
+        spot,
+        expansion.angling.loadout,
+        rodTipWorld,
+        castDirection,
+        preferredFish,
+      )
+    ) {
+      heldTools.play("cast");
+      preferredFish = undefined;
+      toast("Der Schwimmer fliegt …");
+    }
+  }
+  fishing.setReeling(false);
+}
+function cancelAnglingInput() {
+  if (fishing.state === "charging") fishing.cancel();
+  fishing.setReeling(false);
+  anglingPointer = null;
+}
+const fishAction = $("fish-action");
+fishAction.addEventListener("pointerdown", (event) => {
+  if (anglingPointer !== null) return;
+  event.preventDefault();
+  event.stopPropagation();
+  anglingPointer = event.pointerId;
+  fishAction.setPointerCapture?.(event.pointerId);
+  anglingPress();
+});
+fishAction.addEventListener("pointerup", (event) => {
+  if (event.pointerId !== anglingPointer) return;
+  event.preventDefault();
+  event.stopPropagation();
+  anglingRelease();
+  anglingPointer = null;
+});
+fishAction.addEventListener("pointercancel", (event) => {
+  if (event.pointerId === anglingPointer) cancelAnglingInput();
+});
+fishAction.addEventListener("lostpointercapture", (event) => {
+  if (event.pointerId === anglingPointer) cancelAnglingInput();
+});
+fishAction.addEventListener("contextmenu", (event) => event.preventDefault());
 bindTap($("local-mission"), () => {
   if (!canPlay()) return;
   const id = (Object.keys(MISSIONS) as MissionId[]).find((id) =>
@@ -838,6 +1061,44 @@ function sound() {
     o.onended = () => void a.close();
   } catch {}
 }
+function biteSignal() {
+  if (!settings.sound) return;
+  try {
+    const audio = new AudioContext();
+    const oscillator = audio.createOscillator();
+    const gain = audio.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(520, audio.currentTime);
+    oscillator.frequency.setValueAtTime(720, audio.currentTime + 0.09);
+    gain.gain.setValueAtTime(0.08, audio.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.22);
+    oscillator.connect(gain).connect(audio.destination);
+    oscillator.start();
+    oscillator.stop(audio.currentTime + 0.23);
+    oscillator.onended = () => void audio.close();
+  } catch {}
+}
+function handleAnglingEvent(event: AnglingEvent | null) {
+  if (!event) return;
+  if (event === "cast-landed")
+    toast("Der Schwimmer liegt im Wasser. Beobachte ihn und bleib bereit.");
+  if (event === "bite") {
+    biteSignal();
+    toast("Biss! Drücke jetzt – dann halte zum Kurbeln.");
+  }
+  if (event === "bite-missed")
+    toast("Der Fisch hat den Köder wieder losgelassen. Ruhig neu versuchen.");
+  if (event === "line-broken")
+    toast("Zu viel Spannung – die simulierte Schnur ist gerissen. Löse beim nächsten Drill kurz.");
+  if (event === "slack-escape")
+    toast("Die Schnur war zu lange locker. Der Fisch konnte sich lösen.");
+  if (event === "no-fish")
+    toast("An diesem Wurfplatz ist gerade kein passender Fisch frei.");
+  if (["bite-missed", "line-broken", "slack-escape", "no-fish"].includes(event))
+    fishing.acknowledgeEscape();
+  if (event === "landed" && fishing.landedFish)
+    presentCatch(fishing.landedFish, "Angel");
+}
 $("reset-boom").onclick = () => {
   if (nearBoom()) {
     world.resetBoom();
@@ -863,7 +1124,10 @@ window.addEventListener("keydown", (e) => {
   }
   if (!canPlay()) return;
   keys.add(e.code);
-  if (e.code === "KeyE") interact();
+  if (e.code === "KeyE") {
+    if (expansion.tool === "Angel") anglingPress();
+    else interact();
+  }
   if (e.code === "Equal" || e.code === "NumpadAdd") build();
   if (e.code === "Minus" || e.code === "NumpadSubtract") destroy();
   if (e.code === "KeyI") $("bag").click();
@@ -884,7 +1148,10 @@ window.addEventListener("keydown", (e) => {
     hotbar();
   }
 });
-window.addEventListener("keyup", (e) => keys.delete(e.code));
+window.addEventListener("keyup", (e) => {
+  keys.delete(e.code);
+  if (e.code === "KeyE" && expansion.tool === "Angel") anglingRelease();
+});
 function interrupt(reason: string) {
   clearInput();
   save();
@@ -938,7 +1205,7 @@ canvas.addEventListener("pointerdown", (e) => {
   if (document.pointerLockElement === canvas) {
     if (e.button === 0) {
       if (expansion.tool === "Holzknüppel") strike();
-      else if (expansion.tool === "Angel") interact();
+      else if (expansion.tool === "Angel") anglingPress();
       else if (expansion.tool === "Schwert") heldTools.play("strike");
       else destroy();
     }
@@ -952,7 +1219,15 @@ canvas.addEventListener("pointerdown", (e) => {
     }
   }
 });
-window.addEventListener("pointerup", () => (mouseDrag = false));
+window.addEventListener("pointerup", (event) => {
+  mouseDrag = false;
+  if (
+    event.pointerType === "mouse" &&
+    expansion.tool === "Angel" &&
+    document.pointerLockElement === canvas
+  )
+    anglingRelease();
+});
 document.addEventListener("mousemove", (e) => {
   if (!canPlay()) return;
   if (document.pointerLockElement === canvas)
@@ -1068,7 +1343,9 @@ function frame(now: number) {
       lastAim = now;
     }
     shoal.update(elapsed);
-    fishView.update();
+    const fishingEvent = fishing.tick(now, elapsed);
+    handleAnglingEvent(fishingEvent);
+    fishView.update(shoal.time);
     chestLid.rotation.x = missions.state("treasure").completed ? -1.15 : 0;
     treasureGold.visible = missions.state("treasure").completed;
     learningOffer += elapsed;
@@ -1079,17 +1356,26 @@ function frame(now: number) {
         offered = true;
       }
     }
-    const missed = fishing.tick(now);
-    if (missed) toast("Der Fisch ist weitergezogen. Versuch es noch einmal!");
-    const lake = nearLake(),
+    const spot = currentSpot(),
       arena = nearBoom();
+    const discovered = discoverySpot(player.pos[0], player.pos[2]);
+    if (discovered && !expansion.angling.spots.includes(discovered.id)) {
+      expansion.angling.spots.push(discovered.id);
+      const achievements = updateAchievements(
+        expansion.angling,
+        expansion.catches,
+      );
+      save();
+      toast(
+        `Angelplatz entdeckt: ${discovered.name}.${achievements.length ? ` Abzeichen: ${achievements.join(", ")}` : ""}`,
+      );
+    }
     const localMission = (Object.keys(MISSIONS) as MissionId[]).find((id) =>
       nearMission(id),
     );
     $("local-mission").hidden = !localMission;
-    if (!lake && fishing.state !== "idle") fishing.cancel();
-    $("location").textContent = lake
-      ? "Am Seesteg"
+    $("location").textContent = spot
+      ? spot.name
       : arena
         ? "BOOM-Testzone"
         : player.pos[0] < -12 && player.pos[2] > 8
@@ -1098,22 +1384,26 @@ function frame(now: number) {
             ? "Felsenpfad"
             : "Wiesenland";
     $("context").hidden =
-      !lake && !arena && !localMission && expansion.tool === "Bauwerkzeug";
-    $("context-text").textContent = lake
+      !spot && !arena && !localMission && expansion.tool === "Bauwerkzeug";
+    $("context-text").textContent = spot
       ? fishing.state === "bite"
-        ? "Ein Biss! Jetzt einholen!"
+        ? "Ein Biss! Jetzt anschlagen!"
+        : fishing.state === "drill"
+          ? "Kurbeln – bei roter Spannung kurz lösen!"
         : fishing.state === "waiting"
           ? "Warte auf den Biss …"
-          : "Eine Angelpause?"
+          : `${spot.name}: Angel bereit?`
       : arena
         ? "Bereit für einen großen Knall?"
         : "";
-    $("interact").textContent = lake
+    $("interact").textContent = spot
       ? fishing.state === "bite"
-        ? "Einholen!"
+        ? "Angel-Taste!"
+        : fishing.state === "drill"
+          ? "Drill läuft"
         : fishing.state === "waiting"
           ? "Angel im Wasser"
-          : "E · Angeln"
+          : "E · Angelinfo"
       : arena
         ? "E · BOOM!"
         : localMission
@@ -1124,6 +1414,47 @@ function frame(now: number) {
     if (["Axt", "Spitzhacke", "Schaufel"].includes(expansion.tool))
       $("interact").textContent = "E · Abbauen";
     $("interact").classList.toggle("bite", fishing.state === "bite");
+    const showAngling =
+      (expansion.tool === "Angel" && !!spot) || fishing.state !== "idle";
+    $("angling-hud").hidden = !showAngling;
+    $("hud").classList.toggle("angling-active", showAngling);
+    const stateText: Record<string, string> = {
+      idle: "Bereit zum Auswerfen",
+      charging: "Wurfkraft wählen",
+      flying: "Schwimmer fliegt",
+      waiting: "Köder im Wasser",
+      bite: "BISS – jetzt drücken!",
+      drill: "Drill: Spannung halten",
+      landed: "Fisch angelandet",
+      escaped: "Fisch entkommen",
+    };
+    $("angling-state").textContent = stateText[fishing.state];
+    $("cast-power").style.width = `${Math.round(fishing.power * 100)}%`;
+    $("line-tension").style.width = `${Math.round(Math.min(1, fishing.tension) * 100)}%`;
+    $("drill-progress").style.width = `${Math.round(fishing.progress * 100)}%`;
+    $("line-tension").classList.toggle("danger", fishing.tension > 0.78);
+    $("fish-action").textContent =
+      fishing.state === "idle"
+        ? "Halten: Auswerfen"
+        : fishing.state === "charging"
+          ? "Loslassen: Werfen"
+          : fishing.state === "bite"
+            ? "JETZT ANSCHLAGEN"
+            : fishing.state === "drill"
+              ? "Halten: Kurbeln"
+              : "Schwimmer beobachten";
+    $<HTMLButtonElement>("fish-action").disabled = ![
+      "idle",
+      "charging",
+      "bite",
+      "drill",
+    ].includes(fishing.state);
+    $("angling-help").textContent =
+      fishing.state === "drill"
+        ? "Grün halten: kurbeln. Rot: kurz lösen. Nicht lange ganz locker lassen."
+        : fishing.state === "bite"
+          ? "Der Schwimmer taucht – reagiere innerhalb weniger Sekunden."
+          : "Gedrückt halten, Kraft wählen, dann loslassen.";
     $("reset-boom").hidden = !arena;
     $("mission-pin").hidden = !reading.active;
   } else if (!started) {
@@ -1143,11 +1474,15 @@ function frame(now: number) {
       particles.splice(i, 1);
     }
   }
-  bobber.visible = canPlay() && fishing.state !== "idle";
   heldTools.visible = canPlay();
   heldTools.equip(
     expansion.tool,
     expansion.badges.includes("Holzhelfer"),
+  );
+  heldTools.fishingPose(
+    fishing.state,
+    fishing.tension,
+    fishing.reeling,
   );
   heldTools.update(
     elapsed,
@@ -1155,16 +1490,13 @@ function frame(now: number) {
       ["KeyW", "KeyA", "KeyS", "KeyD"].some((key) => keys.has(key)),
     now / 1000,
   );
+  heldTools.getRodTipWorld(rodTipWorld);
+  fishingView.update(fishing, rodTipWorld, now);
   canvas.dataset.toolAction = heldTools.action;
   canvas.dataset.activeTool = expansion.tool;
 
-  bobber.position.x = shoal.bobber.x;
-  bobber.position.z = shoal.bobber.z;
   water.update(now);
-  bobber.position.y =
-    water.level + 0.24 +
-    Math.sin(now * (fishing.state === "bite" ? 0.025 : 0.003)) *
-      (fishing.state === "bite" ? 0.17 : 0.025);
+  fishingWaters.update(now);
   view.update();
   renderer.render(scene, camera);
   renderedFrames++;

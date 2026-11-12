@@ -6,7 +6,7 @@ export class WaterView {
   surface: T.Mesh<T.CircleGeometry, T.MeshPhongMaterial>;
   private depth: T.Mesh<T.CircleGeometry, T.MeshLambertMaterial>;
   private baseY = 0.38;
-  constructor(scene: T.Scene, edition: 1 | 2 | 3) {
+  constructor(scene: T.Scene, edition: 1 | 2 | 3 | 4) {
     const geometry = new T.CircleGeometry(1, 64);
     this.surface = new T.Mesh(
       geometry,

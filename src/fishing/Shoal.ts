@@ -1,8 +1,14 @@
-import { FISH, type FishName } from "./Fishing";
+import { FISH, fishInfo, type FishName } from "./Fishing";
+import { spotById, type SpotId } from "./AnglingData";
+
+export const FISH_PER_SPECIES = 3;
+
 export interface FishActor {
   id: number;
   species: FishName;
+  spot: SpotId;
   length: number;
+  weight: number;
   x: number;
   y: number;
   z: number;
@@ -11,70 +17,149 @@ export interface FishActor {
   respawn: number;
   phase: number;
 }
+
 export class Shoal {
-  actors: FishActor[] = FISH.flatMap((f, i) =>
-    Array.from({ length: 3 }, (_, j) => ({
-      id: i * 3 + j,
-      species: f.name,
-      length: [24, 32, 75, 52, 38][i] + j * 3,
-      x: -10 + Math.cos(i * 1.2 + j * 0.3) * (2 + j),
-      y: 0.14,
-      z: -5 + Math.sin(i * 1.2 + j * 0.3) * (2 + j),
-      heading: 0,
-      alive: true,
-      respawn: 0,
-      phase: i + j * 0.7,
-    })),
+  actors: FishActor[] = FISH.flatMap((fish, speciesIndex) =>
+    Array.from({ length: FISH_PER_SPECIES }, (_, index) => {
+      const spot = spotById(fish.spots[index % fish.spots.length] as SpotId);
+      const length = Math.round(
+        fish.min + (fish.max - fish.min) * (0.24 + index * 0.25),
+      );
+      return {
+        id: speciesIndex * FISH_PER_SPECIES + index,
+        species: fish.name,
+        spot: spot.id,
+        length,
+        weight: estimateWeight(fish.name, length),
+        x: spot.center.x + Math.cos(speciesIndex * 1.2 + index) * (1.2 + index * 0.5),
+        y: spot.waterY - Math.min(spot.depth - 0.2, fish.depth + index * 0.08),
+        z: spot.center.z + Math.sin(speciesIndex * 1.2 + index) * (1.1 + index * 0.55),
+        heading: 0,
+        alive: true,
+        respawn: 0,
+        phase: speciesIndex * 0.8 + index * 0.73,
+      };
+    }),
   );
   target: number | null = null;
-  bobber = { x: -11, z: -3 };
+  lure = { x: -11, y: 0.05, z: -3 };
+  /** Compatibility alias used by v0.2 diagnostics and tests. */
+  bobber = this.lure;
   time = 0;
+
   update(dt: number) {
     this.time += dt;
-    for (const f of this.actors) {
-      if (!f.alive) {
-        if (this.time >= f.respawn) f.alive = true;
+    for (const fish of this.actors) {
+      if (!fish.alive) {
+        if (this.time >= fish.respawn) fish.alive = true;
         else continue;
       }
-      let tx: number, tz: number;
-      if (this.target === f.id) {
-        tx = this.bobber.x;
-        tz = this.bobber.z;
+      const info = fishInfo(fish.species);
+      const spot = spotById(fish.spot);
+      let tx: number;
+      let ty: number;
+      let tz: number;
+      if (this.target === fish.id) {
+        tx = this.lure.x;
+        ty = this.lure.y;
+        tz = this.lure.z;
       } else {
-        const speed =
-          f.species === "Hecht" ? 0.22 : f.species === "Forelle" ? 0.48 : 0.33;
-        const a = this.time * speed + f.phase;
-        const r = 2 + (f.id % 3) * 1.1;
-        tx = -10 + Math.cos(a) * r;
-        tz = -5 + Math.sin(a) * r * 0.85;
+        const angle = this.time * info.speed + fish.phase;
+        const radius = 1.15 + (fish.id % FISH_PER_SPECIES) * 0.62;
+        tx = spot.center.x + Math.cos(angle) * radius;
+        tz =
+          spot.center.z +
+          Math.sin(angle) * radius * (spot.id === "river" ? 2.6 : 0.82) +
+          (spot.id === "river" ? Math.sin(this.time * 0.2 + fish.phase) : 0);
+        ty = spot.waterY - Math.min(spot.depth - 0.18, info.depth);
+        if (info.behavior === "school") {
+          tx += Math.cos(this.time * 0.3 + Math.floor(fish.id / 3)) * 0.35;
+          tz += Math.sin(this.time * 0.3 + Math.floor(fish.id / 3)) * 0.35;
+        }
+        if (
+          info.behavior === "predator" &&
+          Math.sin(this.time * 0.7 + fish.phase) > 0.72
+        ) {
+          const prey = this.actors
+            .filter(
+              (candidate) =>
+                candidate.alive &&
+                candidate.spot === fish.spot &&
+                candidate.length < fish.length * 0.62,
+            )
+            .sort(
+              (a, b) =>
+                Math.hypot(a.x - fish.x, a.z - fish.z) -
+                Math.hypot(b.x - fish.x, b.z - fish.z),
+            )[0];
+          if (prey) {
+            tx = prey.x;
+            ty = prey.y;
+            tz = prey.z;
+          }
+        }
       }
-      const dx = tx - f.x,
-        dz = tz - f.z,
-        dist = Math.hypot(dx, dz),
-        step = Math.min(dist, dt * (this.target === f.id ? 2.4 : 1.3));
-      if (dist > 0.03) {
-        f.x += (dx / dist) * step;
-        f.z += (dz / dist) * step;
-        f.heading = Math.atan2(dx, dz);
+      const dx = tx - fish.x;
+      const dy = ty - fish.y;
+      const dz = tz - fish.z;
+      const distance = Math.hypot(dx, dy, dz);
+      const lureSpeed = this.target === fish.id ? 1.4 + info.speed * 2 : 0.75 + info.speed;
+      const step = Math.min(distance, dt * lureSpeed);
+      if (distance > 0.025) {
+        fish.x += (dx / distance) * step;
+        fish.y += (dy / distance) * step;
+        fish.z += (dz / distance) * step;
+        fish.heading = Math.atan2(dx, dz);
       }
-      f.y = 0.14 + Math.sin(this.time * 2 + f.phase) * 0.025;
-      // Clamp to the common shallow-water ellipse, also valid in legacy worlds.
-      const edge = Math.hypot((f.x + 10) / 5.3, (f.z + 5) / 4.9);
+      fish.y += Math.sin(this.time * 2.2 + fish.phase) * 0.002;
+      const edge = Math.hypot(
+        (fish.x - spot.center.x) / (spot.radius.x * 0.8),
+        (fish.z - spot.center.z) / (spot.radius.z * 0.8),
+      );
       if (edge > 1) {
-        f.x = -10 + (f.x + 10) / edge;
-        f.z = -5 + (f.z + 5) / edge;
+        fish.x = spot.center.x + (fish.x - spot.center.x) / edge;
+        fish.z = spot.center.z + (fish.z - spot.center.z) / edge;
       }
     }
   }
+
+  attract(id: number, position: { x: number; y: number; z: number }) {
+    this.target = id;
+    Object.assign(this.lure, position);
+  }
+
+  stopAttracting() {
+    this.target = null;
+  }
+
   catch(id: number) {
-    const f = this.actors.find((f) => f.id === id && f.alive);
-    if (!f) return null;
-    f.alive = false;
-    f.respawn = this.time + 20;
+    const fish = this.actors.find((candidate) => candidate.id === id && candidate.alive);
+    if (!fish) return null;
+    fish.alive = false;
+    fish.respawn = this.time + 35;
     if (this.target === id) this.target = null;
-    return { ...f };
+    return { ...fish };
+  }
+
+  release(caught: FishActor) {
+    const fish = this.actors.find((candidate) => candidate.id === caught.id);
+    if (!fish) return;
+    const spot = spotById(fish.spot);
+    fish.alive = true;
+    fish.respawn = 0;
+    fish.x = spot.center.x;
+    fish.z = spot.center.z;
+    fish.y = spot.waterY - fishInfo(fish.species).depth;
   }
 }
+
+export function estimateWeight(species: FishName, length: number) {
+  const info = fishInfo(species);
+  const factor = 0.0065 * info.stout;
+  return Math.max(40, Math.round(factor * length ** 3));
+}
+
+/** v0.2 interaction retained while v0.4 uses AnglingEngine. */
 export class LivingFishing {
   state: "idle" | "waiting" | "bite" = "idle";
   deadline = 0;
@@ -83,29 +168,35 @@ export class LivingFishing {
   cast(now: number, preferred?: FishName) {
     if (this.state !== "idle") return false;
     const available = this.shoal.actors.filter(
-      (f) => f.alive && (!preferred || f.species === preferred),
+      (fish) =>
+        fish.alive &&
+        fish.spot === "small" &&
+        (!preferred || fish.species === preferred),
     );
-    const f = available.sort(
-      (a, b) => Math.hypot(a.x + 11, a.z + 3) - Math.hypot(b.x + 11, b.z + 3),
+    const fish = available.sort(
+      (a, b) =>
+        Math.hypot(a.x + 11, a.z + 3) - Math.hypot(b.x + 11, b.z + 3),
     )[0];
-    if (!f) return false;
-    this.target = f.id;
-    this.shoal.target = f.id;
+    if (!fish) return false;
+    this.target = fish.id;
+    this.shoal.attract(fish.id, { x: -11, y: 0.05, z: -3 });
     this.state = "waiting";
     this.deadline = now + 2500;
     return true;
   }
   tick(now: number) {
-    const f = this.shoal.actors.find((f) => f.id === this.target && f.alive);
-    if (this.state !== "idle" && !f) {
+    const fish = this.shoal.actors.find(
+      (candidate) => candidate.id === this.target && candidate.alive,
+    );
+    if (this.state !== "idle" && !fish) {
       this.cancel();
       return "miss";
     }
     if (
       this.state === "waiting" &&
       now >= this.deadline &&
-      f &&
-      Math.hypot(f.x + 11, f.z + 3) < 0.7
+      fish &&
+      Math.hypot(fish.x + 11, fish.z + 3) < 0.7
     ) {
       this.state = "bite";
       this.deadline = now + 3500;
@@ -117,13 +208,13 @@ export class LivingFishing {
   reel(now: number) {
     if (this.state !== "bite" || now > this.deadline || this.target === null)
       return null;
-    const f = this.shoal.catch(this.target);
+    const fish = this.shoal.catch(this.target);
     this.cancel();
-    return f;
+    return fish;
   }
   cancel() {
     this.state = "idle";
     this.target = null;
-    this.shoal.target = null;
+    this.shoal.stopAttracting();
   }
 }

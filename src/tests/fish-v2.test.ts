@@ -1,19 +1,26 @@
 import { it, expect } from "vitest";
 import { Shoal, LivingFishing } from "../fishing/Shoal";
-it("hält fünf echte bewegte Arten im Wasser und fängt genau ein bestimmtes Tier", () => {
+import { spotById } from "../fishing/AnglingData";
+it("hält acht echte bewegte Arten in ihren Gewässern und fängt genau ein bestimmtes Tier", () => {
   const s = new Shoal();
-  expect(new Set(s.actors.map((f) => f.species)).size).toBe(5);
+  expect(new Set(s.actors.map((f) => f.species)).size).toBe(8);
   const x = s.actors[0].x;
   for (let i = 0; i < 300; i++) s.update(0.016);
   expect(s.actors[0].x).not.toBe(x);
   expect(
-    s.actors.every(
-      (f) => Math.hypot((f.x + 10) / 5.3, (f.z + 5) / 4.9) <= 1.001,
-    ),
+    s.actors.every((f) => {
+      const spot = spotById(f.spot);
+      return (
+        Math.hypot(
+          (f.x - spot.center.x) / (spot.radius.x * 0.8),
+          (f.z - spot.center.z) / (spot.radius.z * 0.8),
+        ) <= 1.001
+      );
+    }),
   ).toBe(true);
   expect(s.catch(0)?.species).toBe("Rotauge");
   expect(s.catch(0)).toBeNull();
-  s.update(21);
+  s.update(40);
   expect(s.actors[0].alive).toBe(true);
 });
 it("ein sichtbarer Fisch schwimmt zum Schwimmer, erst dann ist ein Fang möglich", () => {
