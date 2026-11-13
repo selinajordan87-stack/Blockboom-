@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { World, place, remove, type Cell } from "../world/World";
+import { World, LIMIT, place, remove, type Cell } from "../world/World";
 import { Player } from "../player/Player";
 import { Fishing, Inventory } from "../fishing/Fishing";
 import { ReadingEngine, mission } from "../learning/Learning";
@@ -18,7 +18,7 @@ describe("Bauen", () => {
     const w = new World();
     expect(place(w, [0, 1, 7], "Stein", player)).toBe(false);
     expect(place(w, [15, 1, 7], "Stein", player)).toBe(false);
-    expect(place(w, [60, 1, 7], "Stein", [59, 1, 7])).toBe(false);
+    expect(place(w, [LIMIT, 1, 7], "Stein", [LIMIT-1, 1, 7])).toBe(false);
     expect(place(w, [1, 15, 7], "Stein", player)).toBe(false);
     expect(remove(w, [0, -3, 7], player)).toBe(false);
     expect(remove(w, [20, 0, 7], player)).toBe(false);

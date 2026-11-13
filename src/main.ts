@@ -1,6 +1,7 @@
 import "./ui/style.css";
 import "./ui/mobile-rescue.css";
 import { installLifecycle } from "./core/Lifecycle";
+import {FrameStats} from "./core/FrameStats";
 import { TouchControls, bindTap } from "./player/TouchControls";
 import * as T from "three";
 import { BuildHistory } from "./building/History";
@@ -57,6 +58,11 @@ import { ReadingEngine, mission } from "./learning/Learning";
 import { explode } from "./boom/Boom";
 import { load, persist, SAVE_KEY, type Save } from "./storage/Save";
 import {exportTransfer,parseTransfer,importTransfer,IMPORT_BACKUP,type Transfer} from "./storage/Transfer";
+import {DiscoveryEngine} from "./discovery/Engine";
+import {DiscoveryUI} from "./discovery/UI";
+import {DiscoveryView} from "./discovery/View";
+import {LandmarkView} from "./world/LandmarkView";
+import {speak} from "./learning/Speech";
 import { DayView, advanceDay, dayPhase, isNight } from "./nightfall/DayCycle";
 import { Vitals } from "./nightfall/State";
 import { ZombieEngine, WEAPONS, ZOMBIES } from "./nightfall/Zombies";
@@ -67,6 +73,8 @@ import { RegionStream, regionAt } from "./living/Regions";
 import { ItemStore } from "./living/Items";
 import { LivingUI } from "./living/LivingUI";
 import { LivingView } from "./living/LivingView";
+import {initializeDiscoveryGarden} from "./living/StarterGarden";
+import {stage} from "./living/Systems";
 import { farm, mining, updateAnimals, discover, checkMissions, loot } from "./living/Systems";
 import type { Animal } from "./living/State";
 const $ = <E extends HTMLElement = HTMLElement>(id: string) =>
@@ -90,10 +98,11 @@ $("app").innerHTML = `
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="zoom" aria-label="Zoom umschalten" aria-pressed="false">⌕</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
  <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="tackle">≈ Angelset</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E halten zum Angeln · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">MOBILE UX RESCUE · v0.6.1</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Mehr Welt. Mehr Überblick.<br>Dein Abenteuer wartet.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>06.1 / MOBILE UX</span><b>Deine Welt.<br>Deine Perspektive.</b><p>Freier Blick. Ruhige Steuerung. Neue Wege.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">WORLD DISCOVERY · v0.7.0</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Am Horizont wartet mehr.<br>Folge den Spuren deiner Welt.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>07 / WORLD DISCOVERY</span><b>Deine Welt.<br>Deine Perspektive.</b><p>Berge. Bücher. Dein eigener Weg.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
+const zoomControl=$("zoom");
 const canvas = $<HTMLCanvasElement>("world");
 let renderer: T.WebGLRenderer;
 try {
@@ -109,8 +118,8 @@ try {
 }
 const scene = new T.Scene();
 scene.background = new T.Color(0x9ed2df);
-scene.fog = new T.Fog(0xa9d3d5, 26, 68);
-const camera = new T.PerspectiveCamera(70, innerWidth / innerHeight, 0.08, 80);
+scene.fog = new T.Fog(0xa9d3d5, 45, 215);
+const camera = new T.PerspectiveCamera(70, innerWidth / innerHeight, 0.08, 240);
 camera.rotation.order = "YXZ";
 const ambient = new T.HemisphereLight(0xeaf8ff, 0x66724f, 2.25);
 scene.add(ambient);
@@ -133,9 +142,12 @@ let reading = new ReadingEngine(),
 let pendingCatch: { fish: FishActor; method: "Angel" | "Holzknüppel" } | null =
   null;
 let preferredFish: import("./fishing/Fishing").FishName | undefined;
+const needsDiscoveryUpgrade=(()=>{try{return !JSON.parse(localStorage.getItem(SAVE_KEY)||"null")?.extension?.discovery;}catch{return true;}})();
 const expansion = saved?.extension
   ? readExpansion(saved.extension)
   : defaultExpansion(saved ? 1 : 4);
+try{const raw=localStorage.getItem(SAVE_KEY);if(raw&&!JSON.parse(raw).extension?.discovery&&!localStorage.getItem(SAVE_KEY+".pre-v07"))localStorage.setItem(SAVE_KEY+".pre-v07",raw);}catch{}
+const discovery=new DiscoveryEngine(expansion.discovery,expansion);
 try{const raw=localStorage.getItem(SAVE_KEY);if(raw&&!JSON.parse(raw).extension?.living&&!localStorage.getItem(SAVE_KEY+".pre-v06"))localStorage.setItem(SAVE_KEY+".pre-v06",raw);}catch{}
 if (!saved) {expansion.nightfall.mode = "Survival";expansion.nightfall.refuge=true;}
 try {
@@ -159,7 +171,7 @@ const night = expansion.nightfall;
 const vitals = new Vitals(night);
 const zombies = new ZombieEngine(world,night);
 const nightAudio = new NightAudio();
-const regionStream = new RegionStream(world);
+const regionStream = new RegionStream(world,true);
 regionStream.ensure(saved?.position[0]||0,saved?.position[2]||17);
 const cameraRig=new CameraRig(world);
 camera.fov = expansion.view.fov;
@@ -219,6 +231,7 @@ function safeLoad() {
     return null;
   }
 }
+if(needsDiscoveryUpgrade)initializeDiscoveryGarden(world,expansion.living);
 const view = new WorldView(world, scene);
 view.update();
 const fishView = new FishView(shoal, scene, camera);
@@ -230,6 +243,8 @@ const zombieView = new ZombieView(scene);
 const defenseView = new DefenseView(world,scene);
 const livingView = new LivingView(scene);
 const avatar=new Avatar(scene);
+const discoveryView=new DiscoveryView(scene);
+const landmarks=new LandmarkView(scene,world);
 const itemStore = new ItemStore(expansion,inventory.fish);
 defenseView.update(camera.position,isNight(night.time));
 // A few distant block clouds and hand-built signs; all artwork is generated here.
@@ -265,26 +280,26 @@ function sign(text: string, x: number, z: number, color: string) {
   const texture = new T.CanvasTexture(c);
   texture.colorSpace = T.SRGBColorSpace;
   const m = new T.Mesh(
-    new T.PlaneGeometry(2.3, .72),
+    new T.PlaneGeometry(.85, .27),
     new T.MeshBasicMaterial({ map: texture, side: T.FrontSide }),
   );
-  m.position.set(x, 2.8, z);
+  m.position.set(x, 1.35, z);
   scene.add(m);
-  const back=new T.Mesh(m.geometry,m.material);back.position.set(x,2.8,z-.006);back.rotation.y=Math.PI;scene.add(back);
+  const back=new T.Mesh(m.geometry,m.material);back.position.set(x,1.35,z-.006);back.rotation.y=Math.PI;scene.add(back);
   const post = new T.Mesh(cube, new T.MeshLambertMaterial({ color: 0x765940 }));
-  post.scale.set(0.15, 2, 0.15);
-  post.position.set(x, 1.8, z);
+  post.scale.set(0.08, .7, 0.08);
+  post.position.set(x, 1, z);
   scene.add(post);
 }
 sign("SEESTEG", -11, 4, "#8bd4d7");
-sign("FREIES BAUEN", 1, 5, "#b7d88b");
+
 sign("BOOM-ZONE", 10, 16, "#efb453");
-sign("MARA · HOLZAUFTRAG", -3, 14, "#b7d88b");
-sign("ENTDECKERPFAD", 7, -1, "#e3bd77");
-sign("WALDRUINE", -16, 19, "#b7d88b");
-sign("WALDSEE", -13, 12, "#77c6b1");
+
+
+
+
 sign("FLUSS", 14, -8, "#74c9dc");
-sign("GEHEIMTEICH", 4, -15, "#d5b66d");
+
 for (const [x, z, color] of [
   [-3, 14, 0xe1a663],
   [-9, 3, 0x78a9b0],
@@ -361,6 +376,7 @@ function aim() {
   }
   const hit = ray.intersectObjects([...view.group.children,...defenseView.group.children,livingView.crops], false)[0];
   animalTarget=livingView.hit(ray,expansion.living);
+  noteTarget=discoveryView.hit(ray);if(noteTarget&&hit&&hit.distance<ray.ray.origin.distanceTo(new T.Vector3(...noteTarget.position))-.8)noteTarget=null;
   target = null;
   adjacent = null;
   preview.visible = false;
@@ -405,6 +421,7 @@ function aim() {
   if(animalTarget)$("target-label").textContent=animalTarget.name||animalTarget.kind;
 }
 let animalTarget:Animal|null=null;
+let noteTarget:import("./discovery/Content").WorldNote|null=null;
 let miningAction:{cell:Cell;block:import("./world/World").Block;elapsed:number;seconds:number}|null=null;
 function toast(text: string) {
   lastNotice=text;
@@ -447,7 +464,7 @@ function save() {
 }
 function syncAim() {
   updateCamera(0);
-  view.update();
+  view.setFocus(player.pos[0],player.pos[2]);view.update(4);
   defenseView.update(camera.position,isNight(night.time));
   view.group.updateMatrixWorld(true);
   aim();
@@ -466,6 +483,7 @@ function build() {
     if(upper){world.set(...upper,material);history.record(upper,null,material);}
     if(night.mode==="Survival")expansion.materials[material]=(expansion.materials[material]||0)-cost;
     if(["Bett","Tür","Fackel","Laterne"].includes(material)&&!expansion.living.placed.includes(adjacent.join(",")))expansion.living.placed.push(adjacent.join(","));
+    discovery.event("place",material);
     syncUndo();
     save();
   } else
@@ -494,6 +512,7 @@ function destroy(finishMining=false) {
         if(recovered==="Kohleerz"){night.supplies.Kohle=(night.supplies.Kohle||0)+1;}
         if((recovered==="Stein"||recovered.endsWith("erz"))&&!expansion.living.mined.includes(recovered))expansion.living.mined.push(recovered);
       }
+    if(previous)discovery.event("gather",previous);
     missions.wood();
     save();
   } else toast("Visiere einen Block in deiner Nähe an.");
@@ -554,6 +573,7 @@ function openPanel(tag: string, html: string, preserveFishing = false) {
   $("panel-content").classList.remove("pause-options");
   $("panel-content").classList.toggle("game-menu", tag === "DEINE WELT");
   $("panel-tag").textContent = tag;
+  if(zoomControl.closest("#panel-content"))document.querySelector(".touch-actions")!.append(zoomControl);
   $("panel-content").innerHTML = html;
   $("modal").hidden = false;
   $("tool-palette").hidden = true;
@@ -570,6 +590,7 @@ $("close").onclick = closePanel;
 function menu() {
   $("interruption").hidden=true;
   openPanel("DEINE WELT",`<h2>Dein Abenteuer</h2><div class="menu-priority"><button id="resume" class="primary">Weiter</button><button id="camera-reset">Kamera zurücksetzen</button><button id="save">Speichern</button></div><div class="menu-grid"><button id="menu-inventory">Inventar</button><button id="menu-tools">Werkzeuge</button><button id="menu-building">Baumaterial</button><button id="menu-adventure">Welt & Karte</button><button id="menu-learning">Challenge</button><button id="menu-missions">Aufträge</button><button id="menu-tackle">Angelset</button><button id="night-menu">Crafting & Survival</button><button id="menu-camera">Kamera & Steuerung</button><button id="menu-settings">Einstellungen</button><button id="menu-gather">Beeren sammeln</button><button id="menu-notice">Letzter Hinweis</button>${nearBoom()?'<button id="menu-boom">BOOM-Aufbau</button>':""}${zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<12)?'<button id="menu-battle">Schreibkampf</button>':""}</div>`);
+  for(const [id,label,action]of [["menu-log","Abenteuerlog",()=>discoveryUI.log()],["menu-book","Entdeckerbuch",()=>discoveryUI.book()],["menu-map","Karte",()=>livingUI.map()],["menu-garden","Garten",()=>livingUI.garden()],["menu-workbench","Werkbank",()=>livingUI.recipes(false)]] as const){const b=document.createElement("button");b.id=id;b.textContent=label;b.onclick=action;$("panel-content").querySelector(".menu-grid")!.prepend(b);}
   const go=(id:string)=>{closePanel();$(id).click();};
   $("resume").onclick=resumeGame;$("camera-reset").onclick=resetCamera;
   $("save").onclick=()=>{const ok=save();$("save").textContent=ok?"Gespeichert ✓":"Speicherfehler";toast(ok?"Deine Welt ist gespeichert.":"Speichern fehlgeschlagen. Bitte Speicherplatz prüfen.");};
@@ -590,7 +611,8 @@ function resetCamera(){
 }
 function controlSettings(){
  const c=expansion.camera,s=expansion.controls;
- openPanel("KAMERA & STEUERUNG",`<h2>Dein Blick auf die Welt</h2><div class="control-settings"><label>Perspektive<select id="camera-perspective"><option value="first" ${c.perspective==="first"?"selected":""}>Ego · mit Hand</option><option value="third" ${c.perspective==="third"?"selected":""}>Third Person · Figur sichtbar</option></select></label><label>Kameraabstand <output id="distance-value">${c.distance} m</output><input id="camera-distance" type="range" min="2" max="9" step=".25" value="${c.distance}"></label><label>Sichtfeld <output id="fov-value">${expansion.view.fov}°</output><input id="fov" type="range" min="55" max="90" step="1" value="${expansion.view.fov}"></label><label>Kamera-Empfindlichkeit <output id="sensitivity-value">${Math.round(expansion.view.sensitivity*100)}%</output><input id="sensitivity" type="range" min="55" max="160" step="5" value="${expansion.view.sensitivity*100}"></label><label>Joystickgröße <output id="joystick-value">${s.joystickSize} px</output><input id="joystick-size" type="range" min="72" max="112" step="4" value="${s.joystickSize}"></label><label>Deckkraft der Tasten <output id="opacity-value">${Math.round(s.opacity*100)}%</output><input id="control-opacity" type="range" min="20" max="75" step="5" value="${s.opacity*100}"></label><label>Daumenbelegung<select id="handedness"><option value="right" ${s.handedness==="right"?"selected":""}>Bewegen links · Kamera rechts</option><option value="left" ${s.handedness==="left"?"selected":""}>Bewegen rechts · Kamera links</option></select></label></div><button id="camera-reset">Kamera zurücksetzen</button><button id="back-menu">Zum Menü</button><p class="hint">Ansicht in der Schnellleiste: Ego → Third Person → weiter heraus. Vor Wänden rückt die Kamera kurz näher und kehrt anschließend zurück.</p>`);
+ openPanel("KAMERA & STEUERUNG",`<h2>Dein Blick auf die Welt</h2><div class="control-settings"><label>Perspektive<select id="camera-perspective"><option value="first" ${c.perspective==="first"?"selected":""}>Ego · mit Hand</option><option value="third" ${c.perspective==="third"?"selected":""}>Third Person · Figur sichtbar</option></select></label><label>Kameraabstand <output id="distance-value">${c.distance} m</output><input id="camera-distance" type="range" min="2" max="9" step=".25" value="${c.distance}"></label><label>Sichtfeld <output id="fov-value">${expansion.view.fov}°</output><input id="fov" type="range" min="55" max="90" step="1" value="${expansion.view.fov}"></label><label>Kamera-Empfindlichkeit <output id="sensitivity-value">${Math.round(expansion.view.sensitivity*100)}%</output><input id="sensitivity" type="range" min="55" max="160" step="5" value="${expansion.view.sensitivity*100}"></label><label>Joystickgröße <output id="joystick-value">${s.joystickSize} px</output><input id="joystick-size" type="range" min="72" max="112" step="4" value="${s.joystickSize}"></label><label>Deckkraft der Tasten <output id="opacity-value">${Math.round(s.opacity*100)}%</output><input id="control-opacity" type="range" min="20" max="75" step="5" value="${s.opacity*100}"></label><label>Daumenbelegung<select id="handedness"><option value="right" ${s.handedness==="right"?"selected":""}>Bewegen links · Kamera rechts</option><option value="left" ${s.handedness==="left"?"selected":""}>Bewegen rechts · Kamera links</option></select></label></div><button id="camera-reset">Kamera zurücksetzen</button><button id="back-menu">Zum Menü</button><p class="hint">Ansicht wechseln: Ego → Third Person → weiter heraus. Vor Wänden rückt die Kamera kurz näher und kehrt anschließend zurück.</p>`);
+ $("panel-content").append(zoomControl);zoomControl.textContent="Ansicht wechseln";zoomControl.setAttribute("aria-label","Ego oder Third Person wechseln");
  const update=()=>{updateFov();updateCamera(0,true);mobileHUD.settings(s);save();viewportDirty=true;};
  $("camera-perspective").onchange=()=>{c.perspective=$<HTMLSelectElement>("camera-perspective").value as typeof c.perspective;update();};
  $("camera-distance").oninput=()=>{c.distance=Number($<HTMLInputElement>("camera-distance").value);c.perspective="third";$<HTMLSelectElement>("camera-perspective").value="third";$("distance-value").textContent=`${c.distance} m`;update();};
@@ -624,7 +646,7 @@ function generalSettings(){
     save();
     generalSettings();
   };
-  $("diagnostic-export").onclick=()=>downloadJSON("blockboom-diagnose.json",{version:"0.6.1",events:diagnosticEvents,camera:{requested:expansion.camera,actual:cameraRig.actualDistance,blocked:cameraRig.blocked,pos:camera.position.toArray(),fov:camera.fov},controls:touch?.state,viewport:[innerWidth,innerHeight],visualViewport:window.visualViewport?{width:visualViewport!.width,height:visualViewport!.height,scale:visualViewport!.scale,offsetLeft:visualViewport!.offsetLeft,offsetTop:visualViewport!.offsetTop}:null,paused,suspended,webglLost,renderedFrames,lastRenderedAt,world:{region:regionAt(...player.pos).id,loadedChunks:world.activeChunks.size,blocks:world.blocks.size,revision:world.revision}});
+  $("diagnostic-export").onclick=()=>downloadJSON("blockboom-diagnose.json",{version:"0.7.0",events:diagnosticEvents,camera:{requested:expansion.camera,actual:cameraRig.actualDistance,blocked:cameraRig.blocked,pos:camera.position.toArray(),fov:camera.fov},controls:touch?.state,viewport:[innerWidth,innerHeight],visualViewport:window.visualViewport?{width:visualViewport!.width,height:visualViewport!.height,scale:visualViewport!.scale,offsetLeft:visualViewport!.offsetLeft,offsetTop:visualViewport!.offsetTop}:null,paused,suspended,webglLost,renderedFrames,lastRenderedAt,world:{region:regionAt(...player.pos).id,loadedChunks:world.activeChunks.size,blocks:world.blocks.size,revision:world.revision}});
   $("save-transfer").onclick=transferPanel;$("safe-reload").onclick=()=>{if(save())location.reload();else toast("Speichern fehlgeschlagen. Exportiere deinen Stand vor dem Neuladen.");};
   $("back-menu").onclick=menu;
   $("home").onclick = () => {
@@ -646,8 +668,11 @@ function transferPanel(){
  $("apply-import").onclick=()=>{if(!pending)return;importingSave=true;const result=importTransfer(localStorage,pending);if(result.ok)location.reload();else{importingSave=false;$("import-preview").textContent=result.error;}};
  $("back-menu").onclick=menu;
 }
+function equipQuickTool(tool:typeof expansion.tool){
+ expansion.tool=tool;fishing.cancel();equipment();save();
+}
 function showMaterials(){
- openPanel("BAUMATERIAL",`<h2>Woraus baust du?</h2><div class="material-picker">${TYPES.map((b,i)=>`<button data-material="${i}" aria-label="${b} auswählen"><span class="block-icon" style="--block:#${colors[b].toString(16).padStart(6,"0")}"></span>${b}</button>`).join("")}</div>`);
+ openPanel("BAUMATERIAL",`<h2>Woraus baust du?</h2><div class="material-picker">${TYPES.map((b,i)=>`<button data-material="${i}" aria-label="${b} auswählen"><span class="block-icon" style="--block:#${colors[b].toString(16).padStart(6,"0")}"></span>${b}<small>${night.mode==="Kreativ"?"∞":expansion.materials[b]||0}</small></button>`).join("")}</div><p class="hint">Block wählen → grüne Vorschau → Bauen. Rot bedeutet belegt, außer Reichweite oder in deiner Figur.</p>`);
  document.querySelectorAll<HTMLButtonElement>("[data-material]").forEach(b=>b.onclick=()=>{selected=Number(b.dataset.material);materialPage=Math.floor(selected/5);expansion.tool="Bauwerkzeug";equipment();hotbar();save();closePanel();});
 }
 bindTap($("menu"), () => {
@@ -667,12 +692,15 @@ const livingUI = new LivingUI(itemStore,world,{
   equip:name=>{if(TOOLS.includes(name as typeof expansion.tool)){expansion.tool=name as typeof expansion.tool;equipment();}},
   safe:()=>!zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<12),
   challenge:()=>{learning.context=regionAt(...player.pos).id;adventure.challenge();},
+  event:(name,detail)=>discovery.event(name,detail),
 });
 bindTap($("living-menu"),()=>{if(canPlay())livingUI.hub();});
+const discoveryUI=new DiscoveryUI(discovery,{open:openPanel,close:closePanel,save,toast,speech:speak});
 const adventure = new AdventureUI(learning, missions, {
   open: openPanel,
   save,
   near: nearMission,
+  context:()=>regionAt(...player.pos).id,
   toast,
 });
 function nearMission(id: MissionId) {
@@ -900,6 +928,7 @@ function recordCatch(
   expansion.catches = expansion.catches.slice(-500);
   if (disposition === "kept") expansion.angling.kept++;
   else expansion.angling.released++;
+  discovery.event("catch",f.species);
   missions.caught(f.species);
   const complete = reading.catch(f.species);
   const unlocks = updateUnlocks(expansion.angling, expansion.catches.length);
@@ -979,7 +1008,7 @@ $("play").onclick = () => {
     player.pitch = -0.12;
   }
   toast(
-    "Willkommen! Du kannst überall bauen. Folge den Schildern zum See, Wald oder zur BOOM-Zone.",
+    "Auf dem Stein liegt ein Notizbuch. Die Welt und dein nächstes Abenteuer warten draußen.",
   );
 };
 function nearLake() {
@@ -1052,6 +1081,7 @@ function prepareFishing(
 }
 function interact() {
   syncAim();
+  if(noteTarget&&discovery.encounter(noteTarget.id,player.pos)){discoveryUI.read(noteTarget.id);return;}
   if(animalTarget){livingUI.pet(animalTarget);return;}
   if(target){
     const block=world.get(...target);
@@ -1060,7 +1090,7 @@ function interact() {
     if(block==="Werkbank"){livingUI.recipes(false);return;}
     if(block==="Bett"){livingUI.sleep(target);return;}
     if(block==="Schatztruhe"){toast(loot(expansion.living,itemStore,target));save();return;}
-    if(block==="Acker"||expansion.tool==="Hacke"){toast(farm(world,itemStore,target));save();return;}
+    if(block==="Acker"||expansion.tool==="Hacke"){const result=farm(world,itemStore,target);toast(result);if(result.includes("geerntet"))discovery.event("harvest",result.split(" ")[0]);save();return;}
     if(["Tür","Tür offen","Tor","Tor offen"].includes(block||"")){
       if(toggleDoor(world,target,player.pos)){save();toast("Tür oder Tor umgestellt.");}else toast("Halte den Durchgang zum Schließen frei.");return;
     }
@@ -1193,8 +1223,8 @@ bindTap($("jump"), () => {
   if (canPlay()) jump = true;
 });
 bindTap($("zoom"), () => {
-  if (!canPlay()) return;
-  cyclePerspective();
+  if (!started||webglLost) return;
+  cyclePerspective();if(paused)resumeGame();
 });
 bindTap($("attack"),()=>{if(canPlay())attack();});
 bindTap($("word-battle"),()=>{if(canPlay())nightUI.startBattle();});
@@ -1472,7 +1502,7 @@ touch = new TouchControls(
   },
   (x, y) => look(x, y, 0.0035),
 );
-const mobileHUD=new MobileHUD(showMaterials);mobileHUD.settings(expansion.controls);
+const mobileHUD=new MobileHUD(showMaterials,{equipTool:equipQuickTool,eatFood:()=>nightUI.food(),openInventory:showInventory});mobileHUD.settings(expansion.controls);
 let ratio = Math.min(devicePixelRatio, settings.quality),
   viewportDirty = true;
 let landscape = innerWidth > innerHeight;
@@ -1507,6 +1537,7 @@ window.visualViewport?.addEventListener("scroll", keyboardViewport);
 keyboardViewport();
 resize();
 const diagnostics = new URLSearchParams(location.search).has("diagnostics");
+const frameStats=new FrameStats();
 let diagnosticsAt = 0,
   lastRenderedAt=performance.now(),
   renderedFrames = 0,
@@ -1529,6 +1560,7 @@ function frame(now: number) {
 }
 function tickFrame(now:number){
   const realElapsed = Math.max(0,(now - last) / 1000);
+  if(canPlay())frameStats.record(realElapsed);
   const elapsed = Math.min(realElapsed, 0.1);
   last = now;
   if (document.hidden) {
@@ -1552,14 +1584,14 @@ function tickFrame(now:number){
       updateAnimals(expansion.living,world,player.pos,livingAccum);livingAccum=0;
       const found=discover(expansion.living,player.pos);if(found){toast(`Entdeckt: ${found.name}`);save();}
     }
-    missionAccum+=elapsed;if(missionAccum>=1){missionAccum=0;const earned=checkMissions(expansion.living,world);if(earned.length){toast(`Entdeckerpfad geschafft: ${earned.join(", ")}`);save();}}
+    missionAccum+=elapsed;if(missionAccum>=1){missionAccum=0;const chapters=discovery.tick(world,player.pos);if(chapters.length){toast(`Abenteuer: ${chapters.join(", ")}`);save();}const earned=checkMissions(expansion.living,world);if(earned.length){toast(`Entdeckerpfad geschafft: ${earned.join(", ")}`);save();}}
     if(expansion.living.clock>dogAlertAt){const dog=expansion.living.animals.find(a=>a.tame&&a.kind==="Wolf"&&Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<12);if(dog&&zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<10)){toast(`${dog.name||"Dein Wolf"} warnt dich vor nahen Zombies.`);dogAlertAt=expansion.living.clock+20;}}
     if(miningAction){
       if(!target||target.join(",")!==miningAction.cell.join(",")||world.get(...target)!==miningAction.block){miningAction=null;$("mining-progress").hidden=true;}
       else{miningAction.elapsed+=elapsed;$("mining-progress").hidden=false;$("mining-progress").textContent=`${miningAction.block} · ${Math.min(100,Math.round(miningAction.elapsed/miningAction.seconds*100))}%`;heldTools.play("mine");if(miningAction.elapsed>=miningAction.seconds){miningAction=null;$("mining-progress").hidden=true;destroy(true);}}
     }
     const heading=((player.yaw*180/Math.PI%360)+360)%360;
-    $("compass").textContent=["N","W","S","O"][Math.round(heading/90)%4]+` · ${Math.round(player.pos[0])} / ${Math.round(player.pos[2])}`;
+    $("compass").textContent=["N","W","S","O"][Math.round(heading/90)%4]+` · ${Math.min(7,expansion.living.regions.length)}/7`;
     const wasNight=isNight(night.time);
     advanceDay(night,elapsed);
     if(wasNight&&!isNight(night.time)){restoreNightDamage(night);toast("Die Sonne kehrt zurück. Die Nacht ist überstanden.");save();}
@@ -1609,14 +1641,6 @@ function tickFrame(now:number){
     fishView.update(shoal.time);
     chestLid.rotation.x = missions.state("treasure").completed ? -1.15 : 0;
     treasureGold.visible = missions.state("treasure").completed;
-    learningOffer += elapsed;
-    if (learningOffer > learning.interval) {
-      $("learn").classList.add("offer");
-      if (!offered) {
-        toast("Eine neue Challenge wartet – wenn du Lust hast.");
-        offered = true;
-      }
-    }
     const spot = currentSpot(),
       arena = nearBoom();
     const discovered = discoverySpot(player.pos[0], player.pos[2]);
@@ -1728,7 +1752,7 @@ function tickFrame(now:number){
     $("reset-boom").hidden = !arena;
     $("mission-pin").hidden = !reading.active;
     const b=target?world.get(...target):undefined;
-    mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
+    mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
   } else if (!started) {
     camera.position.set(23, 18, 29);
     camera.lookAt(-2, 0, -2);
@@ -1737,6 +1761,8 @@ function tickFrame(now:number){
   for(const cloud of movingClouds)cloud.position.x=cloud.userData.baseX+Math.sin(expansion.living.clock*.015+cloud.position.z)*2;
   if(player.pos[1]<-3)ambient.intensity*=.25;
   livingView.update(expansion.living,camera.position);
+  discoveryView.update(player.pos,expansion.discovery.read);
+  landmarks.update(player.pos,now);
   zombieView.update(zombies);
   defenseView.update(camera.position,isNight(night.time)||player.pos[1]<-3);
   if(canPlay())nightAudio.tick(elapsed,isNight(night.time),zombies.actors.length,settings.sound);
@@ -1777,7 +1803,7 @@ function tickFrame(now:number){
 
   water.update(now);
   fishingWaters.update(now);
-  view.update();
+  view.setFocus(player.pos[0],player.pos[2]);view.update(4);
   view.visibility(camera.position.x,camera.position.z);
   renderer.render(scene, camera);
   lastRenderedAt=now;
@@ -1785,6 +1811,10 @@ function tickFrame(now:number){
   if (diagnostics && now - diagnosticsAt >= 1000) {
     canvas.dataset.performance = JSON.stringify({
       calls: renderer.info.render.calls,
+      frame:frameStats.snapshot(),chunk:view.metrics,streaming:regionStream.metrics,
+      heap:(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory?.usedJSHeapSize??null,
+      activeMeshes:renderer.info.render.calls,activeAnimals:expansion.living.animals.filter(a=>Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<32).length,activeZombies:zombies.actors.filter(z=>z.hp>0).length,
+      discovery:{enabled:expansion.discovery.enabled,notes:expansion.discovery.read,chapters:expansion.discovery.completed,goals:discovery.activeGoals().map(g=>g.id)},
       triangles: renderer.info.render.triangles,
       geometries: renderer.info.memory.geometries,
       textures: renderer.info.memory.textures,

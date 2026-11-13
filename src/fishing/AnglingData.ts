@@ -1,6 +1,6 @@
 import { FISH, fishInfo, type FishName } from "./Fishing";
 
-export type SpotId = "small" | "forest" | "river" | "secret";
+export type SpotId = "small" | "forest" | "river" | "secret" | "great";
 export type RodId = "Stipprute" | "Spinnrute" | "Raubfischrute";
 export type RigId = "Posenmontage" | "Grundmontage";
 export type LineId = "Mono 0,20" | "Geflecht 0,15" | "Stark 0,30";
@@ -63,6 +63,17 @@ export const SPOTS: readonly AnglingSpot[] = [
     shore: { x: 4, z: -15.2 },
     waterY: 0.4,
     depth: 1.8,
+    current: 0,
+  },
+  {
+    id: "great",
+    name: "Großer See",
+    description: "Weites Wasser mit Schilfufer und einer kleinen Insel. Am nördlichen Ufer ziehen Friedfische und Barsche vorbei.",
+    center: { x: -110, z: -110 },
+    radius: { x: 40, z: 30 },
+    shore: { x: -110, z: -78 },
+    waterY: 0.35,
+    depth: 3,
     current: 0,
   },
 ] as const;

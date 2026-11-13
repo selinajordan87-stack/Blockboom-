@@ -2,9 +2,9 @@ import { World, MIN_Y, MAX_Y, LIMIT, type Cell, type Block } from "../world/Worl
 import { collides, solid } from "../nightfall/Defense";
 import { type LivingState, type Animal, type CropKind, CROPS } from "./State";
 import { ItemStore } from "./Items";
-import { regionAt } from "./Regions";
+import { regionAt, CAVE_ENTRANCES } from "./Regions";
 export const GROWTH:Record<CropKind,number>={Weizen:120,Karotte:150,Kartoffel:180,Kürbis:210};
-export const stage=(s:LivingState,c:{kind:CropKind;planted:number})=>Math.min(3,Math.floor((s.clock-c.planted)/GROWTH[c.kind]*3));
+export const stage=(s:LivingState,c:{kind:CropKind;planted:number;growthOffset?:number})=>Math.max(0,Math.min(3,Math.floor((s.clock-c.planted+(c.growthOffset||0))/GROWTH[c.kind]*3)));
 export function farm(world:World,store:ItemStore,cell:Cell){
  const s=store.expansion.living,b=world.get(...cell),key=cell.join(",");
  const crop=s.crops.find(c=>c.cell.join(",")===key);
@@ -40,6 +40,9 @@ export function updateAnimals(s:LivingState,w:World,player:Cell,dt:number){
   let distance=Math.hypot(a.pos[0]-player[0],a.pos[2]-player[2]);
   if(a.tame&&a.mode==="Folgen"&&distance>22){const p=safeAnimalSpot(w,[player[0]+1,player[1],player[2]+1]);if(p){a.pos=p;distance=Math.hypot(p[0]-player[0],p[2]-player[2]);}}
   if(distance>30)continue;
+  // New wild animals settle onto their streamed surface. Pets keep their saved
+  // underground position; a distant unloaded chunk never teleports wildlife.
+  if(!a.tame){const floor=animalFloor(w,a.pos[0],a.pos[2],MAX_Y);if(floor!==null&&!collides(w,[a.pos[0],floor+.001,a.pos[2]],.75,.24))a.pos[1]=floor+.001;}
   // Also recover waiting/sleeping pets and new wildlife inside an old building.
   if(collides(w,a.pos,.75,.24)){const p=safeAnimalSpot(w,a.tame?a.home:a.pos)||safeAnimalSpot(w,player);if(p)a.pos=p;}
   a.hunger=Math.max(0,a.hunger-dt*.02);a.phase+=dt;
@@ -78,16 +81,22 @@ export function checkMissions(s:LivingState,w:World){
    }
    return false;
  });
- const success=[bed,s.animals.some(a=>a.tame&&a.name.trim().length>0),s.regions.includes("cave")&&s.mined.length>=3,s.blueprint,s.looted.includes("49,-5,-33")];
- const earned:string[]=[];for(let i=0;i<EXPLORER.length;i++)if(success[i]&&!s.completed.includes(EXPLORER[i].id)&&(i===0||s.completed.includes(EXPLORER[i-1].id))){s.completed.push(EXPLORER[i].id);earned.push(EXPLORER[i].name);s.bag.Bergkristall=(s.bag.Bergkristall||0)+1;}return earned;
+ const success=[bed,s.animals.some(a=>a.tame&&a.name.trim().length>0),s.regions.includes("cave")&&s.mined.length>=3,s.blueprint,["49,-5,-33","159,-12,-90"].some(id=>s.looted.includes(id))];
+ const earned:string[]=[];for(let i=0;i<EXPLORER.length;i++)if(success[i]&&!s.completed.includes(EXPLORER[i].id)){s.completed.push(EXPLORER[i].id);earned.push(EXPLORER[i].name);s.bag.Bergkristall=(s.bag.Bergkristall||0)+1;}return earned;
 }
-export function discover(s:LivingState,p:Cell){const r=regionAt(...p);if(!s.regions.includes(r.id)){s.regions.push(r.id);return r;}return null;}
+export function discover(s:LivingState,p:Cell){
+ const tx=Math.floor(p[0]/16),tz=Math.floor(p[2]/16);
+ for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){const x=tx+dx,z=tz+dz,id=`${x},${z}`;if(x*16<LIMIT&&(x+1)*16>-LIMIT&&z*16<LIMIT&&(z+1)*16>-LIMIT&&!s.explored.includes(id))s.explored.push(id);}
+ for(const entrance of CAVE_ENTRANCES)if(Math.hypot(p[0]-entrance.position[0],p[1]-entrance.position[1],p[2]-entrance.position[2])<8&&!s.entrances.includes(entrance.id))s.entrances.push(entrance.id);
+ const r=regionAt(...p);if(!s.regions.includes(r.id)){s.regions.push(r.id);return r;}return null;
+}
 export function mining(block:Block,tool:string){const tier=tool==="Eisenspitzhacke"?3:tool==="Kupferspitzhacke"?2:tool==="Spitzhacke"?1:0;
  const required=block==="Golderz"?3:block==="Eisenerz"?2:1;
  return {allowed:tier>=required,seconds:Math.max(.35,2.4-tier*.55),required};}
 export function loot(s:LivingState,store:ItemStore,cell:Cell){const id=cell.join(",");if(s.looted.includes(id))return "Hier hast du bereits alles gefunden.";
- if(!["41,1,28","49,-5,-33"].includes(id))return "Diese Truhe enthält keinen alten Fund.";
- if(id==="49,-5,-33"&&!s.blueprint)return "Ein Zeichen der alten Schmiede fehlt. Suche dort den Bauplan.";
+ const forge=["41,1,28","102,1,88"].includes(id),treasure=["49,-5,-33","159,-12,-90"].includes(id);
+ if(!forge&&!treasure)return "Diese Truhe enthält keinen alten Fund.";
+ if(treasure&&!s.blueprint)return "Ein Zeichen der alten Schmiede fehlt. Suche dort den Bauplan.";
  s.looted.push(id);
- if(id==="41,1,28"){s.blueprint=true;store.add("Bauplan",1);store.add("Altes Buch",1);return "Bauplan gefunden: Unter dem Berg, hinter Kupfer, liegt die Kristallkammer. Die Schmiede wurde nach einem Sturm verlassen.";}
+ if(forge){s.blueprint=true;store.add("Bauplan",1);store.add("Altes Buch",1);return "Bauplan gefunden: Unter dem Berg, hinter Kupfer, liegt die Kristallkammer. Die Schmiede wurde nach einem Sturm verlassen. Das Tagebuch an der Werkbank erzählt mehr.";}
  store.add("Bergkristall",3);store.add("Gold",2);return "Bergschatz: drei Kristalle und zwei Goldbarren! Die alten Bergleute haben ihre Spur hinterlassen.";}

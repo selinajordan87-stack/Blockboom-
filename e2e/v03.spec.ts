@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import {menuPage} from "./ui-helper";
+import {menuPage,shortcut} from "./ui-helper";
 const artifactDir = process.env.BLOCKBOOM_ARTIFACT_DIR || "artifacts";
 
 const legacySave = (position = [1, 1.01, 9], pitch = -0.65) => ({
@@ -79,8 +79,8 @@ test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await seed(page);
-  await expect(page.locator(".eyebrow")).toContainText("v0.6.1");
-  await page.locator("#tool-toggle").click();
+  await expect(page.locator(".eyebrow")).toContainText("v0.7.0");
+  await shortcut(page,"tool-toggle");
   await expect(page.locator("[data-tool]")).toHaveCount(14);
   await page.locator('[data-tool="Spitzhacke"]').click();
   await expect(page.locator("#world")).toHaveAttribute(
@@ -164,9 +164,9 @@ for (const viewport of [
     });
     const page = await context.newPage();
     await seed(page);
-    await page.locator("#zoom").tap();
+    await shortcut(page,"zoom");
     await expect(page.locator("#zoom")).toHaveAttribute("aria-pressed", "true");
-    await page.locator("#tool-toggle").tap();
+    await shortcut(page,"tool-toggle");
     await page.locator('[data-tool="Axt"]').tap();
     await page.locator("#break").tap();
     await expect(page.locator("#modal")).toBeHidden();

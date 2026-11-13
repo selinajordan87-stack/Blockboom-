@@ -12,12 +12,13 @@
 .material-picker .block-icon{display:inline-block;margin-right:8px;vertical-align:middle;}
 #import-file{display:block;width:100%;margin-top:9px;}
 .mobile-game #hud header{inset:calc(var(--safe-top) + 10px) calc(var(--safe-right) + 12px) auto auto;width:auto;}
-.mobile-game .brand,.mobile-game #living-menu,.mobile-game #bag,.mobile-game .location,.mobile-game #compass,.mobile-game #mission-pin,.mobile-game #night-actions,.mobile-game #context,.mobile-game footer,.mobile-game .touch-actions,.mobile-game .mobile-help{display:none!important;}
+.mobile-game .brand,.mobile-game #living-menu,.mobile-game #bag,.mobile-game .location,.mobile-game #mission-pin,.mobile-game #night-actions,.mobile-game #context,.mobile-game footer,.mobile-game .touch-actions,.mobile-game .mobile-help{display:none!important;}
 .mobile-game #save-state{display:none;}
 .mobile-game #save-state.save-error{display:block;position:fixed;left:calc(var(--safe-left) + 12px);top:calc(var(--safe-top) + 42px);font-size:11px;color:#ffddb4;background:#402c25e8;padding:5px 8px;border-radius:7px;}
 .mobile-game #menu{min-width:44px;min-height:44px;width:44px;height:44px;padding:6px;font-size:22px;}
 .mobile-game #hud button{background:rgb(15 39 36 / var(--control-opacity));border:1px solid #edf6e671;box-shadow:none;backdrop-filter:none;}
 .mobile-game #survival-hud{left:calc(var(--safe-left) + 12px);top:calc(var(--safe-top) + 10px);transform:none;padding:5px 8px;gap:8px;font-size:11px;border:0;background:#12322b8a;border-radius:8px;height:26px;}
+.mobile-game #compass{display:block;position:absolute;left:50%;top:calc(var(--safe-top) + 10px);transform:translateX(-50%);max-width:calc(100% - var(--safe-left) - var(--safe-right) - 220px);height:24px;padding:5px 9px;border-radius:8px;overflow:hidden;white-space:nowrap;font-size:10px;line-height:14px;letter-spacing:.3px;pointer-events:none;background:#12322b7a;color:#fff9e8;}
 .mobile-game #day-label{font-size:0;}.mobile-game #day-label::after{content:attr(data-phase);font-size:12px;}.mobile-game #wave-label{font-size:10px;}
 .mobile-game #look{display:block;left:50%;right:0;top:0;bottom:0;width:auto;height:auto;pointer-events:auto;z-index:1;}
 .mobile-game #joystick{display:flex;width:var(--joystick-size);height:var(--joystick-size);left:calc(var(--safe-left) + 14px);bottom:calc(var(--safe-bottom) + 14px);background:rgb(15 39 36 / var(--control-opacity));border:1px solid #f3f8e861;z-index:5;}
@@ -28,11 +29,13 @@
 .mobile-game #break{grid-column:1;grid-row:1;}.mobile-game #interact{grid-column:2;grid-row:1;}.mobile-game #place,.mobile-game #attack{grid-column:1;grid-row:2;}.mobile-game #jump{grid-column:2;grid-row:2;}
 .mobile-game #mobile-actions #fish-action{grid-column:1/-1;grid-row:1;width:104px;font-size:12px;margin:0;}
 .mobile-game .fishing-actions #interact{grid-column:1;grid-row:2;}
-.mobile-game #mobile-quickbar{position:absolute;left:calc(var(--safe-left) + (100% - var(--safe-left) - var(--safe-right))/2);bottom:calc(var(--safe-bottom) + 14px);transform:translateX(-50%);display:flex;gap:5px;padding:4px;border-radius:13px;background:#12322b4d;z-index:5;pointer-events:auto;}
-.mobile-game #mobile-quickbar button{width:56px;height:48px;min-height:48px;min-width:56px;padding:3px;border-radius:9px;font-size:20px;}
-.mobile-game #mobile-quickbar small,.mobile-game #zoom::after,.mobile-game #tool-toggle::after{display:block;font-size:9px;line-height:1.2;margin-top:3px;color:#f8f3de;font-weight:normal;}
+.mobile-game #mobile-quickbar{position:absolute;left:calc(var(--safe-left) + (100% - var(--safe-left) - var(--safe-right))/2);bottom:calc(var(--safe-bottom) + 14px);transform:translateX(-50%);display:flex;gap:3px;padding:4px;border-radius:11px;background:#12322b4d;z-index:5;pointer-events:auto;}
+.mobile-game #mobile-quickbar button{position:relative;width:44px;height:44px;min-height:44px;min-width:44px;padding:3px;border-radius:8px;font-size:22px;line-height:1;}
+.mobile-game #mobile-quickbar button[aria-pressed="true"]{border-color:#ffe3a6;background:rgb(70 83 47 / var(--control-opacity));box-shadow:inset 0 0 0 1px #ffe3a6;}
+.mobile-game #mobile-quickbar small{display:none;}
+.mobile-game #mobile-quickbar .quick-count{position:absolute;right:3px;bottom:3px;font-size:9px;line-height:1;color:#fff8df;text-shadow:0 1px 2px #102b25;}
 .mobile-game #tool-toggle{font-size:0!important;max-width:none;}.mobile-game #tool-toggle::before{font-size:21px;display:block;margin:0;}.mobile-game #tool-toggle::after{content:attr(data-short);}
-.mobile-game #zoom::after{content:attr(data-label);}.mobile-game #selected-material .block-icon{display:block;width:18px;height:18px;margin:0 auto;}
+.mobile-game #selected-material .block-icon{display:block;width:20px;height:20px;margin:0 auto;}
 .mobile-game #tool-palette{bottom:calc(var(--safe-bottom) + 78px);max-height:calc(var(--usable-height,100dvh) - var(--safe-top) - var(--safe-bottom) - 92px);width:min(380px,calc(100% - var(--safe-left) - var(--safe-right) - 24px));grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px;}
 .mobile-game #tool-palette button{min-width:0;font-size:11px;padding:8px 4px;overflow-wrap:anywhere;background:#1e463def;}
 .mobile-game #angling-hud{left:auto;right:calc(var(--safe-right) + 14px);bottom:calc(var(--safe-bottom) + 126px);transform:none;width:104px;padding:7px 6px;border-radius:10px;pointer-events:none;background:#102d27a6;}
@@ -49,3 +52,4 @@
 .mobile-game.handed-left #angling-hud{right:auto;left:calc(var(--safe-left) + 14px);}
 .mobile-game:has(#modal:not([hidden])) #mobile-actions,.mobile-game:has(#modal:not([hidden])) #mobile-quickbar,.mobile-game:has(#modal:not([hidden])) #joystick{visibility:hidden;}
 @media(orientation:portrait){.mobile-game #joystick,.mobile-game #mobile-actions{bottom:calc(var(--safe-bottom) + 80px);}.mobile-game #angling-hud{bottom:calc(var(--safe-bottom) + 192px);}.mobile-game .control-settings{grid-template-columns:1fr;}.mobile-game .menu-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:430px){.mobile-game #mobile-quickbar{max-width:calc(100% - var(--safe-left) - var(--safe-right) - 16px);gap:2px;padding:3px;}.mobile-game #mobile-quickbar button{width:40px;min-width:40px;height:44px;flex:1 1 40px;}.mobile-game #compass{left:auto;right:calc(var(--safe-right) + 64px);transform:none;max-width:calc(100% - var(--safe-left) - var(--safe-right) - 180px);font-size:9px;padding-inline:5px;}}

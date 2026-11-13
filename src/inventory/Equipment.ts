@@ -3,6 +3,7 @@ import { FISH, type FishName } from "../fishing/Fishing";
 import { freshNight, readNight, type NightState } from "../nightfall/State";
 import { freshLiving, readLiving, type LivingState } from "../living/State";
 import {defaultCamera,defaultControls,readCamera,readControls,type CameraSettings,type ControlSettings} from "../player/CameraRig";
+import {freshDiscovery,readDiscovery,type DiscoveryState} from "../discovery/State";
 import {
   BAITS,
   SPOTS,
@@ -54,6 +55,7 @@ export interface Expansion {
   angling: AnglingProgress;
   nightfall: NightState;
   living: LivingState;
+  discovery: DiscoveryState;
 }
 export const defaultExpansion = (edition: 1 | 2 | 3 | 4 = 1): Expansion => ({
   version: 1,
@@ -70,6 +72,7 @@ export const defaultExpansion = (edition: 1 | 2 | 3 | 4 = 1): Expansion => ({
   angling: defaultAngling(),
   nightfall: freshNight(),
   living: freshLiving(),
+  discovery:freshDiscovery(),
 });
 export function readExpansion(raw: unknown): Expansion {
   const d = defaultExpansion();
@@ -146,5 +149,6 @@ export function readExpansion(raw: unknown): Expansion {
   d.camera=readCamera(r.camera);d.controls=readControls(r.controls);
   d.nightfall = readNight(r.nightfall);
   d.living = readLiving(r.living);
+  d.discovery=readDiscovery(r.discovery);
   return d;
 }

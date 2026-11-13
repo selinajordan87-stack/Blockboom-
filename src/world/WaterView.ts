@@ -33,7 +33,9 @@ export class WaterView {
     );
     const wide = edition >= 2;
     this.group.position.set(wide ? -11 : -9.8, 0, wide ? -6 : -4.9);
-    this.group.scale.set(wide ? 8.3 : 6.4, wide ? 7.4 : 6.15, 1);
+    // These children already lie in XZ. Scaling world Y distorted the water
+    // into a two-block ribbon floating above the lake instead of filling it.
+    this.group.scale.set(wide ? 8.3 : 6.4, 1, wide ? 7.4 : 6.15);
     this.surface.rotation.x = this.depth.rotation.x = -Math.PI / 2;
     this.surface.position.y = this.baseY;
     this.depth.position.y = this.baseY - 0.08;

@@ -42,7 +42,6 @@ export class FishView {
       mesh.name = `Fischteil ${part}`;
       mesh.userData.part = part;
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
-      mesh.boundingSphere = new T.Sphere(new T.Vector3(0, 0, 0), 38);
       this.meshes.set(part, mesh);
       this.group.add(mesh);
     }
@@ -54,7 +53,6 @@ export class FishView {
     this.eyes.name = "Fischaugen";
     this.eyes.userData.part = "eyes";
     this.eyes.instanceMatrix.setUsage(T.DynamicDrawUsage);
-    this.eyes.boundingSphere = new T.Sphere(new T.Vector3(0, 0, 0), 38);
     this.group.add(this.eyes);
     this.showcase.name = "3D-Fangansicht";
     this.showcase.visible = false;
@@ -73,6 +71,9 @@ export class FishView {
       }
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+      // Instances now inhabit distant streamed regions. A fixed sphere around
+      // the spawn point would cull their rendering and reject raycasts there.
+      mesh.computeBoundingSphere();
     }
     for (let index = 0; index < this.shoal.actors.length; index++) {
       const fish = this.shoal.actors[index];
@@ -82,6 +83,7 @@ export class FishView {
       }
     }
     this.eyes.instanceMatrix.needsUpdate = true;
+    this.eyes.computeBoundingSphere();
     if (this.showcase.visible) {
       this.showcase.rotation.y = Math.sin(time * 0.7) * 0.28;
       this.showcase.rotation.x = Math.sin(time * 0.4) * 0.04;

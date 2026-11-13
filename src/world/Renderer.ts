@@ -185,6 +185,14 @@ type ChunkData = {
   i: number[];
 };
 const spatialId = (cx: number, cz: number) => `${cx},${cz}`;
+const emptyData = ():ChunkData => ({p:[],n:[],c:[],uv:[],i:[]});
+type ChunkBuild = {id:string;cx:number;cz:number;column:number;solid:ChunkData;glass:ChunkData;cpuMs:number};
+export interface WorldRenderMetrics {
+  /** CPU time spent in the latest update, rather than elapsed time across frames. */
+  lastBuildMs:number;maxBuildMs:number;totalBuildMs:number;
+  lastChunkMs:number;maxChunkMs:number;queue:number;rebuilt:number;
+  columns:number;restarts:number;activeMeshes:number;currentChunk:string|null;
+}
 
 export class WorldView {
   group = new T.Group();
@@ -199,67 +207,96 @@ export class WorldView {
   });
   revision = -1;
   private meshes = new Map<string, T.Mesh>();
-  constructor(public world: World, scene: T.Scene) {
+  private knownChunks = new Set<string>();
+  private pending = new Set<string>();
+  private current:ChunkBuild|undefined;
+  private initialized=false;
+  private focusX=0;
+  private focusZ=17;
+  private visibleDistance=64;
+  private faceColors=Object.fromEntries(Object.entries(colors).map(([block,color])=>[block,new T.Color(color)])) as Record<Block,T.Color>;
+  private grassSide=new T.Color(0x8d8c55);
+  readonly metrics:WorldRenderMetrics={lastBuildMs:0,maxBuildMs:0,totalBuildMs:0,lastChunkMs:0,maxChunkMs:0,queue:0,rebuilt:0,columns:0,restarts:0,activeMeshes:0,currentChunk:null};
+  constructor(public world: World, scene: T.Scene, private clock:()=>number=()=>performance.now()) {
     this.group.name = "chunked voxel world";
     scene.add(this.group);
   }
-  update() {
-    if (this.revision === this.world.revision) return;
-    const affected = new Set<string>();
+  /** Existing callers can drain synchronously. Gameplay passes its small frame budget. */
+  update(budgetMs=Infinity) {
+    this.metrics.lastBuildMs=0;this.metrics.columns=0;
+    if(this.revision===this.world.revision&&!this.current&&!this.pending.size)return;
+    const started=this.clock();
+    if(this.revision!==this.world.revision)this.collectChanges();
+    const budget=Number.isNaN(budgetMs)?0:Math.max(0,budgetMs);
+    while(budget>0&&(budget===Infinity||this.clock()-started<budget)){
+      if(!this.current){
+        const id=this.nextChunk();if(id===undefined)break;
+        const [cx,cz]=id.split(",").map(Number);
+        this.current={id,cx,cz,column:0,solid:emptyData(),glass:emptyData(),cpuMs:0};
+      }
+      const job=this.current,partStarted=this.clock();
+      // One column is the smallest interruptible terrain unit. Both layers share
+      // the same scan; expensive second scans of buried blocks are avoided.
+      const x=job.cx*CHUNK+Math.floor(job.column/CHUNK),z=job.cz*CHUNK+job.column%CHUNK;
+      for(let y=MIN_Y;y<=MAX_Y;y++){
+        const block=this.world.get(x,y,z);
+        if(block&&!special(block))this.blockFaces(block==="Glas"?job.glass:job.solid,x,y,z,block);
+      }
+      job.column++;this.metrics.columns++;
+      if(job.column===CHUNK*CHUNK){
+        this.finish(job);this.current=undefined;
+        job.cpuMs+=this.clock()-partStarted;
+        this.metrics.lastChunkMs=job.cpuMs;this.metrics.maxChunkMs=Math.max(this.metrics.maxChunkMs,job.cpuMs);this.metrics.rebuilt++;
+      }else job.cpuMs+=this.clock()-partStarted;
+    }
+    this.metrics.lastBuildMs=this.clock()-started;
+    this.metrics.maxBuildMs=Math.max(this.metrics.maxBuildMs,this.metrics.lastBuildMs);
+    this.metrics.totalBuildMs+=this.metrics.lastBuildMs;
+    this.syncMetrics();
+  }
+  setFocus(x:number,z:number){if(Number.isFinite(x)&&Number.isFinite(z)){this.focusX=x;this.focusZ=z;}}
+  private syncMetrics(){this.metrics.queue=this.pending.size+(this.current?1:0);this.metrics.currentChunk=this.current?.id||null;this.metrics.activeMeshes=this.meshes.size;}
+  private enqueue(id:string){
+    if(!this.world.activeChunks.has(id))return;
+    if(this.current?.id===id){this.current=undefined;this.metrics.restarts++;}
+    this.pending.add(id);
+  }
+  private collectChanges(){
     for(const [id,mesh]of this.meshes)if(!this.world.activeChunks.has(id.split(":")[0])){
       mesh.geometry.dispose();this.group.remove(mesh);this.meshes.delete(id);
     }
-    if (this.meshes.size === 0) {
-      for (const k of this.world.blocks.keys()) {
-        const [x, , z] = k.split(",").map(Number);
-        affected.add(spatialId(Math.floor(x / CHUNK), Math.floor(z / CHUNK)));
+    for(const id of this.knownChunks)if(!this.world.activeChunks.has(id))this.knownChunks.delete(id);
+    for(const id of this.pending)if(!this.world.activeChunks.has(id))this.pending.delete(id);
+    if(this.current&&!this.world.activeChunks.has(this.current.id))this.current=undefined;
+    if(!this.initialized){
+      for(const id of this.world.activeChunks)this.pending.add(id);
+      this.initialized=true;
+    }else{
+      // v0.7 World records chunk identities at mutation time. The cell fallback
+      // keeps this renderer compatible with older World adapters and tests.
+      const dirtyChunks=(this.world as World&{dirtyChunks?:Set<string>}).dirtyChunks;
+      if(dirtyChunks?.size){for(const id of dirtyChunks)this.enqueue(id);}
+      else for(const key of this.world.dirty){
+        const [x,,z]=key.split(",").map(Number),cx=Math.floor(x/CHUNK),cz=Math.floor(z/CHUNK);
+        this.enqueue(spatialId(cx,cz));
+        if(x%CHUNK===0)this.enqueue(spatialId(cx-1,cz));
+        if(((x%CHUNK)+CHUNK)%CHUNK===CHUNK-1)this.enqueue(spatialId(cx+1,cz));
+        if(z%CHUNK===0)this.enqueue(spatialId(cx,cz-1));
+        if(((z%CHUNK)+CHUNK)%CHUNK===CHUNK-1)this.enqueue(spatialId(cx,cz+1));
       }
-    } else {
-      for (const k of this.world.dirty) {
-        const [x, , z] = k.split(",").map(Number);
-        for (const [dx, dz] of [
-          [0, 0],
-          [1, 0],
-          [-1, 0],
-          [0, 1],
-          [0, -1],
-        ] as const)
-          affected.add(
-            spatialId(
-              Math.floor((x + dx) / CHUNK),
-              Math.floor((z + dz) / CHUNK),
-            ),
-          );
-      }
-    }
-    for (const id of affected) {
-      if(!this.world.activeChunks.has(id))continue;
-      const [cx, cz] = id.split(",").map(Number);
-      this.rebuild(cx, cz, false);
-      this.rebuild(cx, cz, true);
+      for(const id of this.world.activeChunks)if(!this.knownChunks.has(id)&&this.current?.id!==id)this.pending.add(id);
     }
     this.world.dirty.clear();
-    this.revision = this.world.revision;
+    (this.world as World&{dirtyChunks?:Set<string>}).dirtyChunks?.clear();
+    this.revision=this.world.revision;
   }
-  private rebuild(cx: number, cz: number, glassLayer: boolean) {
-    const id = `${spatialId(cx, cz)}:${glassLayer ? "glass" : "solid"}`;
-    const previous = this.meshes.get(id);
-    if (previous) {
-      previous.geometry.dispose();
-      this.group.remove(previous);
-      this.meshes.delete(id);
-    }
-    const data: ChunkData = { p: [], n: [], c: [], uv: [], i: [] };
-    const minX = cx * CHUNK;
-    const minZ = cz * CHUNK;
-    for (let x = minX; x < minX + CHUNK; x++)
-      for (let z = minZ; z < minZ + CHUNK; z++)
-        for (let y = MIN_Y; y <= MAX_Y; y++) {
-          const block = this.world.get(x, y, z);
-          if (!block || special(block) || (block === "Glas") !== glassLayer) continue;
-          this.blockFaces(data, x, y, z, block);
-        }
-    if (!data.i.length) return;
+  private nextChunk(){
+    let closest:string|undefined,nearest=Infinity;
+    for(const id of this.pending){const [cx,cz]=id.split(",").map(Number),distance=(cx*CHUNK+CHUNK/2-this.focusX)**2+(cz*CHUNK+CHUNK/2-this.focusZ)**2;if(distance<nearest){nearest=distance;closest=id;}}
+    if(closest!==undefined)this.pending.delete(closest);return closest;
+  }
+  private layer(data:ChunkData,job:ChunkBuild,glassLayer:boolean){
+    if(!data.i.length)return undefined;
     const geometry = new T.BufferGeometry();
     geometry.setAttribute("position", new T.Float32BufferAttribute(data.p, 3));
     geometry.setAttribute("normal", new T.Float32BufferAttribute(data.n, 3));
@@ -271,10 +308,22 @@ export class WorldView {
       geometry,
       glassLayer ? this.glass : this.material,
     );
+    const id=`${job.id}:${glassLayer?"glass":"solid"}`;
     mesh.name = id;
-    mesh.userData.center=[cx*CHUNK+6,cz*CHUNK+6];
-    this.meshes.set(id, mesh);
-    this.group.add(mesh);
+    mesh.userData.center=[job.cx*CHUNK+6,job.cz*CHUNK+6];
+    mesh.visible=Math.hypot(mesh.userData.center[0]-this.focusX,mesh.userData.center[1]-this.focusZ)<this.visibleDistance;
+    return mesh;
+  }
+  private finish(job:ChunkBuild){
+    const solid=this.layer(job.solid,job,false),glass=this.layer(job.glass,job,true);
+    // Keep the previous whole chunk visible until both replacement layers are
+    // ready, then swap them in the same task so partial builds never make holes.
+    for(const [layer,mesh]of [["solid",solid],["glass",glass]] as const){
+      const id=`${job.id}:${layer}`,previous=this.meshes.get(id);
+      if(previous){previous.geometry.dispose();this.group.remove(previous);this.meshes.delete(id);}
+      if(mesh){this.meshes.set(id,mesh);this.group.add(mesh);}
+    }
+    this.knownChunks.add(job.id);
   }
   private blockFaces(
     data: ChunkData,
@@ -291,12 +340,8 @@ export class WorldView {
       );
       if (neighbor && !special(neighbor) && (neighbor !== "Glas" || block === "Glas")) continue;
       const offset = data.p.length / 3;
-      let color = new T.Color(colors[block]);
-      if (block === "Gras" && face.n[1] === 0)
-        color = new T.Color(0x8d8c55);
-      color.multiplyScalar(
-        face.shade * (0.97 + ((x * 13 + z * 7 + y * 3) & 7) * 0.007),
-      );
+      const color=block==="Gras"&&face.n[1]===0?this.grassSide:this.faceColors[block];
+      const shade=face.shade*(0.97+((x*13+z*7+y*3)&7)*0.007);
       const atlasTile = tileFor(block, face.n);
       const column = atlasTile % ATLAS_COLUMNS;
       const row = Math.floor(atlasTile / ATLAS_COLUMNS);
@@ -306,7 +351,7 @@ export class WorldView {
         const vertex = face.v[j];
         data.p.push(x + vertex[0], y + vertex[1], z + vertex[2]);
         data.n.push(...face.n);
-        data.c.push(color.r, color.g, color.b);
+        data.c.push(color.r*shade,color.g*shade,color.b*shade);
         data.uv.push(
           (column + uvCorners[j][0]) / ATLAS_COLUMNS +
             (uvCorners[j][0] ? -paddingU : paddingU),
@@ -327,10 +372,12 @@ export class WorldView {
   dispose() {
     for (const mesh of this.meshes.values()) mesh.geometry.dispose();
     this.meshes.clear();
+    this.group.clear();
+    this.pending.clear();this.knownChunks.clear();this.current=undefined;this.syncMetrics();
     this.material.dispose();
     this.glass.dispose();
     this.atlas.dispose();
     this.group.removeFromParent();
   }
-  visibility(x:number,z:number){for(const mesh of this.meshes.values()){const [cx,cz]=mesh.userData.center;mesh.visible=Math.hypot(cx-x,cz-z)<48;}}
+  visibility(x:number,z:number,distance=64){this.setFocus(x,z);this.visibleDistance=distance;for(const mesh of this.meshes.values()){const [cx,cz]=mesh.userData.center;mesh.visible=Math.hypot(cx-x,cz-z)<distance;}}
 }

@@ -14,6 +14,7 @@ interface Host {
   save: () => boolean;
   near: (id: MissionId) => boolean;
   toast: (text: string) => void;
+  context?:()=>string;
 }
 const $ = (id: string) => document.getElementById(id)!;
 export class AdventureUI {
@@ -74,7 +75,7 @@ export class AdventureUI {
           : "<p>Kehre zum Auftraggeber zurück, um die Belohnung zu holen.</p>";
       else if (id === "treasure" && !this.host.near(id))
         content +=
-          "<p>Folge dem Schild „Entdeckerpfad“ zur Kiste. Dort kannst du die Rätsel lösen.</p>";
+          "<p>Suche die kleine Kiste am Felsenpfad nördlich der Startwiese. Dort kannst du die Rätsel lösen.</p>";
       else {
         const prompts =
           id === "wood"
@@ -172,11 +173,13 @@ export class AdventureUI {
   private form(prompt: string) {
     return `<form id="answer-form"><label for="learning-answer">${prompt}</label><input id="learning-answer" name="answer" type="text" maxlength="60" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="done"><button type="submit" class="primary" id="answer-submit">Prüfen</button></form>`;
   }
-  challenge() {
+  challenge(shortWords=false) {
     clearInterval(this.slowTimer);
+    this.engine.context=shortWords?"":this.engine.context||this.host.context?.()||"meadow";
     const c = this.engine.select();
     this.save();
     this.renderChallenge(c);
+    const brief=document.createElement("button");brief.id="short-word-exercise";brief.textContent="Freiwillige kurze Wortübung";brief.onclick=()=>this.challenge(true);$("panel-content").append(brief);
   }
   private renderChallenge(c: Challenge) {
     let solved = false;

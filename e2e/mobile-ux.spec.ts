@@ -1,6 +1,6 @@
 import {test,expect,type Page} from "@playwright/test";
 import {defaultExpansion} from "../src/inventory/Equipment";
-import {menuPage,shortcut} from "./ui-helper";
+import {menuPage,shortcut,shortWordExercise} from "./ui-helper";
 import {landFish} from "./fishing-helper";
 const base=(position=[0,1.01,17],yaw=0,pitch=-.12)=>({version:1,position,yaw,pitch,changes:{} as Record<string,string|null>,fish:{Rotauge:2,Flussbarsch:1,Hecht:0},progress:{completedMissions:[],repetitions:0,successfulAnswers:0,voluntaryHints:0},missionActive:false,settings:{sound:false,quality:1},extension:defaultExpansion(4)});
 async function seed(page:Page,s=base()){
@@ -13,17 +13,17 @@ for(const viewport of [{width:667,height:375},{width:844,height:390},{width:932,
  const context=await browser.newContext({viewport,isMobile:true,hasTouch:true}),page=await context.newPage();const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));await seed(page);
  await page.evaluate(()=>{document.documentElement.style.setProperty("--safe-left","44px");document.documentElement.style.setProperty("--safe-right","44px");document.documentElement.style.setProperty("--safe-bottom","21px");});
  for(const id of ["bag","living-menu","tackle","learn","journal","context","night-actions"])await expect(page.locator(`#${id}`)).toBeHidden();
- expect(await page.locator("#mobile-quickbar button").count()).toBeLessThanOrEqual(6);
- const layout=await page.evaluate(()=>{const ids=["joystick","mobile-actions","mobile-quickbar","menu","survival-hud"],r=ids.map(id=>({id,rect:document.getElementById(id)!.getBoundingClientRect()}));return {overflow:document.documentElement.scrollWidth>innerWidth,rects:r.map(({id,rect:b})=>({id,x:b.x,y:b.y,right:b.right,bottom:b.bottom,w:b.width,h:b.height})),overlap:r.some((a,i)=>r.slice(i+1).some(b=>a.rect.x<b.rect.right&&a.rect.right>b.rect.x&&a.rect.y<b.rect.bottom&&a.rect.bottom>b.rect.y))};});
+ expect(await page.locator("#mobile-quickbar button").count()).toBe(6);await expect(page.locator("#compass")).toBeVisible();
+ const layout=await page.evaluate(()=>{const ids=["joystick","mobile-actions","mobile-quickbar","menu","survival-hud","compass"],r=ids.map(id=>({id,rect:document.getElementById(id)!.getBoundingClientRect()}));return {overflow:document.documentElement.scrollWidth>innerWidth,rects:r.map(({id,rect:b})=>({id,x:b.x,y:b.y,right:b.right,bottom:b.bottom,w:b.width,h:b.height})),overlap:r.some((a,i)=>r.slice(i+1).some(b=>a.rect.x<b.rect.right&&a.rect.right>b.rect.x&&a.rect.y<b.rect.bottom&&a.rect.bottom>b.rect.y))};});
  expect(layout.overflow).toBe(false);expect(layout.overlap).toBe(false);for(const b of layout.rects){expect(b.x).toBeGreaterThanOrEqual(44);expect(b.right).toBeLessThanOrEqual(viewport.width-44);expect(b.bottom).toBeLessThanOrEqual(viewport.height-21);}
  const joystick=(await page.locator("#joystick").boundingBox())!,stick=(await page.locator("#stick").boundingBox())!;expect(stick.x+stick.width/2).toBeCloseTo(joystick.x+joystick.width/2,0);expect(stick.y+stick.height/2).toBeCloseTo(joystick.y+joystick.height/2,0);
- await page.screenshot({path:`artifacts/v061/after/${viewport.width}-safe.png`});expect(errors).toEqual([]);await context.close();
+ await page.screenshot({path:`artifacts/v07/regression/${viewport.width}-safe.png`});expect(errors).toEqual([]);await context.close();
 });
 
 test("Third Person zeigt die Figur, erhöht echte Kameradistanz und speichert die Auswahl",async({browser})=>{
- const context=await browser.newContext({viewport:{width:844,height:390},isMobile:true,hasTouch:true}),page=await context.newPage();await seed(page);await page.locator("#zoom").tap();await expect.poll(async()=>(await metrics(page)).camera.avatar).toBe(true);
- const first=await metrics(page);expect(first.fov).toBe(70);expect(first.camera.actualDistance).toBeGreaterThan(3.8);await page.locator("#zoom").tap();await expect.poll(async()=>(await metrics(page)).camera.actualDistance).toBeGreaterThan(5.8);const farther=await metrics(page);expect(farther.camera.position).not.toEqual(first.camera.position);expect(farther.fov).toBe(70);
- await page.screenshot({path:"artifacts/v061/after/third-person.png"});let s=await saved(page);expect(s.extension.camera).toMatchObject({perspective:"third",distance:6});await page.reload();await page.locator("#play").tap();await expect.poll(async()=>(await metrics(page)).camera.avatar).toBe(true);s=await saved(page);expect(s.extension.camera.distance).toBe(6);await context.close();
+ const context=await browser.newContext({viewport:{width:844,height:390},isMobile:true,hasTouch:true}),page=await context.newPage();await seed(page);await shortcut(page,"zoom");await expect.poll(async()=>(await metrics(page)).camera.avatar).toBe(true);
+ const first=await metrics(page);expect(first.fov).toBe(70);expect(first.camera.actualDistance).toBeGreaterThan(3.8);await shortcut(page,"zoom");await expect.poll(async()=>(await metrics(page)).camera.actualDistance).toBeGreaterThan(5.8);const farther=await metrics(page);expect(farther.camera.position).not.toEqual(first.camera.position);expect(farther.fov).toBe(70);
+ await page.screenshot({path:"artifacts/v07/regression/third-person.png"});let s=await saved(page);expect(s.extension.camera).toMatchObject({perspective:"third",distance:6});await page.reload();await page.locator("#play").tap();await expect.poll(async()=>(await metrics(page)).camera.avatar).toBe(true);s=await saved(page);expect(s.extension.camera.distance).toBe(6);await context.close();
 });
 
 test("Baumkollision verkürzt die Sicht vorübergehend; Weglaufen stellt den Abstand wieder her",async({browser})=>{
@@ -50,7 +50,7 @@ test("zwei Daumen, zusätzlicher Finger, Rotation und Browserwechsel behalten st
 test("Third-Person-Bauen, Abbauen und Inventar sind über kleine Touchflächen nutzbar",async({browser})=>{
  const context=await browser.newContext({viewport:{width:844,height:390},isMobile:true,hasTouch:true}),page=await context.newPage(),s=base([1,1.01,9],0,-.65);s.extension.camera.perspective="third";await seed(page,s);
  await page.locator("#selected-material").tap();await page.locator('[data-material="5"]').tap();await page.locator("#place").tap();let state=await saved(page);const key=Object.keys(state.changes).find(k=>state.changes[k]==="Glas");expect(key).toBeTruthy();await page.locator("#break").tap();state=await saved(page);expect(state.changes[key!]).toBeNull();
- await shortcut(page,"bag");await page.locator("#tool-tab").tap();await page.locator('[data-inventory-tool="Angel"]').tap();await page.locator("#close").tap();await expect(page.locator("#world")).toHaveAttribute("data-active-tool","Angel");await shortcut(page,"learn");await page.locator("#learning-answer").fill("Fisch");await page.locator("#answer-form button[type=submit]").click();await expect(page.locator("#learning-feedback")).toContainText("Geschafft");await context.close();
+ await shortcut(page,"bag");await page.locator("#tool-tab").tap();await page.locator('[data-inventory-tool="Angel"]').tap();await page.locator("#close").tap();await expect(page.locator("#world")).toHaveAttribute("data-active-tool","Angel");await shortWordExercise(page);await page.locator("#learning-answer").fill("Fisch");await page.locator("#answer-form button[type=submit]").click();await expect(page.locator("#learning-feedback")).toContainText("Geschafft");await context.close();
 });
 
 test("sichtbare Third-Person-Angel führt einen wirklichen Fang bis ins Inventar",async({browser})=>{

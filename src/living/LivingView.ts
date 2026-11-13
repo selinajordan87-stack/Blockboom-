@@ -1,13 +1,15 @@
 import * as T from "three";
-import type { LivingState, Animal } from "./State";
+import { MAX_ANIMALS, type LivingState, type Animal } from "./State";
 import { stage } from "./Systems";
 export class LivingView {
  group=new T.Group();animals:T.InstancedMesh;crops:T.InstancedMesh;
  private dummy=new T.Object3D();private color=new T.Color();
  constructor(scene:T.Scene){
   const box=new T.BoxGeometry(1,1,1),mat=new T.MeshLambertMaterial({color:0xffffff});
-  this.animals=new T.InstancedMesh(box,mat,12*12);this.crops=new T.InstancedMesh(box,mat,160*4);
-  this.animals.boundingSphere=this.crops.boundingSphere=new T.Sphere(new T.Vector3(),100);
+  this.animals=new T.InstancedMesh(box,mat,MAX_ANIMALS*12);this.crops=new T.InstancedMesh(box,mat,160*4);
+  // Instances move around a much larger world. Distance selection below bounds
+  // the active population; an origin-centred stale sphere must not hide pets.
+  this.animals.frustumCulled=this.crops.frustumCulled=false;
   this.animals.name="lebende Tiere";this.crops.name="wachsender Garten";this.animals.count=this.crops.count=0;
   this.group.add(this.animals,this.crops);scene.add(this.group);
   const water=new T.Mesh(new T.CircleGeometry(1,48),new T.MeshPhongMaterial({color:0x4797ac,transparent:true,opacity:.55,depthWrite:false,side:T.DoubleSide}));
@@ -16,7 +18,7 @@ export class LivingView {
  }
  update(s:LivingState,origin:T.Vector3){
   let i=0;const ids:string[]=[];
-  for(const a of s.animals){if(Math.hypot(a.pos[0]-origin.x,a.pos[2]-origin.z)>32)continue;
+  for(const a of s.animals.slice(0,MAX_ANIMALS)){if(Math.hypot(a.pos[0]-origin.x,a.pos[2]-origin.z)>48)continue;
    const bird=a.kind==="Huhn",cow=a.kind==="Kuh",sheep=a.kind==="Schaf",pig=a.kind==="Schwein";
    const small=a.kind==="Katze"?.62:bird?.48:cow?1.15:1,body=cow?0xc2bca6:sheep?0xe8dfc6:pig?0xc99787:a.kind==="Wolf"?0x8f9b9c:bird?0xe6d8b5:0xa98665;
    const parts=[

@@ -1,7 +1,11 @@
 import { FISH, fishInfo, type FishName } from "./Fishing";
-import { spotById, type SpotId } from "./AnglingData";
+import { spotById, type SpotId, type AnglingSpot } from "./AnglingData";
 
 export const FISH_PER_SPECIES = 3;
+export const MAX_FISH_ACTORS=32;
+// Large lakes need visible fish near a reachable shore, rather than a small
+// school hidden at the distant centre (which also contains an island).
+const swimCenter=(spot:AnglingSpot)=>spot.id==="great"?{x:spot.shore.x,z:spot.shore.z-11.5}:spot.center;
 
 export interface FishActor {
   id: number;
@@ -40,12 +44,22 @@ export class Shoal {
         phase: speciesIndex * 0.8 + index * 0.73,
       };
     }),
-  );
+  ).slice(0,MAX_FISH_ACTORS);
   target: number | null = null;
   lure = { x: -11, y: 0.05, z: -3 };
   /** Compatibility alias used by v0.2 diagnostics and tests. */
   bobber = this.lure;
   time = 0;
+
+  constructor(){
+    const spot=spotById("great"),center=swimCenter(spot);
+    const species:FishName[]=["Rotauge","Flussbarsch","Hecht","Karpfen","Brasse"];
+    const capacity=Math.min(species.length,MAX_FISH_ACTORS-this.actors.length);
+    for(let i=0;i<capacity;i++){
+      const fish=fishInfo(species[i]),length=Math.round(fish.min+(fish.max-fish.min)*(.24+i*.035));
+      this.actors.push({id:this.actors.length,species:fish.name,spot:spot.id,length,weight:estimateWeight(fish.name,length),x:center.x+Math.cos(i*1.9)*1.8,y:spot.waterY-Math.min(spot.depth-.2,fish.depth),z:center.z+Math.sin(i*1.9)*1.4,heading:0,alive:true,respawn:0,phase:i*.73});
+    }
+  }
 
   update(dt: number) {
     this.time += dt;
@@ -56,6 +70,7 @@ export class Shoal {
       }
       const info = fishInfo(fish.species);
       const spot = spotById(fish.spot);
+      const center=swimCenter(spot);
       let tx: number;
       let ty: number;
       let tz: number;
@@ -66,9 +81,9 @@ export class Shoal {
       } else {
         const angle = this.time * info.speed + fish.phase;
         const radius = 1.15 + (fish.id % FISH_PER_SPECIES) * 0.62;
-        tx = spot.center.x + Math.cos(angle) * radius;
+        tx = center.x + Math.cos(angle) * radius;
         tz =
-          spot.center.z +
+          center.z +
           Math.sin(angle) * radius * (spot.id === "river" ? 2.6 : 0.82) +
           (spot.id === "river" ? Math.sin(this.time * 0.2 + fish.phase) : 0);
         ty = spot.waterY - Math.min(spot.depth - 0.18, info.depth);
@@ -145,10 +160,11 @@ export class Shoal {
     const fish = this.actors.find((candidate) => candidate.id === caught.id);
     if (!fish) return;
     const spot = spotById(fish.spot);
+    const center=swimCenter(spot);
     fish.alive = true;
     fish.respawn = 0;
-    fish.x = spot.center.x;
-    fish.z = spot.center.z;
+    fish.x = center.x;
+    fish.z = center.z;
     fish.y = spot.waterY - fishInfo(fish.species).depth;
   }
 }

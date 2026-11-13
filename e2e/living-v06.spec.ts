@@ -8,7 +8,7 @@ async function seed(page:Page,s=blank()){
 async function save(page:Page){await page.locator("#menu").click();await page.locator("#save").click();const s=await page.evaluate(()=>JSON.parse(localStorage.getItem("blockboom.save")!));await page.locator("#resume").click();return s;}
 async function travel(page:Page,pos:number[],yaw=0,pitch=-.5,prepare?:(s:any)=>void){await save(page);await page.goto("./?diagnostics=1");const s=await page.evaluate(()=>JSON.parse(localStorage.getItem("blockboom.save")!));Object.assign(s,{position:pos,yaw,pitch});prepare?.(s);await page.evaluate(v=>localStorage.setItem("blockboom.save",JSON.stringify(v)),s);await page.reload();await page.locator("#play").click();}
 async function metrics(page:Page){return page.locator("#world").evaluate(c=>JSON.parse((c as HTMLCanvasElement).dataset.performance!));}
-async function tool(page:Page,name:string){await page.locator("#tool-toggle").click();await page.locator(`[data-tool="${name}"]`).click();}
+async function tool(page:Page,name:string){await shortcut(page,"tool-toggle");await page.locator(`[data-tool="${name}"]`).click();}
 async function material(page:Page,name:string){for(let i=0;i<8;i++){const b=page.getByRole("button",{name:`${name} auswählen`,exact:true});if(await b.count()){await b.click();return;}await page.locator("#material-next").click();}throw Error(`Material fehlt: ${name}`);}
 
 test("Regionen und Höhle sind erreichbar, äußere Bauwerke und alte Welt bleiben nach Reload",async({page})=>{
@@ -75,7 +75,7 @@ test("alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte S
 
 for(const viewport of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])test(`Wohnwelt mobil ${viewport.width}×${viewport.height}: Karte, Nahrung und Tiername mit Tastaturhöhe`,async({browser})=>{
  const context=await browser.newContext({viewport,isMobile:true,hasTouch:true}),page=await context.newPage(),s=blank();s.extension.living.animals[0].tame=true;s.extension.living.bag.Karotte=2;s.extension.nightfall.hunger=40;
- await seed(page,s);await expect(page.locator("#compass")).toBeHidden();await expect(page.locator(".location")).toBeHidden();
+ await seed(page,s);await expect(page.locator("#compass")).toBeVisible();await expect(page.locator(".location")).toBeHidden();
  await shortcut(page,"living-menu");await page.locator("#living-map").tap();await expect(page.locator(".world-map")).toBeVisible();await page.locator("#mark-home").tap();await page.locator("#close").tap();
  await shortcut(page,"living-menu");await page.locator("#living-bag").tap();await page.locator('[data-category="Nahrung"]').tap();await page.locator('[data-eat="Karotte"]').tap();await page.locator("#close").tap();
  await shortcut(page,"living-menu");await page.locator("#living-pets").tap();await page.locator('[data-animal="animal-0"]').tap();await page.locator("#animal-name").tap();await page.setViewportSize({width:viewport.width,height:240});await page.locator("#animal-name").fill("Nala");await page.locator("#animal-name-save").tap();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.locator("#close").tap();

@@ -20,13 +20,16 @@ export const TYPES = [
 export type Block = (typeof TYPES)[number] | "Boom" | "Tür offen" | "Tor offen" | "Schatztruhe";
 export type Cell = [number, number, number];
 export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
-export const LIMIT = 60;
+export const LIMIT = 336;
 export const MIN_Y = -18, MAX_Y = 26;
 export class World {
   blocks = new Map<string, Block>();
   changes: Record<string, Block | null> = {};
   /** Cells changed since the renderer last synchronized its chunk meshes. */
   dirty = new Set<string>();
+  /** Direct chunk invalidation avoids reparsing thousands of dirty cell strings. */
+  dirtyChunks = new Set<string>();
+  changesByChunk = new Map<string,Map<string,Block|null>>();
   revision = 0;
   activeChunks = new Set<string>();
   get(x: number, y: number, z: number) {
@@ -36,8 +39,16 @@ export class World {
     const k = key(x, y, z);
     if (b) this.blocks.set(k, b);
     else this.blocks.delete(k);
-    if (record) this.changes[k] = b;
+    const cx=Math.floor(x/12),cz=Math.floor(z/12),id=`${cx},${cz}`;
+    if (record) {
+      this.changes[k] = b;
+      let changes=this.changesByChunk.get(id);if(!changes)this.changesByChunk.set(id,changes=new Map());changes.set(k,b);
+    }
     this.dirty.add(k);
+    this.dirtyChunks.add(id);
+    const lx=((x%12)+12)%12,lz=((z%12)+12)%12;
+    if(lx===0)this.dirtyChunks.add(`${cx-1},${cz}`);if(lx===11)this.dirtyChunks.add(`${cx+1},${cz}`);
+    if(lz===0)this.dirtyChunks.add(`${cx},${cz-1}`);if(lz===11)this.dirtyChunks.add(`${cx},${cz+1}`);
     this.revision++;
   }
   constructor() {
