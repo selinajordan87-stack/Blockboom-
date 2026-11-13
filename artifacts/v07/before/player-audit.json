@@ -1,0 +1,214 @@
+[
+  {
+    "name": "01-new-player-start",
+    "time": 1794592583810,
+    "pos": [
+      0,
+      1.000009053412531,
+      17
+    ],
+    "region": "meadow",
+    "animalCount": 6,
+    "camera": {
+      "perspective": "first",
+      "desiredDistance": 4,
+      "actualDistance": 0,
+      "blocked": false,
+      "temporaryFirst": false,
+      "avatar": false,
+      "position": [
+        0,
+        2.6000090534125313,
+        17
+      ],
+      "recoveries": 0
+    },
+    "renderedFrames": 25
+  },
+  {
+    "name": "map-visible-without-discovery",
+    "text": "Wiesenland\nWiesenland\nDichter Wald\nSilbergebirge\nGroßer See\nKupferhöhlen\nVerlassene Siedlung\nN\n\nPosition 0 / 1 / 17 · Goldpunkt: du\n\nDiesen Ort als Zuhause merken"
+  },
+  {
+    "name": "garden-menu",
+    "text": "Dein Garten, deine Ernte.\n\nHacke ausrüsten, Gras oder Erde anvisieren und Benutzen drücken. Danach Samen wählen und den Acker benutzen. Reife Pflanzen lassen sich genauso ernten.\n\nWeizen · 4 Samen\nKarotte · 4 Samen\nKartoffel · 4 Samen\nKürbis · 4 Samen\n\nWachstum zählt gespeicherte aktive Spielzeit. Deine Pflanzen brauchen kein offenes Menü und keine Online-Verbindung."
+  },
+  {
+    "name": "recipes",
+    "text": "Dein Zuhause wächst\n1 × Bett\nHolz: 0/3 + Bretter: 0/3\n1 × Tisch\nBretter: 0/3\n1 × Stuhl\nBretter: 0/3\n1 × Regal\nBretter: 0/3\n1 × Truhe\nBretter: 0/3\n1 × Werkbank\nBretter: 0/3\n1 × Ofen\nStein: 0/6\n1 × Laterne\nStein: 0/1 + Kohle: 0/1\n2 × Teppich\nLaub: 0/3\n1 × Hacke\nHolz: 0/2 + Stein: 0/1\n1 × Kupferspitzhacke\nKupfer: 0/3 + Holz: 0/2\n1 × Eisenspitzhacke\nEisen: 0/3 + Holz: 0/2\n\nFür Metalle und Gerichte benutze einen platzierten Ofen. Hacke und Spitzhacken erscheinen in der Werkzeugauswahl."
+  },
+  {
+    "name": "05-north-from-start",
+    "time": 1794592589690,
+    "pos": [
+      0,
+      1.0000090681965448,
+      7.8500000000000405
+    ],
+    "region": "meadow",
+    "animalCount": 6,
+    "camera": {
+      "perspective": "first",
+      "desiredDistance": 4,
+      "actualDistance": 0,
+      "blocked": false,
+      "temporaryFirst": false,
+      "avatar": false,
+      "position": [
+        0,
+        2.600009068196545,
+        7.8500000000000405
+      ],
+      "recoveries": 0
+    },
+    "renderedFrames": 116
+  },
+  {
+    "name": "06-west-toward-forest",
+    "time": 1794592601434,
+    "pos": [
+      -27.712500000000336,
+      1.0000090049910901,
+      7.8500000000000405
+    ],
+    "region": "forest",
+    "animalCount": 6,
+    "camera": {
+      "perspective": "first",
+      "desiredDistance": 4,
+      "actualDistance": 0,
+      "blocked": false,
+      "temporaryFirst": false,
+      "avatar": false,
+      "position": [
+        -27.712500000000336,
+        2.6000090049910902,
+        7.8500000000000405
+      ],
+      "recoveries": 0
+    },
+    "renderedFrames": 390
+  },
+  {
+    "name": "07-north-toward-lake",
+    "time": 1794592612993,
+    "pos": [
+      -27.712500000000336,
+      1.0000090456810322,
+      -34.71250000000053
+    ],
+    "region": "lake",
+    "animalCount": 6,
+    "camera": {
+      "perspective": "first",
+      "desiredDistance": 4,
+      "actualDistance": 0,
+      "blocked": false,
+      "temporaryFirst": false,
+      "avatar": false,
+      "position": [
+        -27.712500000000336,
+        2.6000090456810323,
+        -34.71250000000053
+      ],
+      "recoveries": 0
+    },
+    "renderedFrames": 738
+  },
+  {
+    "name": "08-east-toward-mountains",
+    "time": 1794592629415,
+    "pos": [
+      29.699996180923822,
+      1.0000090033630902,
+      -34.71250000000053
+    ],
+    "region": "cave",
+    "animalCount": 6,
+    "camera": {
+      "perspective": "first",
+      "desiredDistance": 4,
+      "actualDistance": 0,
+      "blocked": false,
+      "temporaryFirst": false,
+      "avatar": false,
+      "position": [
+        29.699996180923822,
+        2.6000090033630903,
+        -34.71250000000053
+      ],
+      "recoveries": 0
+    },
+    "renderedFrames": 1428
+  },
+  {
+    "name": "09-south-toward-village",
+    "time": 1794592642872,
+    "pos": [
+      29.699996180923822,
+      0.000009036593311944418,
+      -28.30000000000029
+    ],
+    "region": "cave",
+    "animalCount": 6,
+    "camera": {
+      "perspective": "first",
+      "desiredDistance": 4,
+      "actualDistance": 0,
+      "blocked": false,
+      "temporaryFirst": false,
+      "avatar": false,
+      "position": [
+        29.699996180923822,
+        1.600009036593312,
+        -28.30000000000029
+      ],
+      "recoveries": 0
+    },
+    "renderedFrames": 1981
+  },
+  {
+    "name": "10-ordinary-reload",
+    "time": 1794592647220,
+    "pos": [
+      29.699996180923822,
+      0.000009043374995972626,
+      -28.30000000000029
+    ],
+    "region": "cave",
+    "animalCount": 6,
+    "camera": {
+      "perspective": "first",
+      "desiredDistance": 4,
+      "actualDistance": 0,
+      "blocked": false,
+      "temporaryFirst": false,
+      "avatar": false,
+      "position": [
+        29.699996180923822,
+        1.600009043374996,
+        -28.30000000000029
+      ],
+      "recoveries": 0
+    },
+    "renderedFrames": 41
+  },
+  {
+    "name": "save-metadata",
+    "savedPosition": [
+      29.699996180923822,
+      0.000009021131072361204,
+      -28.30000000000029
+    ],
+    "regions": [
+      "meadow",
+      "forest",
+      "lake",
+      "mountain",
+      "cave"
+    ],
+    "animalCount": 6,
+    "crops": 0,
+    "errors": []
+  }
+]
