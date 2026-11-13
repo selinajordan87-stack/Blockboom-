@@ -1,0 +1,8 @@
+{
+  "version": "0.6.0",
+  "beforeFov": 70,
+  "zoomFov": 43.4,
+  "afterMenuFov": 43.4,
+  "renderingContinues": true,
+  "trueRenderFreezeReproduced": false
+}

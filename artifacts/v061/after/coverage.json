@@ -1,0 +1,335 @@
+[
+  {
+    "viewport": {
+      "width": 667,
+      "height": 375
+    },
+    "mode": "world",
+    "version": "MOBILE UX RESCUE · v0.6.1",
+    "performance": {
+      "calls": 73,
+      "triangles": 23308,
+      "geometries": 55,
+      "textures": 10
+    },
+    "fraction": 0.1346206896551724,
+    "rects": [
+      {
+        "id": "menu",
+        "x": 611,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "id": "survival-hud",
+        "x": 12,
+        "y": 10,
+        "w": 103.4375,
+        "h": 26
+      },
+      {
+        "id": "joystick",
+        "x": 14,
+        "y": 273,
+        "w": 88,
+        "h": 88
+      },
+      {
+        "id": "mobile-actions",
+        "x": 549,
+        "y": 257,
+        "w": 104,
+        "h": 104
+      },
+      {
+        "id": "mobile-quickbar",
+        "x": 240.5,
+        "y": 305,
+        "w": 186,
+        "h": 56
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 667,
+      "height": 375
+    },
+    "mode": "fishing",
+    "version": "MOBILE UX RESCUE · v0.6.1",
+    "performance": {
+      "calls": 45,
+      "triangles": 18592,
+      "geometries": 55,
+      "textures": 10
+    },
+    "fraction": 0.17661569215392303,
+    "rects": [
+      {
+        "id": "menu",
+        "x": 611,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "id": "survival-hud",
+        "x": 12,
+        "y": 10,
+        "w": 103.4375,
+        "h": 26
+      },
+      {
+        "id": "angling-hud",
+        "x": 549,
+        "y": 148,
+        "w": 104,
+        "h": 101
+      },
+      {
+        "id": "joystick",
+        "x": 14,
+        "y": 273,
+        "w": 88,
+        "h": 88
+      },
+      {
+        "id": "mobile-actions",
+        "x": 549,
+        "y": 257,
+        "w": 104,
+        "h": 104
+      },
+      {
+        "id": "mobile-quickbar",
+        "x": 240.5,
+        "y": 305,
+        "w": 186,
+        "h": 56
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "world",
+    "version": "MOBILE UX RESCUE · v0.6.1",
+    "performance": {
+      "calls": 76,
+      "triangles": 24440,
+      "geometries": 55,
+      "textures": 10
+    },
+    "fraction": 0.10212662534937417,
+    "rects": [
+      {
+        "id": "menu",
+        "x": 788,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "id": "survival-hud",
+        "x": 12,
+        "y": 10,
+        "w": 103.4375,
+        "h": 26
+      },
+      {
+        "id": "joystick",
+        "x": 14,
+        "y": 288,
+        "w": 88,
+        "h": 88
+      },
+      {
+        "id": "mobile-actions",
+        "x": 726,
+        "y": 272,
+        "w": 104,
+        "h": 104
+      },
+      {
+        "id": "mobile-quickbar",
+        "x": 329,
+        "y": 320,
+        "w": 186,
+        "h": 56
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "mode": "fishing",
+    "version": "MOBILE UX RESCUE · v0.6.1",
+    "performance": {
+      "calls": 46,
+      "triangles": 19742,
+      "geometries": 55,
+      "textures": 10
+    },
+    "fraction": 0.1340381577348402,
+    "rects": [
+      {
+        "id": "menu",
+        "x": 788,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "id": "survival-hud",
+        "x": 12,
+        "y": 10,
+        "w": 103.4375,
+        "h": 26
+      },
+      {
+        "id": "angling-hud",
+        "x": 726,
+        "y": 163,
+        "w": 104,
+        "h": 101
+      },
+      {
+        "id": "joystick",
+        "x": 14,
+        "y": 288,
+        "w": 88,
+        "h": 88
+      },
+      {
+        "id": "mobile-actions",
+        "x": 726,
+        "y": 272,
+        "w": 104,
+        "h": 104
+      },
+      {
+        "id": "mobile-quickbar",
+        "x": 329,
+        "y": 320,
+        "w": 186,
+        "h": 56
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 932,
+      "height": 430
+    },
+    "mode": "world",
+    "version": "MOBILE UX RESCUE · v0.6.1",
+    "performance": {
+      "calls": 76,
+      "triangles": 24440,
+      "geometries": 55,
+      "textures": 10
+    },
+    "fraction": 0.08388062680906277,
+    "rects": [
+      {
+        "id": "menu",
+        "x": 876,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "id": "survival-hud",
+        "x": 12,
+        "y": 10,
+        "w": 103.4375,
+        "h": 26
+      },
+      {
+        "id": "joystick",
+        "x": 14,
+        "y": 328,
+        "w": 88,
+        "h": 88
+      },
+      {
+        "id": "mobile-actions",
+        "x": 814,
+        "y": 312,
+        "w": 104,
+        "h": 104
+      },
+      {
+        "id": "mobile-quickbar",
+        "x": 373,
+        "y": 360,
+        "w": 186,
+        "h": 56
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 932,
+      "height": 430
+    },
+    "mode": "fishing",
+    "version": "MOBILE UX RESCUE · v0.6.1",
+    "performance": {
+      "calls": 46,
+      "triangles": 19742,
+      "geometries": 55,
+      "textures": 10
+    },
+    "fraction": 0.11009082742788702,
+    "rects": [
+      {
+        "id": "menu",
+        "x": 876,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "id": "survival-hud",
+        "x": 12,
+        "y": 10,
+        "w": 103.4375,
+        "h": 26
+      },
+      {
+        "id": "angling-hud",
+        "x": 814,
+        "y": 203,
+        "w": 104,
+        "h": 101
+      },
+      {
+        "id": "joystick",
+        "x": 14,
+        "y": 328,
+        "w": 88,
+        "h": 88
+      },
+      {
+        "id": "mobile-actions",
+        "x": 814,
+        "y": 312,
+        "w": 104,
+        "h": 104
+      },
+      {
+        "id": "mobile-quickbar",
+        "x": 373,
+        "y": 360,
+        "w": 186,
+        "h": 56
+      }
+    ]
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "scenario": "Capture rejected; pointerup is delivered outside its surface",
+  "baseline": "df8c664",
+  "before": {
+    "afterRelease": [
+      0,
+      1
+    ],
+    "nextFinger": [
+      0,
+      1
+    ]
+  },
+  "after": {
+    "afterRelease": [
+      0,
+      0
+    ],
+    "nextFinger": [
+      1,
+      0
+    ]
+  }
+}

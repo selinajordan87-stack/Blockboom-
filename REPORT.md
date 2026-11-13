@@ -179,3 +179,7 @@ Tag und Nacht, drei Zombiearten, Gesundheit/Nahrung, sichtbarer Waffenkampf, Bas
 ## 19. LIVING WORLD v0.6
 
 Sechs Regionen, gestreamte äußere Chunks, begehbare Höhlen, Erz-/Werkzeugfortschritt, funktionale Einrichtung, getrennte Truhen, sechs Tiere, Farming und fünf verbundene Entdeckermissionen ergänzen das bestehende Spiel. Tatsächliche Tests, Speicherkompatibilität, Performance-Befunde, Einschränkungen, Commits und Veröffentlichung stehen im [v0.6-Bericht](V06_REPORT.md).
+
+## 20. MOBILE UX RESCUE v0.6.1
+
+Der mobile HUD wird auf wenige kompakte Kontrollen reduziert. Echte Third Person mit sichtbarer Figur, veränderlicher Distanz, Kamerakollision und Reset ersetzt den verengenden Zoom. Touch-Fallback, lokale Diagnose und manueller Export/Import ergänzen die bestehenden Systeme. Belegte Ursachen, Screenshots, genaue Teststände, offene Gerätefragen und Veröffentlichung stehen im [v0.6.1-Bericht](V061_REPORT.md).
