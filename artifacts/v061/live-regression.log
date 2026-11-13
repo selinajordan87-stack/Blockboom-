@@ -1,0 +1,27 @@
+
+Running 20 tests using 1 worker
+
+(node:33935) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/game.spec.ts:176:1 › Touch: Blöcke setzen/entfernen, Barsch fangen und BOOM zurücksetzen (36.2s)
+  ✓   2 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 667×375 (4.2s)
+  ✓   3 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 844×390 (4.0s)
+  ✓   4 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 932×430 (4.3s)
+  ✓   5 e2e/mobile-ux.spec.ts:23:1 › Third Person zeigt die Figur, erhöht echte Kameradistanz und speichert die Auswahl (10.3s)
+  ✓   6 e2e/mobile-ux.spec.ts:29:1 › Baumkollision verkürzt die Sicht vorübergehend; Weglaufen stellt den Abstand wieder her (6.3s)
+  ✓   7 e2e/mobile-ux.spec.ts:35:1 › Kamera-Reset löst enge Sicht, bleibt nach Menüwechsel erreichbar und stoppt alte Eingaben (5.8s)
+  ✓   8 e2e/mobile-ux.spec.ts:42:1 › zwei Daumen, zusätzlicher Finger, Rotation und Browserwechsel behalten stabile Steuerung (5.1s)
+  ✓   9 e2e/mobile-ux.spec.ts:50:1 › Third-Person-Bauen, Abbauen und Inventar sind über kleine Touchflächen nutzbar (7.4s)
+  ✓  10 e2e/mobile-ux.spec.ts:56:1 › sichtbare Third-Person-Angel führt einen wirklichen Fang bis ins Inventar (27.2s)
+  ✓  11 e2e/mobile-ux.spec.ts:61:1 › Steuerungsoptionen, Linkshand-Belegung und Diagnoseexport bleiben gespeichert (5.5s)
+  ✓  12 e2e/mobile-ux.spec.ts:66:1 › Export ist eine echte Datei; geprüfter Import überlebt Reload und legt eine Sicherung an (10.6s)
+  ✓  13 e2e/mobile-ux.spec.ts:72:1 › WebGL-Unterbrechung hält Menü und Kamera-Reset erreichbar und kann wieder fortgesetzt werden (7.7s)
+  ✓  14 e2e/mobile-ux.spec.ts:78:1 › Browser-Vergrößerung wird vom Kameraabstand getrennt diagnostiziert (8.1s)
+  ✓  15 e2e/nightfall.spec.ts:38:1 › Schreibkampf schützt die Eingabe, hilft nach Fehlern und wirkt ohne Zeitlimit (8.1s)
+  ✓  16 e2e/nightfall.spec.ts:79:1 › Nahkampf über sichtbare Waffe trifft einen echten Zombie und belohnt den Sieg (17.8s)
+  ✓  17 e2e/nightfall.spec.ts:112:94 › Schreibkampf mobil 667×375 mit Tastaturhöhe (4.3s)
+  ✓  18 e2e/nightfall.spec.ts:112:94 › Schreibkampf mobil 844×390 mit Tastaturhöhe (6.2s)
+  ✓  19 e2e/nightfall.spec.ts:112:94 › Schreibkampf mobil 932×430 mit Tastaturhöhe (7.9s)
+  ✓  20 e2e/pages.spec.ts:7:1 › Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang (3.0s)
+
+  20 passed (3.2m)

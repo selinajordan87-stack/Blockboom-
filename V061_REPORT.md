@@ -90,7 +90,7 @@ Aufnahmen des abschließenden Builds `index-D554htlW.js` / `index-DUrYSO9D.css`,
 
 [Sichtbare Third-Person-Figur](artifacts/v061/after/third-person.png), [alte Nahansicht](artifacts/v061/before/844-narrow-view.png), [Vorher-Messdaten](artifacts/v061/before/coverage.json), [Nachher-Messdaten](artifacts/v061/after/coverage.json), [Touch-Reproduktion](artifacts/v061/repro-touch.json), [Zoom-Reproduktion](artifacts/v061/repro-zoom.json).
 
-## Tatsächlich ausgeführte Tests und offene Schlussprüfung
+## Tatsächlich ausgeführte Tests
 
 - Baseline: strict TypeScript, 75/75 Logiktests, Build.
 - Erster neuer Kamerakern: 84/84 Logiktests und **10/10 neue Browserfälle** bestanden. Darunter echte Mehrfingerereignisse, Baumkollision mit Weglaufen/Rückkehr, gespeicherte Perspektive, Bauen/Abbauen in Third Person und ein vollständiger Third-Person-Angelfang bis ins Inventar.
@@ -103,6 +103,8 @@ Aufnahmen des abschließenden Builds `index-D554htlW.js` / `index-DUrYSO9D.css`,
 - Vollständiger Browserlauf auf dem endgültigen Spielbuild: **75 bestanden, ein zusätzlicher Browser-Skalierungstest fehlgeschlagen**, Dauer 14,1 Minuten. Alle Spiel-, Kamera-, Multitouch-, Speicher-, Legacy- und Pages-Fälle bestanden. Der Zusatztest änderte die Viewport-Metadaten erst nach dem Start und setzte die Skalierung, bevor Chromium die neue Begrenzung zuverlässig übernahm. Die Testfixture liefert die geänderte HTML-Metadatenzeile nun vor dem Parsen aus; der ausgelieferte Spielcode und dessen Zoombegrenzung bleiben unverändert.
 - Korrigierter Skalierungstest: **5/5 Wiederholungen bestanden**, 50,4 Sekunden. Damit sind alle 76 unterschiedlichen Browserszenarien erfolgreich geprüft, jedoch nicht als ein einzelner vollständig grüner 76er-Lauf. [Gesamtlaufprotokoll](artifacts/v061/local-regression.log) und [Nachtestprotokoll](artifacts/v061/viewport-repeats.log) halten diese Unterscheidung fest.
 - Ein vorheriger Wiederholungsversuch hatte fünf Verbindungsfehler `ERR_CONNECTION_REFUSED` bereits beim Seitenaufruf: der lokale Vorschauserver war nach der Sitzungspause beendet. Nach geprüftem Neustart erfolgte der oben dokumentierte erfolgreiche Nachtest. Diese Verbindungsfehler sind keine bestandenen Spielprüfungen.
+- **Öffentliche Produktionsadresse: 20/20 Browserfälle bestanden**, 3,2 Minuten. Alle 13 neuen Mobile-UX-Fälle plus Pages-Unterpfad/Assets, kombinierter Touchablauf mit Bauen/Fischfang/BOOM, geschützter Schreibkampf, tatsächlicher Zombie-Nahkampfsieg und drei mobile Schreibkampfgrößen. Die Live-Prüfung verwendet das tatsächlich ausgelieferte Bundle und frische isolierte Browserprofile. [Live-Protokoll](artifacts/v061/live-regression.log).
+- GitHub Actions führte TypeScript, alle 90 Logiktests und den Produktionsbuild ebenfalls erfolgreich aus. Ein echter iPhone-/Android-Test und eine reale Bildschirmtastatur sind weiterhin separat abzunehmen.
 
 Reproduzierbarer lokaler Prüfweg:
 
@@ -130,6 +132,7 @@ Chromium unter `/usr/bin/chromium` wird wie bisher verwendet. Die Vorherbilder w
 - Reale iPhone-/Android-FPS, Energieverbrauch, Wärme und ein längerer Gerätetest sind offen. Software-WebGL ersetzt diese Messungen nicht.
 - Native Safari-Seitenvergrößerung und Betriebssystem-Bedienungshilfen sind von der Spielkamera getrennt. Viewport-Skalierung wird diagnostiziert. Ein entsprechender Auslöser des ursprünglichen iPhone-Problems ist nicht belegt.
 - Kamerakollision verwendet konservative Blockkörper, keine exakten Möbeloberflächen. In sehr engen Räumen ist vorübergehend eine nähere/Ego-Sicht sinnvoll. Die Third-Person-Werkzeugmodelle sind einfacher als die erhaltenen Ego-Modelle.
+- Die bestehenden Nachtlichtwerte wurden erhalten. In der Software-Browseraufnahme bleiben Gelände und Gegner erkennbar; die tatsächliche Lesbarkeit bei geringer iPhone-Helligkeit muss im Gerätetest geprüft werden.
 
 ## Konkrete iPhone-/Android-Abnahme
 
@@ -149,7 +152,13 @@ Chromium unter `/usr/bin/chromium` wird wie bisher verwendet. Die Vorherbilder w
 - `f3eb6a4`: kompakter mobiler HUD, echte Third-Person-Kamera, sichere Touchkontakte, neue Regressionen.
 - `e15d247`: Diagnose und Wiederherstellung härten, abgesicherten Spielstandtransfer und weitere Regressionen ergänzen.
 - `662a25a`: Joystick zentrieren, Zentrierung prüfen und Perspektive verständlich für Vorlesefunktionen beschriften.
-- Dokumentations-/Nachweiscommits, endgültige Ergebnisse und tatsächlicher Veröffentlichungsstatus werden nach Prüfung ergänzt.
-- Zieladresse: **https://selinajordan87-stack.github.io/Blockboom-/**. Noch keine v0.6.1-Veröffentlichung bestätigt.
+- `c6592b1`: Vergleichsbilder und Fehlernachweise dokumentieren, Browser-Skalierungsfixture stabilisieren. Diesen Stand hat der erste v0.6.1-Pages-Lauf veröffentlicht.
+- Ein nachfolgender Dokumentationscommit ergänzt ausschließlich diese Veröffentlichungsnachweise und das Live-Protokoll; der Spielbuild bleibt identisch.
+- Fast-forward von `feature/v061-mobile-ux` nach `main`, normaler Push ohne Force. Der ursprüngliche Commit `467adf6` bleibt nachgewiesener Vorfahr; bisherige Commits wurden nicht umgeschrieben.
+- **Veröffentlicht und erreichbar:** https://selinajordan87-stack.github.io/Blockboom-/ liefert HTTP 200 mit dem neuen Bundle.
+- [Pages-Lauf 43417845845](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43417845845): Build und Deploy erfolgreich, Deployment abgeschlossen am **13.11.2026 um 11:32:49 UTC**, Commit `c6592b1f3c2fe3499b2f0f609f71b00509c40995`.
+- HTML verweist unter dem korrekten Basispfad auf `index-D554htlW.js`, `index-DUrYSO9D.css` und `three-l-OAOSTR.js`. Alle drei öffentlich heruntergeladenen Dateien stimmen bytegenau mit dem lokal geprüften Build überein. [Maschinenlesbarer Nachweis](artifacts/v061/release-verification.json).
 
 Geprüftes Produktionsbundle: `index-D554htlW.js`, SHA-256 `653f18e8758487ea74c3d6a3f485f12c8e658b3aeade6ef2e9b973e412882587`. CSS `index-DUrYSO9D.css`, SHA-256 `57cdff84432d510edcecbea7166198d6422589703ead8002c70a07c4a6886247`. Node 24.22.1. Der bestehende offizielle Pages-Workflow und der Basispfad `/Blockboom-/` bleiben unverändert.
+
+Die automatisierten Abnahmekriterien sind geprüft. Die endgültige mobile Abnahme bleibt offen, bis die Auftraggeberin den obigen Plan auf ihrem echten iPhone durchlaufen hat. Insbesondere wird ein endgültiger Fix eines nicht reproduzierten vollständigen Safari-Freeze nicht behauptet.

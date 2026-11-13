@@ -1,0 +1,47 @@
+{
+  "version": "0.6.1",
+  "checkedAt": "2026-11-13T11:37:17.816Z",
+  "url": "https://selinajordan87-stack.github.io/Blockboom-/",
+  "httpStatus": 200,
+  "workflow": {
+    "conclusion": "success",
+    "headSha": "c6592b1f3c2fe3499b2f0f609f71b00509c40995",
+    "status": "completed",
+    "url": "https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43417845845"
+  },
+  "assets": [
+    {
+      "path": "/Blockboom-/assets/index-D554htlW.js",
+      "sha256": "653f18e8758487ea74c3d6a3f485f12c8e658b3aeade6ef2e9b973e412882587",
+      "byteEqual": true
+    },
+    {
+      "path": "/Blockboom-/assets/index-DUrYSO9D.css",
+      "sha256": "57cdff84432d510edcecbea7166198d6422589703ead8002c70a07c4a6886247",
+      "byteEqual": true
+    },
+    {
+      "path": "/Blockboom-/assets/three-l-OAOSTR.js",
+      "sha256": "3cca2c540f453198736ca1cc4d5ecdccb284a3483da59e5d2bdd7dfad3128259",
+      "byteEqual": true
+    }
+  ],
+  "checks": {
+    "typeScript": "passed",
+    "unitTests": 90,
+    "fullBrowserRun": {
+      "passed": 75,
+      "failed": 1
+    },
+    "correctedBrowserScaleRepeats": {
+      "passed": 5,
+      "failed": 0
+    },
+    "liveBrowserRun": {
+      "passed": 20,
+      "failed": 0
+    },
+    "realDeviceTest": false,
+    "browser": "Chromium, emulated mobile, SwiftShader"
+  }
+}
