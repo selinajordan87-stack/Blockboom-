@@ -48,7 +48,7 @@ export class TouchControls {
     installClickCapture();
     for (const surface of [joystick, lookArea]) this.bind(surface);
     const end=(event:Event)=>{const id=(event as PointerEvent).pointerId;for(const [surface,owner]of this.owners)if(owner===id){pendingTouchClicks.add(id);this.release(surface);}};
-    const empty=(event:Event)=>{if(!(event as TouchEvent).touches.length)this.reset();};
+    const empty=(event:Event)=>{if((event as TouchEvent).touches?.length===0)this.reset();};
     for(const name of ["pointerup","pointercancel"])this.globalTarget?.addEventListener(name,end);
     for(const name of ["touchend","touchcancel"])this.globalTarget?.addEventListener(name,empty);
     this.disposers.push(()=>{for(const name of ["pointerup","pointercancel"])this.globalTarget?.removeEventListener(name,end);for(const name of ["touchend","touchcancel"])this.globalTarget?.removeEventListener(name,empty);});
@@ -151,6 +151,7 @@ export class TouchControls {
   reset() {
     this.release(this.joystick);
     this.release(this.lookArea);
+    for(const cancel of [...activeTaps.values()])cancel();
   }
   get state(){return {joystick:this.owners.get(this.joystick)??null,look:this.owners.get(this.lookArea)??null};}
   dispose() {

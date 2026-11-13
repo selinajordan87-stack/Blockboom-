@@ -172,7 +172,7 @@ for (const viewport of [
     await expect(page.locator("#modal")).toBeHidden();
     const layout = await page.evaluate(() => {
       const joy = document.querySelector("#joystick")!.getBoundingClientRect();
-      const actions = document.querySelector(".touch-actions")!.getBoundingClientRect();
+      const actions = document.querySelector("#mobile-actions")!.getBoundingClientRect();
       return {
         overflow: document.documentElement.scrollWidth > innerWidth,
         separated: joy.right < actions.left,

@@ -237,7 +237,7 @@ test("Manuelle Pause nur per Tippen; Ziehen von Kamera oder Menü aktiviert kein
   await noPause(page);
   for (let i = 0; i < 3; i++) {
     await page.locator("#menu").tap();
-    await expect(page.locator("h2")).toHaveText("Kleine Pause.");
+    await expect(page.locator("h2")).toHaveText("Dein Abenteuer");
     await page.locator("#resume").tap();
     await noPause(page);
   }
@@ -330,7 +330,7 @@ test("Altspielstand, Reload und Landschaft: Inventar, Mission, Baublöcke erhalt
   expect(s.progress.completedMissions).toEqual(["first-perch"]);
   expect(s.settings.quality).toBe(1);
   const rects = await page
-    .locator("#joystick,#hotbar,.touch-actions")
+    .locator("#joystick,#mobile-quickbar,#mobile-actions")
     .evaluateAll((els) =>
       els.map((e) => {
         const r = e.getBoundingClientRect();

@@ -5,7 +5,7 @@ import {Avatar} from "../player/Avatar";
 import {World,type Cell} from "../world/World";
 import {collides} from "../nightfall/Defense";
 import {readExpansion} from "../inventory/Equipment";
-import {mobileActions} from "../ui/MobileHUD";
+import {mobileActions,compactNotice} from "../ui/MobileHUD";
 const setup=()=>{const world=new World(),rig=new CameraRig(world),camera=new T.PerspectiveCamera(70,1.7,.08,80),actor={pos:[0,1,9] as Cell,yaw:0,pitch:-.12},settings=defaultCamera();return {world,rig,camera,actor,settings};};
 it("zoomt wirklich hinter die sichtbare Figur und verändert dabei das Sichtfeld nicht",()=>{
  const s=setup();s.rig.update(s.camera,s.actor,s.settings,70,.016);expect(s.camera.position.y).toBe(2.6);
@@ -27,6 +27,7 @@ it("behandelt Baumblätter und niedrige Decken ohne dauerhafte Nahansicht",()=>{
 it("setzt die Kamera sicher zurück und repariert ungültige Blickwinkel",()=>{
  const s=setup();s.actor.yaw=NaN;s.actor.pitch=Infinity;s.settings.perspective="third";s.rig.update(s.camera,s.actor,s.settings,NaN,.016);expect(s.camera.position.toArray().every(Number.isFinite)).toBe(true);expect(s.camera.fov).toBe(70);expect(s.rig.recoveries).toBe(1);
  s.rig.reset(s.settings);s.rig.update(s.camera,s.actor,s.settings,70,.016,true);expect(s.settings.perspective).toBe("first");expect(s.rig.actualDistance).toBe(0);expect(s.camera.position.z).toBe(9);
+ s.settings.perspective="third";s.rig.actualDistance=NaN;s.rig.update(s.camera,s.actor,s.settings,70,NaN);expect(s.camera.position.toArray().every(Number.isFinite)).toBe(true);expect(s.rig.actualDistance).toBeGreaterThan(0);
 });
 it("behält alte Kamerawerte, Weltedition und Materialien und ergänzt neue Optionen additiv",()=>{
  const e=readExpansion({version:1,edition:4,materials:{Holz:17},view:{fov:80,sensitivity:1.25}});expect(e.view).toEqual({fov:80,sensitivity:1.25});expect(e.materials.Holz).toBe(17);expect(e.camera).toEqual(defaultCamera());
@@ -40,3 +41,4 @@ it("zeigt nur tatsächlich bedienbare, zur Ausrüstung passende mobile Aktionen"
  const s={tool:"Bauwerkzeug" as const,functional:false,nearby:false,spot:false,fishing:"idle",zombie:false,block:"Gras",blockColor:"#abc"};expect(mobileActions(s)).toMatchObject({place:true,break:true,interact:false,attack:false});
  expect(mobileActions({...s,tool:"Schwert"})).toMatchObject({place:false,break:false,attack:true});expect(mobileActions({...s,tool:"Angel",spot:true})).toMatchObject({fish:true,attack:false,interact:true});expect(mobileActions({...s,tool:"Angel",zombie:true})).toMatchObject({attack:false,break:false});
 });
+it("erhält positive Auftragsrückmeldung statt sie hinter einem allgemeinen Hinweis zu verstecken",()=>{expect(compactNotice("Neuer Fang. "+"Fischmerkmale und Rekorde. ".repeat(6)+"Auftrag geschafft!")).toContain("Auftrag geschafft");expect(compactNotice("Bauplan gefunden. "+"Weitere Hinweise. ".repeat(10))).toBe("Bauplan gefunden.");});

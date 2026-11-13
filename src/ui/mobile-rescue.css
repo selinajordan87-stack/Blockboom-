@@ -10,6 +10,7 @@
 .material-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
 .material-picker button{font-size:12px;min-width:0;overflow-wrap:anywhere;}
 .material-picker .block-icon{display:inline-block;margin-right:8px;vertical-align:middle;}
+#import-file{display:block;width:100%;margin-top:9px;}
 .mobile-game #hud header{inset:calc(var(--safe-top) + 10px) calc(var(--safe-right) + 12px) auto auto;width:auto;}
 .mobile-game .brand,.mobile-game #living-menu,.mobile-game #bag,.mobile-game .location,.mobile-game #compass,.mobile-game #mission-pin,.mobile-game #night-actions,.mobile-game #context,.mobile-game footer,.mobile-game .touch-actions,.mobile-game .mobile-help{display:none!important;}
 .mobile-game #save-state{display:none;}
@@ -37,11 +38,13 @@
 .mobile-game #angling-hud{left:auto;right:calc(var(--safe-right) + 14px);bottom:calc(var(--safe-bottom) + 126px);transform:none;width:104px;padding:7px 6px;border-radius:10px;pointer-events:none;background:#102d27a6;}
 .mobile-game #angling-hud>b{font-size:10px;line-height:1.2;margin:0 0 4px;}.mobile-game #angling-help{display:none;}.mobile-game #angling-hud label{font-size:9px;margin:3px 0;gap:2px;grid-template-columns:1fr;}.mobile-game .meter{height:4px;}
 .mobile-game #toast{top:calc(var(--safe-top) + 43px);bottom:auto;left:calc(var(--safe-left) + 12px);transform:none;max-width:240px;padding:6px 9px;border-radius:8px;font-size:11px;line-height:1.35;box-shadow:none;background:#12372cce;}
+.mobile-game:has(#save-state.save-error) #toast{top:calc(var(--safe-top) + 70px);}
 .mobile-game #target-label{font-size:10px;opacity:.8;}
 .mobile-game .panel-overlay{padding:calc(var(--safe-top) + 8px) calc(var(--safe-right) + 10px) calc(var(--safe-bottom) + 8px) calc(var(--safe-left) + 10px);}
 .mobile-game .panel{width:min(640px,100%);max-height:calc(var(--usable-height,100dvh) - var(--safe-top) - var(--safe-bottom) - 16px);padding:12px 16px;}
 .mobile-game .panel h2{font-size:22px;margin:8px 0;}.mobile-game .panel-head button{min-height:44px;min-width:44px;}
 .mobile-game #rotate-tip{left:calc(var(--safe-left) + 12px);right:auto;top:calc(var(--safe-top) + 43px);font-size:10px;pointer-events:none;}
+.mobile-game:has(#toast.visible) #rotate-tip,.mobile-game:has(#save-state.save-error) #rotate-tip{visibility:hidden;}
 .mobile-game.handed-left #joystick{left:auto;right:calc(var(--safe-right) + 14px);}.mobile-game.handed-left #mobile-actions{right:auto;left:calc(var(--safe-left) + 14px);}.mobile-game.handed-left #look{left:0;right:50%;}
 .mobile-game.handed-left #angling-hud{right:auto;left:calc(var(--safe-left) + 14px);}
 .mobile-game:has(#modal:not([hidden])) #mobile-actions,.mobile-game:has(#modal:not([hidden])) #mobile-quickbar,.mobile-game:has(#modal:not([hidden])) #joystick{visibility:hidden;}

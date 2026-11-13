@@ -50,12 +50,13 @@ import { Player } from "./player/Player";
 import { HeldTools } from "./player/HeldTools";
 import {CameraRig} from "./player/CameraRig";
 import {Avatar} from "./player/Avatar";
-import {MobileHUD} from "./ui/MobileHUD";
+import {MobileHUD,compactNotice} from "./ui/MobileHUD";
 import { WaterView } from "./world/WaterView";
 import { Inventory, FISH } from "./fishing/Fishing";
 import { ReadingEngine, mission } from "./learning/Learning";
 import { explode } from "./boom/Boom";
 import { load, persist, SAVE_KEY, type Save } from "./storage/Save";
+import {exportTransfer,parseTransfer,importTransfer,IMPORT_BACKUP,type Transfer} from "./storage/Transfer";
 import { DayView, advanceDay, dayPhase, isNight } from "./nightfall/DayCycle";
 import { Vitals } from "./nightfall/State";
 import { ZombieEngine, WEAPONS, ZOMBIES } from "./nightfall/Zombies";
@@ -178,8 +179,10 @@ function updateCamera(dt:number,force=false){
  cameraRig.update(camera,player,expansion.camera,expansion.view.fov,dt,force);
 }
 const diagnosticEvents:{time:number;event:string;detail?:string}[]=[];
-let lastNotice="",webglLost=false;
+let lastNotice="",webglLost=false,importingSave=false;
 function recordDiagnostic(event:string,detail?:string){diagnosticEvents.push({time:Math.round(performance.now()),event,...(detail?{detail:detail.slice(0,160)}:{})});if(diagnosticEvents.length>30)diagnosticEvents.shift();}
+window.addEventListener("error",e=>recordDiagnostic("runtime-error",e.message));
+window.addEventListener("unhandledrejection",e=>recordDiagnostic("promise-error",String(e.reason)));
 const history = new BuildHistory(),
   missions = new Missions(expansion);
 const learning = new LearningEngine(
@@ -405,7 +408,7 @@ let animalTarget:Animal|null=null;
 let miningAction:{cell:Cell;block:import("./world/World").Block;elapsed:number;seconds:number}|null=null;
 function toast(text: string) {
   lastNotice=text;
-  $("toast").textContent = matchMedia("(pointer: coarse)").matches&&text.length>100?"Neuer Hinweis im Menü.":text;
+  $("toast").textContent = matchMedia("(pointer: coarse)").matches?compactNotice(text):text;
   $("toast").classList.add("visible");
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(
@@ -414,9 +417,8 @@ function toast(text: string) {
   );
 }
 let toastTimer = 0;
-function save() {
-  if (!started) return false;
-  const s: Save = {
+function snapshot():Save{
+  return {
     version: 1,
     position: player.pos,
     yaw: player.yaw,
@@ -428,6 +430,11 @@ function save() {
     settings,
     extension: expansion,
   };
+}
+function save() {
+  if (!started) return false;
+  if(importingSave)return true;
+  const s=snapshot();
   let ok = false;
   try {
     ok = persist(localStorage, s);
@@ -595,7 +602,7 @@ function controlSettings(){
  $("camera-reset").onclick=resetCamera;$("back-menu").onclick=menu;
 }
 function generalSettings(){
- openPanel("EINSTELLUNGEN",`<h2>Dein Spiel</h2><button id="sound">Sound: ${settings.sound?"an":"aus"}</button><button id="quality">Auflösung: ${settings.quality===1?"sparsam":"normal"}</button><label class="mode-select">Lernmodus<select id="game-mode">${["Entspannt", "Abenteuer", "Lern-Challenge"].map((m)=>`<option ${learning.profile.mode===m?"selected":""}>${m}</option>`).join("")}</select></label><button id="home">Zum Startpunkt</button><button id="diagnostic-export">Kameradiagnose speichern</button><button id="back-menu">Zum Menü</button>`);
+ openPanel("EINSTELLUNGEN",`<h2>Dein Spiel</h2><button id="sound">Sound: ${settings.sound?"an":"aus"}</button><button id="quality">Auflösung: ${settings.quality===1?"sparsam":"normal"}</button><label class="mode-select">Lernmodus<select id="game-mode">${["Entspannt", "Abenteuer", "Lern-Challenge"].map((m)=>`<option ${learning.profile.mode===m?"selected":""}>${m}</option>`).join("")}</select></label><button id="save-transfer">Spielstand exportieren / importieren</button><button id="home">Zum Startpunkt</button><button id="diagnostic-export">Kameradiagnose speichern</button><button id="safe-reload">Gespeichert neu laden</button><button id="back-menu">Zum Menü</button>`);
   $("game-mode").onchange = () => {
     learning.profile.mode = ($("game-mode") as HTMLSelectElement).value as Mode;
     try {
@@ -617,7 +624,8 @@ function generalSettings(){
     save();
     generalSettings();
   };
-  $("diagnostic-export").onclick=()=>downloadJSON("blockboom-diagnose.json",{version:"0.6.1",events:diagnosticEvents,camera:{requested:expansion.camera,actual:cameraRig.actualDistance,blocked:cameraRig.blocked,pos:camera.position.toArray(),fov:camera.fov},controls:touch?.state,viewport:[innerWidth,innerHeight],paused,suspended,webglLost,renderedFrames});
+  $("diagnostic-export").onclick=()=>downloadJSON("blockboom-diagnose.json",{version:"0.6.1",events:diagnosticEvents,camera:{requested:expansion.camera,actual:cameraRig.actualDistance,blocked:cameraRig.blocked,pos:camera.position.toArray(),fov:camera.fov},controls:touch?.state,viewport:[innerWidth,innerHeight],visualViewport:window.visualViewport?{width:visualViewport!.width,height:visualViewport!.height,scale:visualViewport!.scale,offsetLeft:visualViewport!.offsetLeft,offsetTop:visualViewport!.offsetTop}:null,paused,suspended,webglLost,renderedFrames,lastRenderedAt,world:{region:regionAt(...player.pos).id,loadedChunks:world.activeChunks.size,blocks:world.blocks.size,revision:world.revision}});
+  $("save-transfer").onclick=transferPanel;$("safe-reload").onclick=()=>{if(save())location.reload();else toast("Speichern fehlgeschlagen. Exportiere deinen Stand vor dem Neuladen.");};
   $("back-menu").onclick=menu;
   $("home").onclick = () => {
     player.pos = [0, 16, 17];
@@ -627,6 +635,17 @@ function generalSettings(){
   };
 }
 function downloadJSON(name:string,value:unknown){const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function transferPanel(){
+ let pending:Transfer|undefined;
+ openPanel("SPIELSTAND",'<h2>Deine Welt mitnehmen</h2><p>Export speichert Welt und Lernfortschritt als Datei auf deinem Gerät.</p><button id="export-save">Sicherungsdatei herunterladen</button><label>Spielstand-Datei auswählen<input id="import-file" type="file" accept="application/json,.json"></label><p id="import-preview" role="status">Vor dem Import wird der bisherige Stand lokal gesichert. Prüfe danach die Vorschau.</p><button id="apply-import" disabled>Geprüften Stand importieren</button><button id="back-menu">Zum Menü</button>');
+ $("export-save").onclick=()=>downloadJSON("blockboom-spielstand.json",exportTransfer(snapshot(),learning.profile));
+ try{const previous=localStorage.getItem(IMPORT_BACKUP);if(previous){parseTransfer(previous);const b=document.createElement("button");b.id="export-previous-save";b.textContent="Sicherung vor dem letzten Import herunterladen";b.onclick=()=>downloadJSON("blockboom-vor-import.json",JSON.parse(previous));$("panel-content").append(b);}}catch{/* A damaged backup remains untouched. */}
+ $("import-file").onchange=async()=>{pending=undefined;$<HTMLButtonElement>("apply-import").disabled=true;const file=$<HTMLInputElement>("import-file").files?.[0];if(!file)return;
+  try{if(file.size>8*1024*1024)throw Error("Die Datei ist zu groß.");pending=parseTransfer(await file.text());$("import-preview").textContent=`Geprüft: ${Object.keys(pending.world.changes).length} Weltänderungen, ${Object.values(pending.world.fish).reduce((a,b)=>a+b,0)} Fische. Dein bisheriger Stand wird vor dem Übernehmen gesichert.`;$<HTMLButtonElement>("apply-import").disabled=false;}catch(error){$("import-preview").textContent=String(error instanceof Error?error.message:error);}
+ };
+ $("apply-import").onclick=()=>{if(!pending)return;importingSave=true;const result=importTransfer(localStorage,pending);if(result.ok)location.reload();else{importingSave=false;$("import-preview").textContent=result.error;}};
+ $("back-menu").onclick=menu;
+}
 function showMaterials(){
  openPanel("BAUMATERIAL",`<h2>Woraus baust du?</h2><div class="material-picker">${TYPES.map((b,i)=>`<button data-material="${i}" aria-label="${b} auswählen"><span class="block-icon" style="--block:#${colors[b].toString(16).padStart(6,"0")}"></span>${b}</button>`).join("")}</div>`);
  document.querySelectorAll<HTMLButtonElement>("[data-material]").forEach(b=>b.onclick=()=>{selected=Number(b.dataset.material);materialPage=Math.floor(selected/5);expansion.tool="Bauwerkzeug";equipment();hotbar();save();closePanel();});
@@ -817,7 +836,7 @@ bindTap($("undo"), () => {
 function equipment() {
   $("tool-toggle").textContent = expansion.tool;
   $("tool-toggle").dataset.icon = toolIcon(expansion.tool);
-  $("tool-toggle").dataset.short=({Bauwerkzeug:"Bauen",Spitzhacke:"Hacke",Kupferspitzhacke:"Kupfer",Eisenspitzhacke:"Eisen",Holzschwert:"Schwert",Steinschwert:"Schwert",Holzknüppel:"Knüppel"} as Record<string,string>)[expansion.tool]||expansion.tool;
+  $("tool-toggle").dataset.short=({Bauwerkzeug:"Bauen",Spitzhacke:"Spitzhacke",Kupferspitzhacke:"Kupfer",Eisenspitzhacke:"Eisen",Holzschwert:"Schwert",Steinschwert:"Schwert",Holzknüppel:"Knüppel"} as Record<string,string>)[expansion.tool]||expansion.tool;
   $("tool-toggle").setAttribute("aria-label",`Werkzeug wählen · ${expansion.tool}`);
   $("tool-palette").innerHTML = TOOLS.map(
     (t) =>
@@ -1342,6 +1361,7 @@ window.addEventListener("keyup", (e) => {
   if (e.code === "KeyE" && expansion.tool === "Angel") anglingRelease();
 });
 function interrupt(reason: string) {
+  recordDiagnostic("interruption",reason);
   clearInput();
   save();
   if (!started || paused || suspended) return;
@@ -1470,7 +1490,9 @@ function resize() {
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);
+let lastViewportScale=1;
 function keyboardViewport() {
+  const scale=window.visualViewport?.scale||1;if(Math.abs(scale-lastViewportScale)>.01){recordDiagnostic("browser-viewport-scale",String(scale));lastViewportScale=scale;}
   document.documentElement.style.setProperty(
     "--usable-height",
     `${window.visualViewport?.height || innerHeight}px`,
@@ -1486,6 +1508,7 @@ keyboardViewport();
 resize();
 const diagnostics = new URLSearchParams(location.search).has("diagnostics");
 let diagnosticsAt = 0,
+  lastRenderedAt=performance.now(),
   renderedFrames = 0,
   picks = 0;
 let lastAim = 0;
@@ -1505,7 +1528,7 @@ function frame(now: number) {
   try{tickFrame(now);}catch(error){recordDiagnostic("frame-error",String(error));interrupt("Darstellung unterbrochen. Im Menü kannst du die Kamera zurücksetzen.");}
 }
 function tickFrame(now:number){
-  const realElapsed = (now - last) / 1000;
+  const realElapsed = Math.max(0,(now - last) / 1000);
   const elapsed = Math.min(realElapsed, 0.1);
   last = now;
   if (document.hidden) {
@@ -1757,6 +1780,7 @@ function tickFrame(now:number){
   view.update();
   view.visibility(camera.position.x,camera.position.z);
   renderer.render(scene, camera);
+  lastRenderedAt=now;
   renderedFrames++;
   if (diagnostics && now - diagnosticsAt >= 1000) {
     canvas.dataset.performance = JSON.stringify({

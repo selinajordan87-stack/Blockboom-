@@ -329,7 +329,7 @@ test("mobiles Lernformular bleibt bei kleiner Tastaturhöhe bedienbar; Moduswech
   await page.setViewportSize({ width: 844, height: 390 });
   await page.locator("#menu").tap();
   await menuPage(page,"menu-settings");await page.locator("#game-mode").selectOption("Entspannt");
-  await page.locator("#resume").tap();
+  await page.locator("#close").tap();
   await expect(page.locator("#modal")).toBeHidden();
   await page.locator("#tool-toggle").tap();
   await page.locator('[data-tool="Axt"]').tap();
@@ -402,6 +402,6 @@ test.describe("Kompatibilitätsklick auf Touchgeräten", () => {
     await expect(page.locator("#modal")).toBeVisible();
     await page.locator("#cast").tap();
     await expect(page.locator("#modal")).toBeHidden();
-    await expect(page.locator("#fish-action")).toHaveText("Halten: Auswerfen");
+    await expect(page.locator("#fish-action")).toHaveText("Auswerfen");
   });
 });

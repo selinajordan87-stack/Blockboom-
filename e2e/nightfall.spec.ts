@@ -111,7 +111,7 @@ test("drei Touchkontakte: Bewegung, Kamera und Angriff bleiben unabhängig",asyn
 
 for(const viewport of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])test(`Schreibkampf mobil ${viewport.width}×${viewport.height} mit Tastaturhöhe`,async({browser})=>{
   const context=await browser.newContext({viewport,hasTouch:true,isMobile:true}),page=await context.newPage();
-  await seed(page);await setNight(page);await expect.poll(async()=>{const raw=await page.locator("#world").getAttribute("data-performance");return raw?JSON.parse(raw).nightfall.zombies.length:0;},{timeout:15000}).toBeGreaterThan(0);await shortcut(page,"word-battle");
+  await seed(page);await setNight(page);await expect.poll(async()=>{const raw=await page.locator("#world").getAttribute("data-performance");if(!raw)return false;const n=JSON.parse(raw).nightfall;return n.zombies.some((z:any)=>z.hp>0&&Math.hypot(z.pos[0]-n.player.pos[0],z.pos[2]-n.player.pos[2])<12);},{timeout:20000}).toBe(true);await shortcut(page,"word-battle");
   await page.locator("#battle-answer").tap();await page.setViewportSize({width:viewport.width,height:240});await page.locator("#battle-answer").fill("Abenteuer");await page.locator("#battle-submit").tap();await expect(page.locator("#battle-feedback")).toContainText("Zauber wirkt");
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:`artifacts/v05/writing-${viewport.width}.png`});await page.locator("#battle-leave").tap();await expect(page.locator("#modal")).toBeHidden();await context.close();

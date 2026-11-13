@@ -1,5 +1,11 @@
 import type {Tool} from "../inventory/Equipment";
 import type {ControlSettings,CameraSettings} from "../player/CameraRig";
+export function compactNotice(text:string){
+ if(text.length<=100)return text;
+ if(text.includes("Auftrag geschafft"))return "Auftrag geschafft! Details im Menü.";
+ const sentence=text.match(/^.+?[.!?](?:\s|$)/)?.[0].trim();
+ return sentence&&sentence.length<=100?sentence:"Neuer Hinweis. Details im Menü.";
+}
 export interface MobileContext {tool:Tool;functional:boolean;nearby:boolean;spot:boolean;fishing:string;zombie:boolean;block:string;blockColor:string}
 export function mobileActions(s:MobileContext){
  const build=s.tool==="Bauwerkzeug",weapon=/schwert|Schwert|Bogen|Holzknüppel/.test(s.tool)||s.zombie&&["Axt","Steinaxt","Spitzhacke"].includes(s.tool);

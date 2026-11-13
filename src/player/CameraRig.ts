@@ -23,6 +23,7 @@ export class CameraRig {
  constructor(private world:World){}
  update(camera:T.PerspectiveCamera,actor:{pos:Cell;yaw:number;pitch:number},settings:CameraSettings,fov:number,dt:number,force=false){
   if(!Number.isFinite(actor.yaw)||!Number.isFinite(actor.pitch)){actor.yaw=0;actor.pitch=-.12;this.recoveries++;force=true;}
+  if(!Number.isFinite(this.actualDistance)){this.actualDistance=0;this.recoveries++;force=true;}
   actor.yaw%=Math.PI*2;actor.pitch=Math.max(-1.45,Math.min(1.45,actor.pitch));
   camera.fov=finite(fov,55,90,70);camera.rotation.order="YXZ";
   this.direction.set(-Math.sin(actor.yaw)*Math.cos(actor.pitch),Math.sin(actor.pitch),-Math.cos(actor.yaw)*Math.cos(actor.pitch));
@@ -39,7 +40,8 @@ export class CameraRig {
      allowed=Math.max(0,d-.12);this.blocked=true;break;
     }
    }
-   this.actualDistance=force||allowed<this.actualDistance?allowed:this.actualDistance+(allowed-this.actualDistance)*(1-Math.exp(-8*Math.min(.1,Math.max(0,dt))));
+   const elapsed=Number.isFinite(dt)?Math.min(.1,Math.max(0,dt)):0;
+   this.actualDistance=force||allowed<this.actualDistance?allowed:this.actualDistance+(allowed-this.actualDistance)*(1-Math.exp(-8*elapsed));
    if(this.actualDistance>=.32){
     camera.position.copy(this.pivot).addScaledVector(this.offset,this.actualDistance);
     this.sample.copy(this.pivot).addScaledVector(this.direction,5);camera.lookAt(this.sample);
