@@ -2,7 +2,7 @@
 
 ## Aktueller Stand
 
-Veröffentlichung für `selinajordan87-stack/Blockboom-` ist ausdrücklich freigegeben. Der tatsächliche Status steht im Abschlussbericht. Bei Beginn dieser Veröffentlichung: sauberer Arbeitsbaum, Branch `master`, fünf vorhandene Commits bis `467adf6`, kein Remote. Die vorhandene Historie bleibt erhalten; `master` wird wie beauftragt in `main` umbenannt. Das Repository heißt tatsächlich `Blockboom-` und muss diesen Namen behalten, damit der konfigurierte Base-Pfad `/Blockboom-/` passt.
+Repository, `main`, Remote und Pages-Quelle **GitHub Actions** sind eingerichtet; die Veröffentlichung ist ausdrücklich freigegeben. Aktueller Umfang, geprüfter Release-Status und Geräteanleitung stehen im [v0.6-Bericht](../V06_REPORT.md). Die vorhandene Historie einschließlich `467adf6` bleibt erhalten. Das Repository heißt tatsächlich `Blockboom-`; dazu passt der Base-Pfad `/Blockboom-/`.
 
 ## Nach ausdrücklicher Freigabe
 
@@ -26,7 +26,7 @@ Die folgenden Schritte beschreiben die Einrichtung. Welche Schritte tatsächlich
    https://OWNER.github.io/Blockboom-/
    ```
 
-   Das ist ein URL-Muster, kein bereits bereitgestellter Link. Ein manueller Start per **Run workflow** ist ebenfalls möglich; auf anderen Branches wird nicht deployt. Der Workflow selbst wurde noch nicht auf GitHub ausgeführt.
+   Das ist das URL-Muster für neue Einrichtungen. BLOCKBOOM verwendet `https://selinajordan87-stack.github.io/Blockboom-/`; der genaue geprüfte Versionsstand steht im Releasebericht. Ein manueller Start per **Run workflow** ist ebenfalls möglich; auf anderen Branches wird nicht deployt.
 
 ## iPhone und Android
 

@@ -1,0 +1,175 @@
+{
+  "base": "http://127.0.0.1:4206/Blockboom-/",
+  "renderer": "Chromium / SwiftShader, no physical device",
+  "measurements": [
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "requestedQuality": 1,
+      "effectiveRatio": 1,
+      "calls": 68,
+      "triangles": 23788,
+      "geometries": 57,
+      "textures": 10,
+      "chunks": 28,
+      "activeChunks": 26,
+      "blocks": 38548,
+      "softwareFPS": 20,
+      "heap": 28450246,
+      "localStorageUTF16Bytes": 6668
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "requestedQuality": 1.5,
+      "effectiveRatio": 1.5,
+      "calls": 68,
+      "triangles": 23788,
+      "geometries": 57,
+      "textures": 10,
+      "chunks": 28,
+      "activeChunks": 26,
+      "blocks": 38548,
+      "softwareFPS": 13.1,
+      "heap": 31954459,
+      "localStorageUTF16Bytes": 6612
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "requestedQuality": 1,
+      "effectiveRatio": 1,
+      "calls": 71,
+      "triangles": 24920,
+      "geometries": 57,
+      "textures": 10,
+      "chunks": 28,
+      "activeChunks": 26,
+      "blocks": 38548,
+      "softwareFPS": 18.2,
+      "heap": 31141517,
+      "localStorageUTF16Bytes": 6668
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "requestedQuality": 1.5,
+      "effectiveRatio": 1.5,
+      "calls": 71,
+      "triangles": 24920,
+      "geometries": 57,
+      "textures": 10,
+      "chunks": 28,
+      "activeChunks": 26,
+      "blocks": 38548,
+      "softwareFPS": 12.5,
+      "heap": 30780889,
+      "localStorageUTF16Bytes": 6578
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "requestedQuality": 1,
+      "effectiveRatio": 1,
+      "calls": 71,
+      "triangles": 24920,
+      "geometries": 57,
+      "textures": 10,
+      "chunks": 28,
+      "activeChunks": 26,
+      "blocks": 38548,
+      "softwareFPS": 15.3,
+      "heap": 28928639,
+      "localStorageUTF16Bytes": 6666
+    },
+    {
+      "viewport": {
+        "width": 932,
+        "height": 430
+      },
+      "requestedQuality": 1.5,
+      "effectiveRatio": 1.5,
+      "calls": 71,
+      "triangles": 24920,
+      "geometries": 57,
+      "textures": 10,
+      "chunks": 28,
+      "activeChunks": 26,
+      "blocks": 38548,
+      "softwareFPS": 9,
+      "heap": 29227115,
+      "localStorageUTF16Bytes": 6592
+    }
+  ],
+  "scenes": [
+    {
+      "name": "wolf",
+      "calls": 70,
+      "triangles": 23800,
+      "geometries": 54,
+      "chunks": 28,
+      "activeChunks": 26,
+      "blocks": 38548
+    },
+    {
+      "name": "forest",
+      "calls": 39,
+      "triangles": 23370,
+      "geometries": 57,
+      "chunks": 33,
+      "activeChunks": 32,
+      "blocks": 58057
+    },
+    {
+      "name": "village",
+      "calls": 24,
+      "triangles": 14452,
+      "geometries": 67,
+      "chunks": 38,
+      "activeChunks": 32,
+      "blocks": 54856
+    },
+    {
+      "name": "mountain",
+      "calls": 13,
+      "triangles": 10412,
+      "geometries": 57,
+      "chunks": 30,
+      "activeChunks": 29,
+      "blocks": 48755
+    },
+    {
+      "name": "lake",
+      "calls": 18,
+      "triangles": 11408,
+      "geometries": 55,
+      "chunks": 33,
+      "activeChunks": 32,
+      "blocks": 54689
+    },
+    {
+      "name": "cave",
+      "calls": 18,
+      "triangles": 13974,
+      "geometries": 61,
+      "chunks": 34,
+      "activeChunks": 33,
+      "blocks": 60380
+    }
+  ],
+  "errors": [],
+  "storage": {
+    "sampleSaveUTF16Bytes": 5234,
+    "fiftyThousandDeltasUTF16Bytes": 2478300
+  }
+}

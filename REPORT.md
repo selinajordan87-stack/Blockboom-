@@ -175,3 +175,7 @@ Das Angelspiel besitzt nun acht sichtbare Arten, vier Gewässer, Ausrüstung, si
 ## 18. NIGHTFALL v0.5
 
 Tag und Nacht, drei Zombiearten, Gesundheit/Nahrung, sichtbarer Waffenkampf, Basisbauteile, Werkbank und freiwillige Schreibkämpfe ergänzen das bestehende Sandbox- und Angelspiel. Die additive Speichererweiterung, Prüfungen, Leistungsgrenzen, verschobene Details, Geräteabnahme und Veröffentlichung stehen im [v0.5-Bericht](V05_REPORT.md).
+
+## 19. LIVING WORLD v0.6
+
+Sechs Regionen, gestreamte äußere Chunks, begehbare Höhlen, Erz-/Werkzeugfortschritt, funktionale Einrichtung, getrennte Truhen, sechs Tiere, Farming und fünf verbundene Entdeckermissionen ergänzen das bestehende Spiel. Tatsächliche Tests, Speicherkompatibilität, Performance-Befunde, Einschränkungen, Commits und Veröffentlichung stehen im [v0.6-Bericht](V06_REPORT.md).
