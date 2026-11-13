@@ -59,7 +59,7 @@
 | `src/learning/living-content.ts` | 24 regionale Aufgaben ohne Änderung alter Aufgaben-IDs |
 | `scripts/measure-living.mjs` | reproduzierbare Produktionsmessungen/Screenshots in Chromium |
 
-Gezielte Erweiterungen an `World.ts`, `Renderer.ts`, `Player.ts`, `Save.ts`, `Equipment.ts`, `Defense.ts`, `Views.ts`, `HeldTools.ts`, Lernengine, `main.ts` und CSS verbinden diese Module mit dem bestehenden Spiel. Tests liegen unter `src/tests/living.test.ts`, `rendering.test.ts` und `e2e/living-v06.spec.ts`; ältere Prüfungen wurden nur bei bewusst erweiterten Material-/Werkzeug-/Aufgabenzahlen angepasst. Paketversion und Startbildschirm zeigen v0.6.0. Keine neuen Abhängigkeiten, kein Rewrite und keine fremden Assets.
+Gezielte Erweiterungen an `World.ts`, `Renderer.ts`, `Player.ts`, `Save.ts`, `Equipment.ts`, `Defense.ts`, `Views.ts`, `Zombies.ts`, `HeldTools.ts`, Lernengine, `main.ts` und CSS verbinden diese Module mit dem bestehenden Spiel. Tests liegen unter `src/tests/living.test.ts`, `rendering.test.ts` und `e2e/living-v06.spec.ts`; ältere Prüfungen wurden nur bei bewusst erweiterten Material-/Werkzeug-/Aufgabenzahlen angepasst. Paketversion und Startbildschirm zeigen v0.6.0. Keine neuen Abhängigkeiten, kein Rewrite und keine fremden Assets.
 
 ## Speicherkompatibilität und Grenzen
 
@@ -75,14 +75,17 @@ Gezielte Erweiterungen an `World.ts`, `Renderer.ts`, `Player.ts`, `Save.ts`, `Eq
 ## Tatsächlich ausgeführte Prüfungen
 
 - Ausgangsstand v0.5: strict TypeScript, 58/58 Logiktests und Build bestanden; veröffentlichtes Bundle und erfolgreicher Pages-Lauf geprüft.
-- Nach abschließender Stabilisierung: strict TypeScript, **74/74 Unit-/Integrationstests** in zehn Dateien und Produktionsbuild bestanden. Aktuelles Bundle: `index-D2TPZoVJ.js`, CSS `index-BWFNebq2.css`, Three.js `three-D1BCpSoH.js`.
+- Nach abschließender Stabilisierung einschließlich Sichtbarkeitskorrektur: strict TypeScript, **75/75 Unit-/Integrationstests** in zehn Dateien und Produktionsbuild bestanden. Aktuelles Bundle: `index-DE_B-dPy.js`, CSS `index-BWFNebq2.css`, Three.js `three-D1BCpSoH.js`.
 - Erster vollständiger Produktions-Browserlauf unter `/Blockboom-/`: **59/59 bestanden**, 11,4 Minuten, Chromium/SwiftShader. Enthält alle 53 bisherigen Fälle und sechs neue verknüpfte Wohnwelt-Abläufe.
 - Die neuen Fälle prüfen tatsächliche Höhlenbewegung/Reload, Entdeckung der Regionen, Erzabbau, Ofen/Werkzeugkette, Füttern/Benennen, mobiles Pflanzen/Ernten, Truhentransfer/Reload und alle fünf Missionen. Wachstumszeit wird im Browserfall nach echter Aussaat als gespeicherte aktive Zeit vorgerückt; es wird kein minutenlanges Echtzeitwarten behauptet.
 - Gefundene Integrationsfehler wurden korrigiert: Schmiedeofen belegte dieselbe Zelle wie die Fundtruhe; ungeeignete Testpositionen im Gelände lösten den sicheren Wiedereinstieg aus; ein Truhentest zielte auf den Rand des Modells. Fehlerläufe sind keine bestandenen Prüfungen.
 - Anschließend **7/7 neue Kernabläufe** nach den Streaming-/Speicherschutzänderungen erneut bestanden, einschließlich tatsächlicher Bettnutzung bis zum Morgen, voller Truhe und ausgefüllter Browserquote.
 - Ein weiterer Gesamtlauf wurde nach 20 erfolgreichen Fällen wegen eines Renderer-Absturzes im Quoten-Stresstest abgebrochen: ein Fall fehlgeschlagen, ein laufender Fall bewusst unterbrochen, 41 noch nicht ausgeführt. Das vorherige Füllverfahren schrieb beim Annähern an die Quote viele große Werte in einer Schleife. Es wurde durch eine begrenzte binäre Suche mit Ereignisschleifen-Freigaben ersetzt. Kein Nachweis eines Absturzes beim normalen Speichern; der Fehler im Stresstest wird ausdrücklich nicht als erfolgreicher Test gezählt.
 - Das korrigierte Quotenverfahren bestand anschließend **3/3 Wiederholungen** (46,4 Sekunden). Die drei neuen mobilen Karten-/Nahrungs-/Tiernamenfälle bestehen bei 667×375, 844×390 und 932×430, jeweils zusätzlich mit 240 Pixeln Tastaturhöhe.
-- Abschließende vollständige Produktions-Browsersuite auf dem unveränderten Release-Code `41805a1`: **63/63 bestanden**, 11,6 Minuten. Alle zehn neuen Fälle und alle 53 bisherigen Regressionen sind enthalten. Zusätzlich bestehen TypeScript strict, 74/74 Unit-/Integrationstests und der Build. Bau-/Undo-Plateau: beide Messungen 55 Geometrien und zehn Texturen. Die Live-Prüfung folgt nach Deployment.
+- Vollständige Produktions-Browsersuite auf Release-Code `41805a1`: **63/63 bestanden**, 11,6 Minuten. Alle zehn neuen Fälle und alle 53 bisherigen Regressionen sind enthalten. Zusätzlich bestanden TypeScript strict, 74/74 Unit-/Integrationstests und der Build. Bau-/Undo-Plateau: beide Messungen 55 Geometrien und zehn Texturen.
+- Nach der ersten Veröffentlichung bestanden **17/17 Live-Fälle** auf GitHub Pages, 5,2 Minuten: alle zehn neuen Abläufe, Angeln mit Reload, BOOM, kombinierter Touch-Spielablauf, Schreibkampf, Nahkampf, Dreifingersteuerung und Pages-Assets.
+- Zusätzliche Randkontrolle: Der alte Zombie-Instancing-Sichtradius 60 deckte die neue Welt nicht vollständig ab. Ein reproduzierbarer Kamerafrustum-Test zeigt einen tatsächlich sichtbaren Gegner bei (57,5 / 1 / 57,5), während dessen InstancedMesh fälschlich ausgeblendet wurde. Dieser Fall schlug vor der Korrektur fehl. Der Radius wird jetzt aus Weltgrenze und Bauhöhe abgeleitet; der Test besteht. Die erste Testfixture wurde zuvor auf die tatsächliche Bodenhöhe der Spawnprüfung korrigiert.
+- Nach dieser eng begrenzten Grafikänderung (`a2be6c9`): erneut strict TypeScript, **75/75 Tests**, Produktionsbuild und **14/14 gezielte NIGHTFALL-/Pages-Browserfälle** bestanden (2,2 Minuten). Es wird kein weiterer vollständiger 63er-Durchlauf nach dieser Änderung behauptet. Danach dieselben **14/14 Fälle direkt auf dem korrigierten GitHub-Pages-Bundle bestanden** (2,2 Minuten), einschließlich Kampf, Dreifingersteuerung, mobiler Tastaturhöhe, Save/Reload und Pages-Assets.
 
 ## Performance-Befunde
 
@@ -129,7 +132,13 @@ Gezielte Erweiterungen an `World.ts`, `Renderer.ts`, `Player.ts`, `Save.ts`, `Eq
 - `b1ccf11`: verknüpfte Regionen, Streaming, Höhlen, Einrichtung, Tiere, Garten, Missionen und regionale Lerninhalte.
 - `e5db9e2`: Save-/Truhenschutz, gestaffeltes Nachladen, stabile Missionsprüfung, verbundene Browser-/Logikregressionen und Messskript.
 - `41805a1`: sichere Haustierpositionen auch beim Warten/Schlafen, feste Truhengrenze ohne stillen Inhaltsverlust, Kompassabstand und begrenzter Quoten-Stresstest.
-- Dokumentationscommit und tatsächlicher Actions-/Live-Status werden nach Veröffentlichung ergänzt. Lokal ist der Release geprüft; noch keine v0.6-Veröffentlichung bestätigt.
+- `c48a8c5`: geprüfter Releasebericht, Start-/Geräteanleitung, Lizenznachweis und Messdaten. Per Fast-Forward nach `main` übernommen und ohne Force-Push veröffentlicht. Der ursprüngliche Commit `467adf6` ist weiterhin Vorfahr; frühere Branches und Commits bleiben erhalten.
+- `a2be6c9`: reproduzierter und korrigierter Zombie-Sichtbarkeitsradius für die vergrößerte Welt, mit zusätzlichem Regressionstest.
+- Erste Veröffentlichung: [Workflow 43380788662](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43380788662) für `c48a8c5` am 13. November 2026 erfolgreich; auch dort strict TypeScript, 74/74 Tests und Build erfolgreich. Das Bundle `index-D2TPZoVJ.js` bestand anschließend die 17 Live-Fälle.
+- Korrigierter Release: [Workflow 43382086660](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43382086660) für `a2be6c9` erfolgreich. Die bestehenden offiziellen Pages-Actions wurden verwendet. Nicht blockierende GitHub-Hinweise betreffen ältere Action-Runtime-Metadaten; die Ausführung unter Node 24 war erfolgreich.
+- Öffentliche Adresse: **https://selinajordan87-stack.github.io/Blockboom-/** — tatsächlich HTTP 200, HTML verweist auf `index-DE_B-dPy.js`, `index-BWFNebq2.css` und `three-D1BCpSoH.js`.
+- Heruntergeladenes korrigiertes Live-Spielbundle und lokaler getesteter Build besitzen exakt denselben SHA-256: `8625df2a4a0abd066c87918044d69c7f391296059aa29b63d221baef4a0e64b9`.
+- Die 14 relevanten Live-Nachtests bestehen vollständig. **v0.6.0 ist veröffentlicht und automatisiert geprüft; die echte iPhone-/Android-Abnahme bleibt offen.** Auf dem Gerät neu laden, ohne Website-Daten zu löschen. Maßgeblich für den laufenden Hauptbranch ist der [aktuelle Pages-Workflowstatus](https://github.com/selinajordan87-stack/Blockboom-/actions/workflows/pages.yml).
 
 ## Nächste sinnvolle Teilversion
 
