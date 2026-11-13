@@ -217,6 +217,7 @@ defenseView.update(camera.position,isNight(night.time));
 // A few distant block clouds and hand-built signs; all artwork is generated here.
 const cloudMaterial = new T.MeshLambertMaterial({ color: 0xf4f6e9 });
 const cube = new T.BoxGeometry(1, 1, 1);
+const movingClouds:T.Mesh[]=[];
 for (const [x, z] of [
   [-16, -18],
   [9, -23],
@@ -226,6 +227,7 @@ for (const [x, z] of [
   const cloud = new T.Mesh(cube, cloudMaterial);
   cloud.position.set(x, 14, z);
   cloud.scale.set(7, 1.2, 3);
+  cloud.userData.baseX=x;movingClouds.push(cloud);
   scene.add(cloud);
 }
 function sign(text: string, x: number, z: number, color: string) {
@@ -446,11 +448,14 @@ function destroy(finishMining=false) {
   heldTools.play("mine");
   syncAim();
   const previous = target ? world.get(...target) : undefined;
+  if(previous==="Truhe"&&target&&Object.values(expansion.living.chests[target.join(",")]||{}).some(n=>n>0)){toast("Leere die Truhe zuerst. So bleiben deine Gegenstände sicher.");return;}
+  if(previous==="Schatztruhe"){toast("Öffne die Fundtruhe mit Benutzen. Sie gehört zum Entdeckerpfad.");return;}
   if(previous?.endsWith("erz")&&!finishMining){
     const m=mining(previous,expansion.tool);if(!m.allowed&&night.mode!=="Kreativ"){toast(`Dieses Erz braucht Werkzeugstufe ${m.required}. Stelle eine bessere Spitzhacke her.`);return;}
     if(!miningAction&&target)miningAction={cell:[...target],block:previous,elapsed:0,seconds:night.mode==="Kreativ"?.25:m.seconds};return;
   }
   if (target && remove(world, target, player.pos)) {
+    expansion.living.crops=expansion.living.crops.filter(c=>c.cell.join(",")!==target!.join(","));
     history.record(target, previous!, null);
     syncUndo();
     if (previous && previous !== "Boom")
@@ -1453,6 +1458,7 @@ let lastAim = 0;
 let learningOffer = 0,
   offered = false;
 let last = performance.now(),
+  dogAlertAt = 0,
   livingAccum = 0,
   missionAccum = 0,
   zombieAccum = 0,
@@ -1480,13 +1486,14 @@ function frame(now: number) {
   }
   if (canPlay()) {
     expansion.living.clock+=elapsed;
-    regionStream.ensure(player.pos[0],player.pos[2]);
+    regionStream.ensure(player.pos[0],player.pos[2],1);
     livingAccum+=elapsed;
     if(livingAccum>.2){
       updateAnimals(expansion.living,world,player.pos,livingAccum);livingAccum=0;
       const found=discover(expansion.living,player.pos);if(found){toast(`Entdeckt: ${found.name}`);save();}
     }
     missionAccum+=elapsed;if(missionAccum>=1){missionAccum=0;const earned=checkMissions(expansion.living,world);if(earned.length){toast(`Entdeckerpfad geschafft: ${earned.join(", ")}`);save();}}
+    if(expansion.living.clock>dogAlertAt){const dog=expansion.living.animals.find(a=>a.tame&&a.kind==="Wolf"&&Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<12);if(dog&&zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<10)){toast(`${dog.name||"Dein Wolf"} warnt dich vor nahen Zombies.`);dogAlertAt=expansion.living.clock+20;}}
     if(miningAction){
       if(!target||target.join(",")!==miningAction.cell.join(",")||world.get(...target)!==miningAction.block){miningAction=null;$("mining-progress").hidden=true;}
       else{miningAction.elapsed+=elapsed;$("mining-progress").hidden=false;$("mining-progress").textContent=`${miningAction.block} · ${Math.min(100,Math.round(miningAction.elapsed/miningAction.seconds*100))}%`;heldTools.play("mine");if(miningAction.elapsed>=miningAction.seconds){miningAction=null;$("mining-progress").hidden=true;destroy(true);}}
@@ -1665,6 +1672,7 @@ function frame(now: number) {
     camera.lookAt(-2, 0, -2);
   }
   dayView.update(night.time,camera.position);
+  for(const cloud of movingClouds)cloud.position.x=cloud.userData.baseX+Math.sin(expansion.living.clock*.015+cloud.position.z)*2;
   if(player.pos[1]<-3)ambient.intensity*=.25;
   livingView.update(expansion.living,camera.position);
   zombieView.update(zombies);

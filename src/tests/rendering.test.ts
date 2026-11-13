@@ -2,6 +2,7 @@ import { it, expect } from "vitest";
 import * as T from "three";
 import { World } from "../world/World";
 import { WorldView } from "../world/Renderer";
+import { RegionStream } from "../living/Regions";
 it("behält eine begrenzte Geometriezahl und baut nur betroffene Chunks neu", () => {
   const w = new World(),
     scene = new T.Scene(),
@@ -51,4 +52,19 @@ it("behält eine begrenzte Geometriezahl und baut nur betroffene Chunks neu", ()
       rebuiltMeshes: disposed,
     }),
   );
+});
+
+it("gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam",()=>{
+ const w=new World(),stream=new RegionStream(w),scene=new T.Scene(),view=new WorldView(w,scene);
+ const tracked=new Map<T.BufferGeometry,boolean>();let peakMeshes=0,peakBlocks=0,maxRebuildMs=0;
+ for(const [x,z]of [[0,17],[-43,12],[45,-30],[39,29],[-43,-35],[45,-30],[-43,12],[0,17]]){
+   const t=performance.now();stream.ensure(x,z);view.update();maxRebuildMs=Math.max(maxRebuildMs,performance.now()-t);
+   peakMeshes=Math.max(peakMeshes,view.group.children.length);peakBlocks=Math.max(peakBlocks,w.blocks.size);
+   for(const m of view.group.children){const mesh=m as T.Mesh;expect([view.material,view.glass]).toContain(mesh.material);
+     if(!tracked.has(mesh.geometry)){tracked.set(mesh.geometry,false);mesh.geometry.addEventListener("dispose",()=>tracked.set(mesh.geometry,true));}
+   }
+   expect([...tracked.values()].filter(disposed=>!disposed)).toHaveLength(view.group.children.length);
+ }
+ expect(peakMeshes).toBeLessThanOrEqual(74);expect(peakBlocks).toBeLessThan(120000);expect([...tracked.values()].filter(Boolean).length).toBeGreaterThan(50);
+ console.info(JSON.stringify({streamingPasses:8,peakMeshes,peakBlocks,remainingGeometry:view.group.children.length,disposedGeometry:[...tracked.values()].filter(Boolean).length,maxRebuildMs:+maxRebuildMs.toFixed(2)}));
 });

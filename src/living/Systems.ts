@@ -1,4 +1,4 @@
-import { World, type Cell, type Block } from "../world/World";
+import { World, MIN_Y, MAX_Y, type Cell, type Block } from "../world/World";
 import { collides, solid } from "../nightfall/Defense";
 import { type LivingState, type Animal, type CropKind, CROPS } from "./State";
 import { ItemStore } from "./Items";
@@ -23,7 +23,7 @@ export function feed(animal:Animal,store:ItemStore){
  animal.hunger=Math.min(100,animal.hunger+35);animal.trust=Math.min(3,animal.trust+1);if(animal.trust>=2)animal.tame=true;animal.action="Fressen";return true;
 }
 function animalFloor(w:World,x:number,z:number,around:number){
- for(let y=Math.min(25,Math.floor(around)+1);y>=-1;y--)if(solid(w.get(Math.floor(x),y,Math.floor(z))))return y+1;
+ for(let y=Math.min(MAX_Y,Math.floor(around));y>=MIN_Y;y--)if(solid(w.get(Math.floor(x),y,Math.floor(z))))return y+1;
  return null;
 }
 export function updateAnimals(s:LivingState,w:World,player:Cell,dt:number){
@@ -40,7 +40,7 @@ export function updateAnimals(s:LivingState,w:World,player:Cell,dt:number){
   const tx=following?player[0]:a.home[0]+Math.sin(a.phase*.24)*2.5,tz=following?player[2]:a.home[2]+Math.cos(a.phase*.18)*2.5;
   const dx=tx-a.pos[0],dz=tz-a.pos[2],len=Math.hypot(dx,dz)||1,step=Math.min(len,dt*(following?3: .7));
   const next:Cell=[a.pos[0]+dx/len*step,a.pos[1],a.pos[2]+dz/len*step],floor=animalFloor(w,next[0],next[2],a.pos[1]);
-  if(floor!==null&&Math.abs(floor-a.pos[1])<=.55){next[1]=floor+.001;if(!collides(w,next,.75,.24)){a.pos=next;a.heading=Math.atan2(dx,dz);a.action="Gehen";}}
+  if(floor!==null&&Math.abs(floor-a.pos[1])<=1.05){next[1]=floor+.001;if(!collides(w,next,.75,.24)){a.pos=next;a.heading=Math.atan2(dx,dz);a.action="Gehen";}}
   // Tamed animals cannot die; an edited wall sends them to their saved safe home.
   if(a.tame&&collides(w,a.pos,.7,.2)&&!collides(w,a.home,.7,.2))a.pos=[...a.home];
  }
@@ -59,10 +59,15 @@ export function sheltered(w:World,pos:Cell){
  return roof&&enclosed;
 }
 export function checkMissions(s:LivingState,w:World){
- const bed=s.placed.filter(k=>w.get(...k.split(",").map(Number) as Cell)==="Bett").some(k=>{
+ const bed=!s.completed.includes("home")&&s.placed.filter(k=>w.get(...k.split(",").map(Number) as Cell)==="Bett").some(k=>{
    const p=k.split(",").map(Number) as Cell;
-   const near=(b:string)=>[...w.blocks].some(([id,block])=>{const c=id.split(",").map(Number);return block===b&&Math.hypot(c[0]-p[0],c[1]-p[1],c[2]-p[2])<7;});
-   return sheltered(w,[p[0],p[1]+1,p[2]])&&near("Tür")&&(near("Fackel")||near("Laterne"));
+   if(!sheltered(w,[p[0],p[1]+1,p[2]]))return false;
+   let door=false,light=false;
+   for(let dx=-6;dx<=6;dx++)for(let dy=-6;dy<=6;dy++)for(let dz=-6;dz<=6;dz++){
+     if(dx*dx+dy*dy+dz*dz>=49)continue;const b=w.get(p[0]+dx,p[1]+dy,p[2]+dz);
+     door ||= b==="Tür";light ||= b==="Fackel"||b==="Laterne";if(door&&light)return true;
+   }
+   return false;
  });
  const success=[bed,s.animals.some(a=>a.tame&&a.name.trim().length>0),s.regions.includes("cave")&&s.mined.length>=3,s.blueprint,s.looted.includes("49,-5,-33")];
  const earned:string[]=[];for(let i=0;i<EXPLORER.length;i++)if(success[i]&&!s.completed.includes(EXPLORER[i].id)&&(i===0||s.completed.includes(EXPLORER[i-1].id))){s.completed.push(EXPLORER[i].id);earned.push(EXPLORER[i].name);s.bag.Bergkristall=(s.bag.Bergkristall||0)+1;}return earned;
@@ -72,6 +77,7 @@ export function mining(block:Block,tool:string){const tier=tool==="Eisenspitzhac
  const required=block==="Golderz"?3:block==="Eisenerz"?2:1;
  return {allowed:tier>=required,seconds:Math.max(.35,2.4-tier*.55),required};}
 export function loot(s:LivingState,store:ItemStore,cell:Cell){const id=cell.join(",");if(s.looted.includes(id))return "Hier hast du bereits alles gefunden.";
+ if(!["41,1,28","49,-5,-33"].includes(id))return "Diese Truhe enthält keinen alten Fund.";
  if(id==="49,-5,-33"&&!s.blueprint)return "Ein Zeichen der alten Schmiede fehlt. Suche dort den Bauplan.";
  s.looted.push(id);
  if(id==="41,1,28"){s.blueprint=true;store.add("Bauplan",1);store.add("Altes Buch",1);return "Bauplan gefunden: Unter dem Berg, hinter Kupfer, liegt die Kristallkammer. Die Schmiede wurde nach einem Sturm verlassen.";}

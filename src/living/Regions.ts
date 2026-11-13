@@ -9,7 +9,7 @@ export const REGIONS = [
 ] as const;
 export function regionAt(x:number,y:number,z:number){
   if(x>=26&&z<-20&&y<3)return REGIONS[4];
-  return REGIONS.reduce((a,b)=>Math.hypot(x-a.x,z-a.z)<Math.hypot(x-b.x,z-b.z)?a:b);
+  return REGIONS.filter(r=>r.id!=="cave").reduce((a,b)=>Math.hypot(x-a.x,z-a.z)<Math.hypot(x-b.x,z-b.z)?a:b);
 }
 export const LANDMARKS = {
   cave:[28,1,-30], forge:[39,1,29], cellar:[43,-4,37], treasure:[49,-5,-33], home:[4,1,19],
@@ -33,15 +33,17 @@ function structure(w:World,cx:number,cz:number,kind:"house"|"forge"|"tower"){
   }
   w.set(cx+2,1,cz,"Tür",false);w.set(cx+2,2,cz,"Tür",false);
   w.set(cx+1,1,cz+3,kind==="forge"?"Ofen":"Truhe",false);w.set(cx+4,2,cz+4,"Laterne",false);
-  if(kind==="forge")w.set(cx+3,1,cz+3,"Werkbank",false);
+  if(kind==="forge"){w.set(cx+3,1,cz+3,"Werkbank",false);w.set(cx+4,1,cz+2,"Ofen",false);}
   if(kind==="tower")for(let y=1;y<=6;y++)w.set(cx+1,y,cz+1,"Leiter",false);
 }
 /** Deterministic external chunks; origin [-24,24) is never generated over. */
 export class RegionStream {
   private center="";
+  private pending:string[]=[];
   constructor(private world:World){}
-  ensure(x:number,z:number){
-    const cx=Math.floor(x/12),cz=Math.floor(z/12),center=`${cx},${cz}`;if(center===this.center)return;
+  ensure(x:number,z:number,budget=Infinity){
+    const cx=Math.floor(x/12),cz=Math.floor(z/12),center=`${cx},${cz}`;
+    if(center!==this.center){
     this.center=center;const wanted=new Set<string>();
     for(let a=cx-2;a<=cx+2;a++)for(let b=cz-2;b<=cz+2;b++)
       if(a>=-5&&a<5&&b>=-5&&b<5&&(a-cx)**2+(b-cz)**2<=5)wanted.add(`${a},${b}`);
@@ -50,10 +52,14 @@ export class RegionStream {
       if(!wanted.has(id)){
         for(let xx=a*12;xx<a*12+12;xx++)for(let zz=b*12;zz<b*12+12;zz++)for(let y=MIN_Y;y<=MAX_Y;y++)this.world.blocks.delete(`${xx},${y},${zz}`);
         this.world.activeChunks.delete(id);this.world.revision++;
+        // Adjacent meshes must expose the faces formerly hidden by this chunk.
+        for(let edge=0;edge<12;edge++)for(const [xx,zz]of [[a*12-1,b*12+edge],[a*12+12,b*12+edge],[a*12+edge,b*12-1],[a*12+edge,b*12+12]])this.world.dirty.add(`${xx},0,${zz}`);
       }
     }
+    this.pending=[...wanted].filter(id=>!this.world.activeChunks.has(id)).sort((a,b)=>{const [ax,az]=a.split(",").map(Number),[bx,bz]=b.split(",").map(Number);return (ax-cx)**2+(az-cz)**2-(bx-cx)**2-(bz-cz)**2;});
+    }
     const generated:string[]=[];
-    for(const id of wanted)if(!this.world.activeChunks.has(id)){
+    for(const id of this.pending.splice(0,budget))if(!this.world.activeChunks.has(id)){
       const [a,b]=id.split(",").map(Number);this.generate(a,b);this.world.activeChunks.add(id);generated.push(id);
     }
     if(generated.length)for(const [key,block]of Object.entries(this.world.changes)){

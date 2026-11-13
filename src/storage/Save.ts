@@ -50,7 +50,7 @@ export function decode(raw: string | null): Save | null {
         c[1] < MIN_Y ||
         c[1] > MAX_Y ||
         !(
-          b === null || [...TYPES, "Laub", "Sand", "Boom", "Tür offen", "Tor offen"].includes(b as string)
+          b === null || [...TYPES, "Laub", "Sand", "Boom", "Tür offen", "Tor offen", "Schatztruhe"].includes(b as string)
         )
       )
         return null;
@@ -108,6 +108,8 @@ export function load(storage: Pick<Storage, "getItem">) {
 }
 export function persist(storage: Pick<Storage, "setItem">, save: Save) {
   try {
+    // Never replace a readable save with a world that the loader would reject.
+    if(Object.keys(save.changes).length>50000)return false;
     storage.setItem(SAVE_KEY, JSON.stringify(save));
     return true;
   } catch {

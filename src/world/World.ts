@@ -15,9 +15,9 @@ export const TYPES = [
   "Kalkstein",
   "Schiefer",
   "Tür", "Tor", "Zaun", "Leiter", "Treppe", "Fackel", "Falle", "Lagerkiste", "Barriere", "Mauer",
-  "Kohleerz", "Kupfererz", "Eisenerz", "Golderz", "Acker", "Bett", "Tisch", "Stuhl", "Regal", "Truhe", "Werkbank", "Ofen", "Laterne", "Teppich", "Schatztruhe",
+  "Kohleerz", "Kupfererz", "Eisenerz", "Golderz", "Acker", "Bett", "Tisch", "Stuhl", "Regal", "Truhe", "Werkbank", "Ofen", "Laterne", "Teppich",
 ] as const;
-export type Block = (typeof TYPES)[number] | "Boom" | "Tür offen" | "Tor offen";
+export type Block = (typeof TYPES)[number] | "Boom" | "Tür offen" | "Tor offen" | "Schatztruhe";
 export type Cell = [number, number, number];
 export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
 export const LIMIT = 60;
