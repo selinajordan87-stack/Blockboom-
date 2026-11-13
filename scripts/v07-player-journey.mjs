@@ -43,13 +43,15 @@ export class FreshJourney{
  async close(){if(await this.page.locator('#close').isVisible())await this.page.locator('#close').tap();}
  async save(){await this.menu('save');const state=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('blockboom.save')));await this.page.locator('#resume').tap();return state;}
  async readEntry(id,photo){await this.menu('menu-book');await this.page.locator(`[data-book-entry="${id}"]`).tap();const text=await this.page.locator('#panel-content').innerText();this.events.push({event:'read-text',id,text});if(photo)await this.page.screenshot({path:`${this.out}/${photo}.png`});await this.page.locator('#note-done').tap();return text;}
- async finish(){await writeFile(`${this.out}/journey.json`,JSON.stringify({kind:'input-only known-route technical gameplay proof, not independent human exploration',events:this.events,errors:this.errors},null,2)+'\n');}
+ async finish(){try{await this.menu('menu-settings');await this.page.locator('#save-transfer').tap();const pending=this.page.waitForEvent('download');await this.page.locator('#export-save').tap();await(await pending).saveAs(`${this.out}/played-save.json`);this.events.push({event:'export',method:'normal save export UI, actual played state'});}catch(error){this.events.push({event:'export-failure',message:String(error)});}await writeFile(`${this.out}/journey.json`,JSON.stringify({kind:'input-only known-route technical gameplay proof, not independent human exploration',events:this.events,errors:this.errors},null,2)+'\n');}
 }
 
 async function run(){
  const browser=await chromium.launch(browserOptions),context=await browser.newContext({viewport:{width:844,height:390},isMobile:true,hasTouch:true}),page=await context.newPage(),j=new FreshJourney(page,context,process.env.BLOCKBOOM_ARTIFACT_DIR||'artifacts/v07/after');
  try{
-  await j.start();await j.capture('01-start-region');await j.capture('16-mobile-hud');
+  await j.start();
+  if(process.env.BLOCKBOOM_CONTINUE_SAVE){await j.menu('menu-settings');await page.locator('#save-transfer').tap();await page.locator('#import-file').setInputFiles(process.env.BLOCKBOOM_CONTINUE_SAVE);await page.locator('#apply-import').tap();await page.locator('#play').tap();await j.fresh();j.events.push({event:'continue',method:'actual previously exported played save imported through normal UI'});}
+  await j.capture('01-start-region');await j.capture('16-mobile-hud');
   await j.menu('menu-map');await page.screenshot({path:`${j.out}/15-discovery-map.png`});await j.close();
   await j.readEntry('start-plan','14-reading-adventure');
   await j.menu('night-menu');await page.locator('#difficulty').selectOption('Friedlich');await page.locator('#apply-night').tap();j.events.push({event:'setting',difficulty:'Friedlich',method:'normal settings UI; exploration control run, combat tested separately'});
@@ -58,11 +60,12 @@ async function run(){
    {name:'lake',points:[[-26,7],[-26,-20],[-30,-35],[-36,-35]],photo:'04-lake'},
    {name:'mountain-approach',points:[[-25,-34],[20,-34],[26,-30]],photo:'06-cave-entrance'},
    {name:'old-mine',points:[[28,-30],[34,-30],[41,-30],[46,-30]],photo:'07-cave-interior'},
-   {name:'old-settlement',points:[[41,-30],[34,-30],[27,-30],[24,-30],[24,20],[31,22],[38,24]],photo:'08-abandoned-settlement'},
-   {name:'outer-settlement',points:[[54,20],[72,20],[84,48],[96,74],[100,82]],photo:'08b-larger-settlement'},
-   {name:'mountains',points:[[84,48],[72,20],[84,-20],[104,-50],[122,-75]],photo:'03-mountain'},
+   {name:'old-settlement',points:[[41,-30],[34,-30],[27,-30],[24,-30],[24,20],[28,22]],photo:'08-abandoned-settlement',look:[42,3,34]},
+   {name:'outer-settlement',points:[[28,22],[54,23],[64,27],[76,43],[88,59],[100,75]],photo:'08b-larger-settlement',look:[107,4,91]},
+   {name:'mountains',points:[[88,59],[76,43],[64,27],[64,-45],[100,-70],[122,-84],[129,-90]],photo:'03-mountain',look:[145,18,-105]},
   ];
-  for(const leg of route){for(const [x,z]of leg.points)await j.walk(x,z,{name:`${leg.name}:${x},${z}`});await j.capture(leg.photo);}
+  const active=process.env.BLOCKBOOM_JOURNEY_ROUTE==='outer'?route.slice(5):route;
+  for(const leg of active){for(const [x,z]of leg.points)await j.walk(x,z,{name:`${leg.name}:${x},${z}`});if(leg.look)await j.aim(...leg.look);await j.capture(leg.photo);}
   await j.save();await page.reload();await page.locator('#play').tap();await j.capture('17-save-reload');
  }catch(error){j.events.push({event:'failure',message:String(error)});await page.screenshot({path:`j.out/failure.png`.replace('j.out',j.out)}).catch(()=>{});throw error;}finally{await j.finish();await browser.close();}
 }

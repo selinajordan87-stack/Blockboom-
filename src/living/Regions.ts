@@ -134,7 +134,8 @@ export class RegionStream {
       // One-block shore steps permit a normal jump out of the water.
       const top=lake?(river?(Math.abs(x+30)<1?-2:-1):lakeDistance<.67?-2:-1):settlement?0:terrainHeight(x,z);
       for(let y=MIN_Y;y<=top;y++){
-        let block:Block=y===MIN_Y?"Stein":y===top?(lake?"Sand":"Gras"):y>=top-2?"Erde":"Stein";
+        const rock=Math.hypot(x-46,z+40)<22&&top>=4;
+        let block:Block=y===MIN_Y?"Stein":y===top?(lake?"Sand":rock?(top>=9?"Kalkstein":top>=7?"Schiefer":"Stein"):"Gras"):y>=top-2&&!rock?"Erde":"Stein";
         const hash=Math.abs(x*73856093^y*19349663^z*83492791);
         if(y<top-3&&y>MIN_Y&&hash%47===0)block="Kohleerz";
         if(y<-2&&hash%61===0)block="Kupfererz";

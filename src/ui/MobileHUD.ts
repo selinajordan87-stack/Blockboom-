@@ -58,6 +58,7 @@ export class SlotHold {
  private stopTimer(){if(this.timer!==undefined)clearTimeout(this.timer);this.timer=undefined;}
 }
 const $=(id:string)=>document.getElementById(id)!;
+const quickIcon=(tool:string)=>`<svg viewBox="0 0 28 28" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${tool==="Spitzhacke"?'<path d="M8 24L18 9" stroke="#bd9462"/><path d="M5 9Q13 1 24 13L18 9L11 7Z" fill="#a2bac0"/>':tool==="Axt"?'<path d="M8 24L17 6" stroke="#bd9462"/><path d="M15 6L24 10L20 17L11 12Z" fill="#a2bac0"/>':tool==="Schwert"?'<path d="M6 24L12 18M9 16L15 22" stroke="#c4a367"/><path d="M12 18L21 4L24 5L23 10L15 21Z" fill="#a2bac0"/>':'<path d="M7 24L20 4L22 7" stroke="#c4a367"/><path d="M21 6L23 20Q23 25 19 23M9 19L13 20" stroke-width="1.4"/>'}</svg>`;
 export class MobileHUD {
  readonly active=matchMedia("(pointer: coarse)").matches;
  private currentTool:Tool="Bauwerkzeug";private holds:SlotHold[]=[];
@@ -80,7 +81,7 @@ export class MobileHUD {
    button.addEventListener("click",e=>{if(e.detail===0)hold.keyboard();},true);
    bindTap(button,()=>{if(hold.tapAllowed&&allowed())action();});quick.append(button);
   };
-  for(const entry of QUICK_TOOLS){const b=document.createElement("button");b.id=entry.id;b.dataset.quickTool=entry.tool;b.textContent=entry.icon;b.setAttribute("aria-label",`${entry.tool} ausrüsten · halten für Inventar`);slot(b,()=>choose(entry.tool));}
+  for(const entry of QUICK_TOOLS){const b=document.createElement("button");b.id=entry.id;b.dataset.quickTool=entry.tool;b.innerHTML=quickIcon(entry.tool);b.setAttribute("aria-label",`${entry.tool} ausrüsten · halten für Inventar`);slot(b,()=>choose(entry.tool));}
   const material=document.createElement("button");material.id="selected-material";material.setAttribute("aria-label","Baumaterial auswählen");material.innerHTML='<span class="block-icon"></span><small>Gras</small><span class="quick-count"></span>';
   slot(material,()=>{if(this.currentTool==="Bauwerkzeug")openMaterials();else choose("Bauwerkzeug");});
   const food=document.createElement("button");food.id="quick-food";food.textContent="◉";food.setAttribute("aria-label","Nahrung verwenden · halten für Inventar");slot(food,()=>hooks.eatFood?hooks.eatFood():inventory());

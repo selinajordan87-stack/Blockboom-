@@ -5,6 +5,9 @@
 .discovery-reading h2{line-height:1.3;text-transform:none;}
 .discovery-reading summary{font-size:16px;line-height:1.6;padding:9px 0;}
 .discovery-reading .challenge-domain{font-size:12px!important;}
+.blueprint-layout{display:grid;grid-template-columns:115px minmax(0,1fr);gap:16px;align-items:center;}
+.blueprint-layout svg{width:115px;height:115px;background:#204a40;border-radius:12px;}
+@media(max-width:430px){.blueprint-layout{grid-template-columns:1fr;}.blueprint-layout svg{margin:auto;}}
 .menu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0;}
 .menu-grid button{min-width:0;padding:10px 7px;font-size:13px;line-height:1.35;overflow-wrap:anywhere;}
 .menu-priority{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}

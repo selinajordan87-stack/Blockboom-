@@ -61,6 +61,8 @@ import {exportTransfer,parseTransfer,importTransfer,IMPORT_BACKUP,type Transfer}
 import {DiscoveryEngine} from "./discovery/Engine";
 import {DiscoveryUI} from "./discovery/UI";
 import {DiscoveryView} from "./discovery/View";
+import {BlueprintPreview,buildTower,towerPlan,towerValidity,observeFromTower} from "./discovery/Blueprint";
+import {BlueprintUI} from "./discovery/BlueprintUI";
 import {LandmarkView} from "./world/LandmarkView";
 import {speak} from "./learning/Speech";
 import { DayView, advanceDay, dayPhase, isNight } from "./nightfall/DayCycle";
@@ -195,7 +197,8 @@ let lastNotice="",webglLost=false,importingSave=false;
 function recordDiagnostic(event:string,detail?:string){diagnosticEvents.push({time:Math.round(performance.now()),event,...(detail?{detail:detail.slice(0,160)}:{})});if(diagnosticEvents.length>30)diagnosticEvents.shift();}
 window.addEventListener("error",e=>recordDiagnostic("runtime-error",e.message));
 window.addEventListener("unhandledrejection",e=>recordDiagnostic("promise-error",String(e.reason)));
-const history = new BuildHistory(),
+let planningTower=false;
+const history = new BuildHistory(64),
   missions = new Missions(expansion);
 const learning = new LearningEngine(
   (() => {
@@ -244,6 +247,7 @@ const defenseView = new DefenseView(world,scene);
 const livingView = new LivingView(scene);
 const avatar=new Avatar(scene);
 const discoveryView=new DiscoveryView(scene);
+const towerPreview=new BlueprintPreview(scene);
 const landmarks=new LandmarkView(scene,world);
 const itemStore = new ItemStore(expansion,inventory.fish);
 defenseView.update(camera.position,isNight(night.time));
@@ -419,6 +423,7 @@ function aim() {
     if(z)$("target-label").textContent=`${ZOMBIES[z.kind].name} · ${Math.ceil(z.hp)} LP`;
   }
   if(animalTarget)$("target-label").textContent=animalTarget.name||animalTarget.kind;
+  if(planningTower){preview.visible=false;outline.visible=false;towerPreview.update(adjacent,!towerValidity(world,adjacent,player.pos));}else towerPreview.mesh.visible=false;
 }
 let animalTarget:Animal|null=null;
 let noteTarget:import("./discovery/Content").WorldNote|null=null;
@@ -471,6 +476,11 @@ function syncAim() {
 }
 function build() {
   syncAim();
+  if(planningTower){
+    if(!adjacent){toast(towerValidity(world,null,player.pos));return;}
+    const result=buildTower(world,expansion,adjacent,player.pos);toast(result.message);
+    if(result.ok){for(const p of towerPlan(adjacent))history.record(p.cell,null,p.block);planningTower=false;towerPreview.mesh.visible=false;syncUndo();save();}return;
+  }
   const material=TYPES[selected];
   const tall=material==="Tür"||material==="Tor";
   const upper:Cell|null=adjacent&&tall?[adjacent[0],adjacent[1]+1,adjacent[2]]:null;
@@ -592,7 +602,7 @@ $("close").onclick = closePanel;
 function menu() {
   $("interruption").hidden=true;
   openPanel("DEINE WELT",`<h2>Dein Abenteuer</h2><div class="menu-priority"><button id="resume" class="primary">Weiter</button><button id="camera-reset">Kamera zurücksetzen</button><button id="save">Speichern</button></div><div class="menu-grid"><button id="menu-inventory">Inventar</button><button id="menu-tools">Werkzeuge</button><button id="menu-building">Baumaterial</button><button id="menu-adventure">Welt & Karte</button><button id="menu-learning">Challenge</button><button id="menu-missions">Aufträge</button><button id="menu-tackle">Angelset</button><button id="night-menu">Crafting & Survival</button><button id="menu-camera">Kamera & Steuerung</button><button id="menu-settings">Einstellungen</button><button id="menu-gather">Beeren sammeln</button><button id="menu-notice">Letzter Hinweis</button>${nearBoom()?'<button id="menu-boom">BOOM-Aufbau</button>':""}${zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<12)?'<button id="menu-battle">Schreibkampf</button>':""}</div>`);
-  for(const [id,label,action]of [["menu-log","Abenteuerlog",()=>discoveryUI.log()],["menu-book","Entdeckerbuch",()=>discoveryUI.book()],["menu-map","Karte",()=>livingUI.map()],["menu-garden","Garten",()=>livingUI.garden()],["menu-workbench","Werkbank",()=>livingUI.recipes(false)]] as const){const b=document.createElement("button");b.id=id;b.textContent=label;b.onclick=action;$("panel-content").querySelector(".menu-grid")!.prepend(b);}
+  for(const [id,label,action]of [["menu-plan","Bauplan",()=>blueprintUI.show()],["menu-log","Abenteuerlog",()=>discoveryUI.log()],["menu-book","Entdeckerbuch",()=>discoveryUI.book()],["menu-map","Karte",()=>livingUI.map()],["menu-garden","Garten",()=>livingUI.garden()],["menu-workbench","Werkbank",()=>livingUI.recipes(false)]] as const){const b=document.createElement("button");b.id=id;b.textContent=label;b.onclick=action;$("panel-content").querySelector(".menu-grid")!.prepend(b);}
   const go=(id:string)=>{closePanel();$(id).click();};
   $("resume").onclick=resumeGame;$("camera-reset").onclick=resetCamera;
   $("save").onclick=()=>{const ok=save();$("save").textContent=ok?"Gespeichert ✓":"Speicherfehler";toast(ok?"Deine Welt ist gespeichert.":"Speichern fehlgeschlagen. Bitte Speicherplatz prüfen.");};
@@ -670,10 +680,18 @@ function transferPanel(){
  $("apply-import").onclick=()=>{if(!pending)return;importingSave=true;const result=importTransfer(localStorage,pending);if(result.ok)location.reload();else{importingSave=false;$("import-preview").textContent=result.error;}};
  $("back-menu").onclick=menu;
 }
+function eatQuickFood(){
+ const food=night.supplies.Fischgericht>0?"Fischgericht":night.supplies.Beeren>0?"Beeren":null;
+ if(food){vitals.eat(food);toast(`${food} gegessen.`);save();return;}
+ const harvest=["Ofenkartoffel","Brot","Gemüsesuppe","Karotte","Kartoffel","Kürbis"].find(id=>itemStore.count(id)>0);
+ if(harvest&&itemStore.add(harvest,-1)){night.hunger=Math.min(100,night.hunger+30);night.health=Math.min(100,night.health+12);toast(`${harvest} gegessen.`);save();}else nightUI.food();
+}
 function equipQuickTool(tool:typeof expansion.tool){
+ planningTower=false;
  expansion.tool=tool;fishing.cancel();equipment();save();
 }
 function showMaterials(){
+ planningTower=false;
  openPanel("BAUMATERIAL",`<h2>Woraus baust du?</h2><div class="material-picker">${TYPES.map((b,i)=>`<button data-material="${i}" aria-label="${b} auswählen"><span class="block-icon" style="--block:#${colors[b].toString(16).padStart(6,"0")}"></span>${b}<small>${night.mode==="Kreativ"?"∞":expansion.materials[b]||0}</small></button>`).join("")}</div><p class="hint">Block wählen → grüne Vorschau → Bauen. Rot bedeutet belegt, außer Reichweite oder in deiner Figur.</p>`);
  document.querySelectorAll<HTMLButtonElement>("[data-material]").forEach(b=>b.onclick=()=>{selected=Number(b.dataset.material);materialPage=Math.floor(selected/5);expansion.tool="Bauwerkzeug";equipment();hotbar();save();closePanel();});
 }
@@ -697,6 +715,7 @@ const livingUI = new LivingUI(itemStore,world,{
   event:(name,detail)=>discovery.event(name,detail),
 });
 bindTap($("living-menu"),()=>{if(canPlay())livingUI.hub();});
+const blueprintUI=new BlueprintUI(expansion,{open:openPanel,close:closePanel,speech:speak,begin:()=>{planningTower=true;expansion.tool="Bauwerkzeug";equipment();toast("Wähle ebenen Boden. Grün: Bauen. Den Modus beendest du mit einem Werkzeugwechsel.");}});
 const discoveryUI=new DiscoveryUI(discovery,{open:openPanel,close:closePanel,save,toast,speech:speak});
 const adventure = new AdventureUI(learning, missions, {
   open: openPanel,
@@ -864,6 +883,7 @@ bindTap($("undo"), () => {
   );
 });
 function equipment() {
+  if(expansion.tool!=="Bauwerkzeug")planningTower=false;
   $("tool-toggle").textContent = expansion.tool;
   $("tool-toggle").dataset.icon = toolIcon(expansion.tool);
   $("tool-toggle").dataset.short=({Bauwerkzeug:"Bauen",Spitzhacke:"Spitzhacke",Kupferspitzhacke:"Kupfer",Eisenspitzhacke:"Eisen",Holzschwert:"Schwert",Steinschwert:"Schwert",Holzknüppel:"Knüppel"} as Record<string,string>)[expansion.tool]||expansion.tool;
@@ -1504,7 +1524,7 @@ touch = new TouchControls(
   },
   (x, y) => look(x, y, 0.0035),
 );
-const mobileHUD=new MobileHUD(showMaterials,{equipTool:equipQuickTool,eatFood:()=>nightUI.food(),openInventory:showInventory});mobileHUD.settings(expansion.controls);
+const mobileHUD=new MobileHUD(showMaterials,{equipTool:equipQuickTool,eatFood:eatQuickFood,openInventory:showInventory});mobileHUD.settings(expansion.controls);
 let ratio = Math.min(devicePixelRatio, settings.quality),
   viewportDirty = true;
 let landscape = innerWidth > innerHeight;
@@ -1632,6 +1652,7 @@ function tickFrame(now:number){
       jump = false;
       accum -= 1 / 120;
     }
+    if(observeFromTower(world,expansion,player.pos)){toast("Weitblick! Deine Karte zeigt jetzt die Umgebung. Mehr dazu im Entdeckerbuch.");save();}
     updateCamera(elapsed);
     if (now - lastAim >= 50) {
       aim();
@@ -1755,6 +1776,7 @@ function tickFrame(now:number){
     $("mission-pin").hidden = !reading.active;
     const b=target?world.get(...target):undefined;
     mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
+    $("place").dataset.label=planningTower?"Turm":"Bauen";$("place").setAttribute("aria-label",planningTower?"Aussichtsturm am Vorschauplatz bauen":"Block platzieren");
   } else if (!started) {
     camera.position.set(23, 18, 29);
     camera.lookAt(-2, 0, -2);
@@ -1817,6 +1839,7 @@ function tickFrame(now:number){
       heap:(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory?.usedJSHeapSize??null,
       activeMeshes:renderer.info.render.calls,activeAnimals:expansion.living.animals.filter(a=>Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<32).length,activeZombies:zombies.actors.filter(z=>z.hp>0).length,
       discovery:{enabled:expansion.discovery.enabled,notes:expansion.discovery.read,chapters:expansion.discovery.completed,goals:discovery.activeGoals().map(g=>g.id)},
+      blueprint:{planning:planningTower,origin:adjacent,valid:planningTower&&!towerValidity(world,adjacent,player.pos),cells:towerPreview.mesh.visible?towerPreview.mesh.count:0},
       triangles: renderer.info.render.triangles,
       geometries: renderer.info.memory.geometries,
       textures: renderer.info.memory.textures,
