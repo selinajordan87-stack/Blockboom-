@@ -1,0 +1,210 @@
+{
+  "kind": "input-only known-route technical gameplay proof, not independent human exploration",
+  "events": [
+    {
+      "event": "start",
+      "version": "WORLD DISCOVERY · v0.7.0",
+      "method": "fresh isolated context, UI and input only; technical known route, no save/position injection; no human finding-time claim"
+    },
+    {
+      "event": "capture",
+      "name": "01-start-region",
+      "seconds": 3.982,
+      "position": [
+        0,
+        1.0000090384928255,
+        17
+      ],
+      "region": "meadow",
+      "frames": 23,
+      "performance": {
+        "calls": 75,
+        "geometries": 56,
+        "textures": 4,
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000149011612,
+        "maxColumnMs": 3.5,
+        "generatedChunks": 10,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 1440
+      }
+    },
+    {
+      "event": "capture",
+      "name": "16-mobile-hud",
+      "seconds": 4.91,
+      "position": [
+        0,
+        1.0000090314398602,
+        17
+      ],
+      "region": "meadow",
+      "frames": 39,
+      "performance": {
+        "calls": 75,
+        "geometries": 56,
+        "textures": 4,
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000149011612,
+        "maxColumnMs": 3.5,
+        "generatedChunks": 10,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 1440
+      }
+    },
+    {
+      "event": "read-text",
+      "id": "start-plan",
+      "text": "Bauwissen · Lesestufe A\n\nEin Platz für die Nacht\n\nSammle Holz am Baum und Stein am Felsen; wähle danach einen Block und setze ihn am durchsichtigen Umriss.\n\nEigene Wände, Tür, Dach und Licht bilden deinen Unterschlupf – ergänze Werkbank, Bett und Truhe.\n\n▷ Vorlesen\nHinweis\n\nGelesen · weiter\nIm Buch blättern"
+    },
+    {
+      "event": "capture",
+      "name": "14-reading-adventure",
+      "seconds": 7.499,
+      "position": [
+        0,
+        1.0000090285915357,
+        17
+      ],
+      "region": "meadow",
+      "frames": 63,
+      "performance": {
+        "calls": 75,
+        "geometries": 56,
+        "textures": 4,
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000149011612,
+        "maxColumnMs": 3.5,
+        "generatedChunks": 10,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 1440
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "forest:0,7",
+      "position": [
+        0,
+        1.0000090622285875,
+        7.550000000000043
+      ],
+      "seconds": 6.867
+    },
+    {
+      "event": "arrived",
+      "name": "forest:-27,7",
+      "position": [
+        -26.69490237457541,
+        1.0000090001080042,
+        6.995760010843329
+      ],
+      "seconds": 26.603
+    },
+    {
+      "event": "arrived",
+      "name": "forest:-30,8",
+      "position": [
+        -29.85195415035359,
+        1.000009031574729,
+        7.711907312561972
+      ],
+      "seconds": 21.6
+    },
+    {
+      "event": "capture",
+      "name": "02-forest",
+      "seconds": 63.917,
+      "position": [
+        -29.85195415035359,
+        1.0000090125859993,
+        7.711907312561972
+      ],
+      "region": "forest",
+      "frames": 1167,
+      "performance": {
+        "calls": 31,
+        "geometries": 57,
+        "textures": 4,
+        "lastMs": 0,
+        "maxRuntimeMs": 35.100000001490116,
+        "maxColumnMs": 7.600000001490116,
+        "generatedChunks": 25,
+        "unloadedChunks": 11,
+        "pendingChunks": 0,
+        "generatedColumns": 3600
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "lake:-26,7",
+      "position": [
+        -26.239992380509868,
+        1.000009035236514,
+        7.295758766573773
+      ],
+      "seconds": 23.45
+    },
+    {
+      "event": "arrived",
+      "name": "lake:-26,-20",
+      "position": [
+        -26.001943876112456,
+        1.0000090338798975,
+        -19.77819472953685
+      ],
+      "seconds": 19.399
+    },
+    {
+      "event": "arrived",
+      "name": "lake:-30,-35",
+      "position": [
+        -30.022077757359263,
+        -0.9999909688329552,
+        -35.08404813850555
+      ],
+      "seconds": 13.306
+    },
+    {
+      "event": "arrived",
+      "name": "lake:-36,-35",
+      "position": [
+        -36.09647746559511,
+        -0.9999909380442201,
+        -34.99864799454397
+      ],
+      "seconds": 8.199
+    },
+    {
+      "event": "capture",
+      "name": "04-lake",
+      "seconds": 129.614,
+      "position": [
+        -36.09647746559511,
+        -0.9999909689687133,
+        -34.99864799454397
+      ],
+      "region": "lake",
+      "frames": 2657,
+      "performance": {
+        "calls": 36,
+        "geometries": 60,
+        "textures": 4,
+        "lastMs": 0.6000000014901161,
+        "maxRuntimeMs": 35.100000001490116,
+        "maxColumnMs": 7.600000001490116,
+        "generatedChunks": 40,
+        "unloadedChunks": 22,
+        "pendingChunks": 4,
+        "generatedColumns": 5896
+      }
+    },
+    {
+      "event": "failure",
+      "message": "Error: Walk timeout at mountain-approach:-25,-34; position [-28.280105753729373,-0.9999909640867118,-33.19650324445704]; no teleport fallback was used"
+    }
+  ],
+  "errors": []
+}

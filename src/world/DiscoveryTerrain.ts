@@ -46,8 +46,8 @@ export function terrainProfile(x:number,z:number){
  let top=Math.max(0,Math.floor(Math.max(mountain,woodlandRock)+rolling));
  let surface:Block=top>12?"Schiefer":top>7?"Stein":"Gras";
  if(village||trail<2.15){top=0;surface=trail<1.5?"Erde":"Gras";}
- if(lake<1.08){top=lake<.9?-2-Math.floor((.9-lake)*4):0;surface="Sand";}
- if(river<3.7){top=river<2.4?-2:0;surface=river<2.4?"Sand":"Ton";}
+ if(lake<1.08){top=lake<.74?-2-Math.floor((.74-lake)*4):lake<.94?-1:0;surface="Sand";}
+ if(river<3.7){top=river<1.5?-2:river<2.4?-1:0;surface=river<2.4?"Sand":"Ton";}
  if(island){top=1;surface="Gras";}
  // A timber crossing at the river, and a jetty to the island, are real solids.
  const bridge=river<3.9&&trail<2.15;

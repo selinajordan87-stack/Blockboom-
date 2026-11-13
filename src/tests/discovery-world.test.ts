@@ -28,6 +28,11 @@ it("erhält gespeicherte Häuser und abgebaute Zellen beim Verlassen und Wiederl
  stream.ensure(-100,30);stream.ensure(102,88);expect(w.get(104,2,87)).toBe("Glas");expect(w.get(104,0,87)).toBeUndefined();
  expect(w.changesByChunk.get("8,7")?.get("104,2,87")).toBe("Glas");
 });
+it("lässt die Figur vom alten Seeboden mit normalen Sprüngen ans Ostufer zurückkehren",()=>{
+ const w=new World(),stream=new RegionStream(w,true),p=new Player(w);stream.ensure(-36,-34);p.pos=[-36,-.999,-34.5];p.yaw=-Math.PI/2;
+ for(let i=0;i<1800&&p.pos[0]<-25;i++){stream.ensure(p.pos[0],p.pos[2]);p.step(1/120,0,1,i%70===0);}
+ expect(p.pos[0]).toBeGreaterThan(-26);expect(p.pos[1]).toBeGreaterThan(.9);
+});
 it("begrenzt Runtime-Generierung pro Schritt und misst tatsächliche Laufzeit",()=>{
  const w=new World(),stream=new RegionStream(w,true);stream.ensure(0,17);let steps=0,columns=stream.metrics.generatedColumns;
  do{stream.ensure(100,85,1);expect(stream.metrics.generatedColumns-columns).toBeLessThanOrEqual(8);columns=stream.metrics.generatedColumns;steps++;}while(stream.metrics.pendingChunks>0&&steps<700);

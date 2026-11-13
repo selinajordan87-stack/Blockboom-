@@ -12,7 +12,11 @@ Der [Reality Audit](REALITY_AUDIT.md) trennt technischen Bestand von tatsächlic
 
 Im integrierten Spiel vorhanden: korrigierte Wasserfläche, angeschlossene Fern-Landmarken, additive Außenwelt, budgetiertes Chunk-Rendering, physische lesbare Notizbücher, gespeichertes Entdeckerbuch, Abenteuerlog, aufgedeckte Erkundungskarte, sichtbarer Startergarten, begrenzte regionale Tierplätze und ein zusätzlicher tatsächlich besetzter Angelplatz.
 
-Erste Browserprüfung: frischer Start, direkte Werkzeugslots, tatsächliche Buchinteraktion, freiwillige Materialrechnung mit Fehler/Hilfe und Reload bestanden. Wald und Kartenaufdeckung wurden ebenfalls mit normalen Bewegungseingaben erreicht. Der vollständige Farmingtest und die erweiterten Wanderungen laufen noch. Diese Liste ist kein vollständiger Release- oder iPhone-Abnahmenachweis.
+Erste Browserprüfung: **4/4 bestanden**. Frischer Start, direkte Werkzeugslots, tatsächliche Buchinteraktion, freiwillige Materialrechnung mit Fehler/Hilfe, Wald und Kartenaufdeckung, Langdruck-Inventar und zwei Daumen. Farming wurde vom Start zu Fuß erreicht: Kürbis geerntet, Weizen gepflanzt, gespeichert/neugeladen, zwei Minuten echte aktive Spielzeit abgewartet und geerntet. Keine Uhr- oder Koordinateninjektion.
+
+Die anschließende längere Wanderung scheiterte tatsächlich am Ostufer des alten großen Sees: zwei Blöcke tiefer Seeboden ohne ausreichende Zwischenstufe. Diese Prüfung wird nicht als Erfolg gezählt. Die Ufer wurden gezielt abgestuft; gespeicherte Änderungen haben weiterhin Vorrang. Ein zusätzlicher Player-Physiktest bestätigt den Rückweg mit normalen Sprüngen. Der erneute vollständige Gehweg läuft noch. Die Welttexte sind jetzt explizit mit mindestens 16 px und größerem Zeilenabstand lesbar. Bau-/Sammelaktionen geben kurze Mengenrückmeldungen.
+
+Checkpoint `49d1db3` sichert die wiederhergestellte Integration. Diese Angaben sind kein vollständiger Release- oder iPhone-Abnahmenachweis.
 
 ## Prüfmethoden und offene Punkte
 

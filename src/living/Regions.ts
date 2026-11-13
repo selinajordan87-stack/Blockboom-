@@ -128,9 +128,11 @@ export class RegionStream {
   }
   private legacyColumn(x:number,z:number){
     const w=this.world;
-      const lake=(x+40)**2/144+(z+35)**2/81<1 || (Math.abs(x+30)<2&&z>-35&&z<-15);
+      const lakeDistance=Math.sqrt((x+40)**2/144+(z+35)**2/81),river=Math.abs(x+30)<2&&z>-35&&z<-15;
+      const lake=lakeDistance<1||river;
       const settlement=x>=30&&x<=53&&z>=24&&z<=46;
-      const top=lake?-2:settlement?0:terrainHeight(x,z);
+      // One-block shore steps permit a normal jump out of the water.
+      const top=lake?(river?(Math.abs(x+30)<1?-2:-1):lakeDistance<.67?-2:-1):settlement?0:terrainHeight(x,z);
       for(let y=MIN_Y;y<=top;y++){
         let block:Block=y===MIN_Y?"Stein":y===top?(lake?"Sand":"Gras"):y>=top-2?"Erde":"Stein";
         const hash=Math.abs(x*73856093^y*19349663^z*83492791);

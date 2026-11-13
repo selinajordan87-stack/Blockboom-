@@ -1,3 +1,4 @@
+import {shortcut} from "./ui-helper";
 import { expect, test, type Page } from "@playwright/test";
 
 const legacy = (position: number[] = [-11, 2.01, 2]) => ({
@@ -79,7 +80,7 @@ test("mobile Angelaktion beendet touchcancel ohne Wurf, Hänger oder Pausenmenü
   });
   const page = await context.newPage();
   await start(page);
-  await page.locator("#tool-toggle").tap();
+  await shortcut(page,"tool-toggle");
   await page.locator('[data-tool="Angel"]').tap();
   await expect(page.locator("#fish-action")).toBeVisible();
   const box = (await page.locator("#fish-action").boundingBox())!;

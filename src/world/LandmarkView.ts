@@ -22,9 +22,12 @@ export class LandmarkView {
   const geometry=new T.BufferGeometry();geometry.setAttribute("position",new T.Float32BufferAttribute(p,3));geometry.setAttribute("normal",new T.Float32BufferAttribute(p.map((_,i)=>i%3===1?1:0),3));geometry.setAttribute("color",new T.Float32BufferAttribute(colors,3));geometry.setIndex(new T.BufferAttribute(this.indices,1).setUsage(T.DynamicDrawUsage));geometry.computeBoundingSphere();
   this.far=new T.Mesh(geometry,new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide}));this.far.name="distant terrain LOD";this.group.add(this.far);
   const box=new T.BoxGeometry(1,1,1);
-  this.silhouettes=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0xffffff}),100);this.silhouettes.frustumCulled=false;this.silhouettes.name="distant landmark LOD";this.group.add(this.silhouettes);
+  this.silhouettes=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0xffffff,fog:false}),100);this.silhouettes.frustumCulled=false;this.silhouettes.name="distant landmark LOD";this.group.add(this.silhouettes);
   const add=(x:number,y:number,z:number,sx:number,sy:number,sz:number,c:number)=>this.landmarks.push([x,y,z,sx,sy,sz,c]);
-  for(const[cx,cz,h]of [[145,-105,24],[45,-40,11],[-108,-46,10]])for(let i=0;i<3;i++)add(cx+(i-1)*9,h*(.22+i*.06),cz-i*5,24-i*6,h*(.44+i*.12),22-i*6,0x8a9692);
+  for(const[cx,cz,h]of [[145,-105,24],[45,-40,11],[-108,-46,10]])for(let peak=0;peak<3;peak++)for(let tier=0;tier<5;tier++){
+   const height=h*(peak===1?1:.72),step=height/5,width=36-tier*7;
+   add(cx+(peak-1)*16,step*(tier+.5),cz-peak*7,width,step,width*.8,tier===4?0xc8c4aa:tier>1?0x929e9e:0x76867d);
+  }
   for(const[cx,cz]of [[-100,30],[-125,17],[-87,41]])for(let i=0;i<5;i++)add(cx+Math.sin(i*2.4)*8,5+i%3,cz+Math.cos(i*2.4)*8,5,9+i%3,5,i%2?0x335e42:0x46764c);
   add(117,6.5,105,6,13,6,0x7f8578);add(102,2.5,87,9,5,9,0x966f56);add(116,3,92,9,6,9,0x89765a);add(92,2.5,83,8,5,8,0x9a8362);add(47.5,4,40.5,5,8,5,0x8c8270);
   this.smoke=new T.InstancedMesh(box,new T.MeshBasicMaterial({color:0xd1d5c7,transparent:true,opacity:.25,depthWrite:false}),10);this.smoke.frustumCulled=false;this.smoke.name="forge smoke";this.group.add(this.smoke);

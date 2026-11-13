@@ -42,7 +42,7 @@ export class FreshJourney{
  async menu(id){if(!await this.page.locator(`#${id}`).isVisible())await this.page.locator('#menu').tap();await this.page.locator(`#${id}`).tap();}
  async close(){if(await this.page.locator('#close').isVisible())await this.page.locator('#close').tap();}
  async save(){await this.menu('save');const state=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('blockboom.save')));await this.page.locator('#resume').tap();return state;}
- async readEntry(id){await this.menu('menu-book');await this.page.locator(`[data-book-entry="${id}"]`).tap();const text=await this.page.locator('#panel-content').innerText();this.events.push({event:'read-text',id,text});await this.page.locator('#note-done').tap();return text;}
+ async readEntry(id,photo){await this.menu('menu-book');await this.page.locator(`[data-book-entry="${id}"]`).tap();const text=await this.page.locator('#panel-content').innerText();this.events.push({event:'read-text',id,text});if(photo)await this.page.screenshot({path:`${this.out}/${photo}.png`});await this.page.locator('#note-done').tap();return text;}
  async finish(){await writeFile(`${this.out}/journey.json`,JSON.stringify({kind:'input-only known-route technical gameplay proof, not independent human exploration',events:this.events,errors:this.errors},null,2)+'\n');}
 }
 
@@ -51,7 +51,8 @@ async function run(){
  try{
   await j.start();await j.capture('01-start-region');await j.capture('16-mobile-hud');
   await j.menu('menu-map');await page.screenshot({path:`${j.out}/15-discovery-map.png`});await j.close();
-  await j.readEntry('start-plan');await j.capture('14-reading-adventure');
+  await j.readEntry('start-plan','14-reading-adventure');
+  await j.menu('night-menu');await page.locator('#difficulty').selectOption('Friedlich');await page.locator('#apply-night').tap();j.events.push({event:'setting',difficulty:'Friedlich',method:'normal settings UI; exploration control run, combat tested separately'});
   const route=[
    {name:'forest',points:[[0,7],[-27,7],[-30,8]],photo:'02-forest'},
    {name:'lake',points:[[-26,7],[-26,-20],[-30,-35],[-36,-35]],photo:'04-lake'},

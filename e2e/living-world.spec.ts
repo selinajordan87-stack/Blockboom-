@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { landFish } from "./fishing-helper";
-import {shortcut,menuPage} from "./ui-helper";
+import {shortcut,menuPage,shortWordExercise} from "./ui-helper";
 const errors = new WeakMap<Page, string[]>();
 test.beforeEach(async ({ page }) => {
   const list: string[] = [];
@@ -132,7 +132,7 @@ test("direkter Fang trifft ein sichtbares Fischmodell in Reichweite", async ({
   page,
 }) => {
   await seeded(page, [-10, -0.99, -3]);
-  await page.locator("#tool-toggle").click();
+  await shortcut(page,"tool-toggle");
   await page.locator('[data-tool="Holzknüppel"]').click();
   let yaw = 0,
     pitch = -0.1;
@@ -262,7 +262,7 @@ test("Challenge: Fehler, Silben, langsames Wort, lokale Stimme und getrennte Ler
   page,
 }) => {
   await seeded(page);
-  await shortcut(page,"learn");
+  await shortWordExercise(page);
   await answer(page, "falsch");
   await expect(page.locator("#learning-feedback")).toContainText("Noch nicht");
   await page.locator("#challenge-syllables").click();
@@ -318,7 +318,7 @@ test("mobiles Lernformular bleibt bei kleiner Tastaturhöhe bedienbar; Moduswech
   });
   const page = await context.newPage();
   await seeded(page);
-  await shortcut(page,"learn");
+  await shortWordExercise(page);
   await page.locator("#learning-answer").tap();
   await page.setViewportSize({ width: 390, height: 360 });
   await page.keyboard.type("Fisch");
@@ -331,7 +331,7 @@ test("mobiles Lernformular bleibt bei kleiner Tastaturhöhe bedienbar; Moduswech
   await menuPage(page,"menu-settings");await page.locator("#game-mode").selectOption("Entspannt");
   await page.locator("#close").tap();
   await expect(page.locator("#modal")).toBeHidden();
-  await page.locator("#tool-toggle").tap();
+  await shortcut(page,"tool-toggle");
   await page.locator('[data-tool="Axt"]').tap();
   await expect(page.locator("#tool-toggle")).toHaveText("Axt");
   await context.close();

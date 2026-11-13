@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:40696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (14.8s)
+  ✓  2 e2e/discovery-v07.spec.ts:19:1 › v0.7 neue Entdeckerkarte verbirgt unbekannte Orte und normale Bewegung erschließt den Wald (1.1m)
+  ✓  3 e2e/discovery-v07.spec.ts:25:1 › v0.7 Feld ist vom Start aus zu Fuß nutzbar: echte Ernte, Aussaat, aktive Wachstumszeit und Reload (2.7m)
+  ✓  4 e2e/discovery-v07.spec.ts:36:1 › v0.7 Langdruck-Inventar und zwei Daumen bleiben unabhängig vom neuen HUD (5.9s)
+
+  4 passed (4.1m)

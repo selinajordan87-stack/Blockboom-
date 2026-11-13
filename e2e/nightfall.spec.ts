@@ -77,7 +77,7 @@ test("offene Tür abbauen und Undo erhalten einen gültigen Tür-Vorrat nach Rel
 });
 
 test("Nahkampf über sichtbare Waffe trifft einen echten Zombie und belohnt den Sieg",async({page})=>{
-  await seed(page);await setNight(page);await page.locator("#tool-toggle").click();await page.locator('[data-tool="Schwert"]').click();
+  await seed(page);await setNight(page);await shortcut(page,"tool-toggle");await page.locator('[data-tool="Schwert"]').click();
   await expect(page.locator("#world")).toHaveAttribute("data-active-tool","Schwert");
   let yaw=0,pitch=-.1,kills=0;
   for(let attempt=0;attempt<24&&!kills;attempt++){
@@ -97,7 +97,7 @@ test("Nahkampf über sichtbare Waffe trifft einen echten Zombie und belohnt den 
 
 test("drei Touchkontakte: Bewegung, Kamera und Angriff bleiben unabhängig",async({browser})=>{
   const context=await browser.newContext({viewport:{width:844,height:390},hasTouch:true,isMobile:true}),page=await context.newPage();await seed(page);
-  await page.locator("#tool-toggle").tap();await page.locator('[data-tool="Schwert"]').tap();await expect(page.locator("#attack")).toBeVisible();
+  await shortcut(page,"tool-toggle");await page.locator('[data-tool="Schwert"]').tap();await expect(page.locator("#attack")).toBeVisible();
   const joy=(await page.locator("#joystick").boundingBox())!,look=(await page.locator("#look").boundingBox())!,attack=(await page.locator("#attack").boundingBox())!,cdp=await context.newCDPSession(page);
   const a={id:1,x:joy.x+joy.width/2,y:joy.y+12},b={id:2,x:look.x+30,y:look.y+70},c={id:3,x:attack.x+attack.width/2,y:attack.y+attack.height/2};
   await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[a,b]});

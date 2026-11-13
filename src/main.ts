@@ -484,6 +484,7 @@ function build() {
     if(night.mode==="Survival")expansion.materials[material]=(expansion.materials[material]||0)-cost;
     if(["Bett","Tür","Fackel","Laterne"].includes(material)&&!expansion.living.placed.includes(adjacent.join(",")))expansion.living.placed.push(adjacent.join(","));
     discovery.event("place",material);
+    toast(`${material} gesetzt${night.mode==="Survival"?` · noch ${expansion.materials[material]||0}`:""}.`);
     syncUndo();
     save();
   } else
@@ -509,6 +510,7 @@ function destroy(finishMining=false) {
       {
         const recovered=previous==="Tür offen"?"Tür":previous==="Tor offen"?"Tor":previous;
         expansion.materials[recovered] = (expansion.materials[recovered] || 0) + 1;
+        toast(`${recovered} +1 · ${expansion.materials[recovered]} gesammelt.`);
         if(recovered==="Kohleerz"){night.supplies.Kohle=(night.supplies.Kohle||0)+1;}
         if((recovered==="Stein"||recovered.endsWith("erz"))&&!expansion.living.mined.includes(recovered))expansion.living.mined.push(recovered);
       }
