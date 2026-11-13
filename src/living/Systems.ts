@@ -1,4 +1,4 @@
-import { World, MIN_Y, MAX_Y, type Cell, type Block } from "../world/World";
+import { World, MIN_Y, MAX_Y, LIMIT, type Cell, type Block } from "../world/World";
 import { collides, solid } from "../nightfall/Defense";
 import { type LivingState, type Animal, type CropKind, CROPS } from "./State";
 import { ItemStore } from "./Items";
@@ -26,11 +26,22 @@ function animalFloor(w:World,x:number,z:number,around:number){
  for(let y=Math.min(MAX_Y,Math.floor(around));y>=MIN_Y;y--)if(solid(w.get(Math.floor(x),y,Math.floor(z))))return y+1;
  return null;
 }
+function safeAnimalSpot(w:World,origin:Cell):Cell|null{
+ if(!collides(w,origin,.8,.25)&&solid(w.get(Math.floor(origin[0]),Math.floor(origin[1]-.01),Math.floor(origin[2]))))return [...origin];
+ for(let radius=0;radius<=3;radius++)for(let dx=-radius;dx<=radius;dx++)for(let dz=-radius;dz<=radius;dz++){
+   if(Math.max(Math.abs(dx),Math.abs(dz))!==radius)continue;
+   const x=Math.floor(origin[0])+dx+.5,z=Math.floor(origin[2])+dz+.5;if(Math.abs(x)>=LIMIT-1||Math.abs(z)>=LIMIT-1)continue;
+   const floor=animalFloor(w,x,z,origin[1]+1);if(floor===null)continue;const p:Cell=[x,floor+.001,z];if(!collides(w,p,.8,.25))return p;
+ }
+ return null;
+}
 export function updateAnimals(s:LivingState,w:World,player:Cell,dt:number){
  for(const a of s.animals){
-  const distance=Math.hypot(a.pos[0]-player[0],a.pos[2]-player[2]);
-  if(a.tame&&a.mode==="Folgen"&&distance>22){const p:Cell=[player[0]+1,player[1],player[2]+1];if(!collides(w,p,.8,.25)){a.pos=p;a.home=[...p];}}
+  let distance=Math.hypot(a.pos[0]-player[0],a.pos[2]-player[2]);
+  if(a.tame&&a.mode==="Folgen"&&distance>22){const p=safeAnimalSpot(w,[player[0]+1,player[1],player[2]+1]);if(p){a.pos=p;distance=Math.hypot(p[0]-player[0],p[2]-player[2]);}}
   if(distance>30)continue;
+  // Also recover waiting/sleeping pets and new wildlife inside an old building.
+  if(collides(w,a.pos,.75,.24)){const p=safeAnimalSpot(w,a.tame?a.home:a.pos)||safeAnimalSpot(w,player);if(p)a.pos=p;}
   a.hunger=Math.max(0,a.hunger-dt*.02);a.phase+=dt;
   if(a.mode==="Schlafen"){a.action="Schlafen";continue;}
   if(a.tame&&a.mode==="Warten"){a.action="Ruhen";continue;}
@@ -41,8 +52,6 @@ export function updateAnimals(s:LivingState,w:World,player:Cell,dt:number){
   const dx=tx-a.pos[0],dz=tz-a.pos[2],len=Math.hypot(dx,dz)||1,step=Math.min(len,dt*(following?3: .7));
   const next:Cell=[a.pos[0]+dx/len*step,a.pos[1],a.pos[2]+dz/len*step],floor=animalFloor(w,next[0],next[2],a.pos[1]);
   if(floor!==null&&Math.abs(floor-a.pos[1])<=1.05){next[1]=floor+.001;if(!collides(w,next,.75,.24)){a.pos=next;a.heading=Math.atan2(dx,dz);a.action="Gehen";}}
-  // Tamed animals cannot die; an edited wall sends them to their saved safe home.
-  if(a.tame&&collides(w,a.pos,.7,.2)&&!collides(w,a.home,.7,.2))a.pos=[...a.home];
  }
 }
 export const EXPLORER=[

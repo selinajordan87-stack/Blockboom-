@@ -51,7 +51,10 @@ test("alte Welt wird vor v0.6 gesichert; echte Speicherquote schützt den letzte
  const s:any=blank();delete s.extension.living;s.extension.materials.Holz=17;s.changes["2,1,7"]="Glas";
  await seed(page,s);const backup=await page.evaluate(()=>JSON.parse(localStorage.getItem("blockboom.save.pre-v06")!));expect(backup.changes).toEqual(s.changes);expect(backup.extension.living).toBeUndefined();
  const before=await save(page);expect(before.extension.materials.Holz).toBe(17);await page.locator("#menu").click();
- const original=await page.evaluate(()=>{const raw=localStorage.getItem("blockboom.save")!;let filler="";for(const step of [65536,1024,1]){while(true){try{localStorage.setItem("test-quota",filler+"x".repeat(step));filler+="x".repeat(step);}catch{break;}}}return raw;});
+ const original=await page.evaluate(async()=>{const raw=localStorage.getItem("blockboom.save")!;let low=0,high=6*1024*1024;
+   while(low<high){const mid=Math.ceil((low+high)/2);try{localStorage.setItem("test-quota","x".repeat(mid));low=mid;}catch{high=mid-1;}await new Promise(r=>setTimeout(r,0));}
+   localStorage.setItem("test-quota","x".repeat(low));return raw;
+ });
  await page.locator("#resume").click();await page.keyboard.press("Equal");await expect(page.locator("#save-state")).toHaveText("Speicher nicht verfügbar");expect(await page.evaluate(()=>localStorage.getItem("blockboom.save"))).toBe(original);
  await page.evaluate(()=>localStorage.removeItem("test-quota"));const recovered=await save(page);expect(Object.keys(recovered.changes).length).toBeGreaterThan(Object.keys(before.changes).length);await page.reload();await page.locator("#play").click();expect((await save(page)).extension.materials.Holz).toBe(17);
 });
@@ -71,7 +74,8 @@ test("alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte S
 
 for(const viewport of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])test(`Wohnwelt mobil ${viewport.width}×${viewport.height}: Karte, Nahrung und Tiername mit Tastaturhöhe`,async({browser})=>{
  const context=await browser.newContext({viewport,isMobile:true,hasTouch:true}),page=await context.newPage(),s=blank();s.extension.living.animals[0].tame=true;s.extension.living.bag.Karotte=2;s.extension.nightfall.hunger=40;
- await seed(page,s);await page.locator("#living-menu").tap();await page.locator("#living-map").tap();await expect(page.locator(".world-map")).toBeVisible();await page.locator("#mark-home").tap();await page.locator("#close").tap();
+ await seed(page,s);const compass=(await page.locator("#compass").boundingBox())!,location=(await page.locator(".location").boundingBox())!;expect(compass.y).toBeGreaterThanOrEqual(location.y+location.height);
+ await page.locator("#living-menu").tap();await page.locator("#living-map").tap();await expect(page.locator(".world-map")).toBeVisible();await page.locator("#mark-home").tap();await page.locator("#close").tap();
  await page.locator("#living-menu").tap();await page.locator("#living-bag").tap();await page.locator('[data-category="Nahrung"]').tap();await page.locator('[data-eat="Karotte"]').tap();await page.locator("#close").tap();
  await page.locator("#living-menu").tap();await page.locator("#living-pets").tap();await page.locator('[data-animal="animal-0"]').tap();await page.locator("#animal-name").tap();await page.setViewportSize({width:viewport.width,height:240});await page.locator("#animal-name").fill("Nala");await page.locator("#animal-name-save").tap();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.locator("#close").tap();
  const state=await save(page);expect(state.extension.living.animals[0].name).toBe("Nala");expect(state.extension.living.bag.Karotte).toBe(1);expect(state.extension.nightfall.hunger).toBeGreaterThan(65);expect(state.extension.living.home).not.toBeNull();await expect(page.locator("#interruption")).toBeHidden();await context.close();

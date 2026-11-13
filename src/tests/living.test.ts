@@ -51,6 +51,11 @@ it("verschiebt Materialien, Fische und Ernte verlustfrei zwischen getrennten Tru
  e.living.chests["1,1,1"]=a;e.living.chests["2,1,1"]=b;const loaded=readExpansion(JSON.parse(JSON.stringify(e)));expect(loaded.living.chests["2,1,1"]).toEqual({Karotte:1});
  expect(new Set(CATALOG.map(i=>i.id)).size).toBe(CATALOG.length);
 });
+it("verhindert eine 101. gefüllte Truhe und verwendet freigewordenen Speicher ohne Verlust",()=>{
+ const e=defaultExpansion(),store=new ItemStore(e,{});for(let i=0;i<100;i++)store.chest(`${i-50},1,1`)!.Karotte=1;
+ expect(store.chest("0,1,2")).toBeNull();expect(readLiving(JSON.parse(JSON.stringify(e.living))).chests).toEqual(e.living.chests);
+ expect(store.move("Karotte",e.living.chests["-50,1,1"],false)).toBe(true);expect(store.chest("0,1,2")).toEqual({});expect(store.count("Karotte")).toBe(1);expect(e.living.chests["-50,1,1"]).toBeUndefined();
+});
 it("lässt alle vier Pflanzen echt wachsen und gibt Ernte plus neue Samen",()=>{
  const w=new World(),e=defaultExpansion(),store=new ItemStore(e,{});e.tool="Hacke";
  CROPS.forEach((kind,i)=>{const c:Cell=[i,0,7];e.living.selectedSeed=kind;expect(farm(w,store,c)).toContain("Acker");expect(farm(w,store,c)).toContain("gepflanzt");});
@@ -70,6 +75,11 @@ it("lässt Begleiter im Untergrund folgen und hält sie vor massiven Wänden an"
  a.pos=[42,-4.99,-30];a.home=[...a.pos];a.tame=true;a.mode="Folgen";
  const before=a.pos[0];for(let i=0;i<4;i++)updateAnimals(s,w,[46,-4.99,-30],.2);expect(a.pos[0]).toBeGreaterThan(before);
  w.set(45,-5,-30,"Stein");w.set(45,-4,-30,"Stein");for(let i=0;i<20;i++)updateAnimals(s,w,[48,-4.99,-30],.2);expect(a.pos[0]).toBeLessThan(45);
+});
+it("rettet auch wartende und schlafende Haustiere aus neu gebauten Blöcken und behält ihren Heimatort",()=>{
+ const w=new World(),s=freshLiving(),a=s.animals[0];a.tame=true;a.home=[0,1,10];a.pos=[2,1,10];a.mode="Warten";w.set(2,1,10,"Stein");
+ updateAnimals(s,w,[0,1,10],.2);expect(a.pos).toEqual([0,1,10]);a.mode="Schlafen";a.pos=[2,1,10];updateAnimals(s,w,[0,1,10],.2);expect(a.pos).toEqual([0,1,10]);
+ a.mode="Folgen";a.pos=[-40,1,10];updateAnimals(s,w,[0,1,10],.2);expect(a.home).toEqual([0,1,10]);expect(a.pos[0]).toBeGreaterThan(-3);
 });
 it("belohnt fünf Missionen nur für wirkliche Bedingungen und nur einmal",()=>{
  const w=new World();buildRefuge(w);const e=defaultExpansion(),s=e.living,store=new ItemStore(e,{});

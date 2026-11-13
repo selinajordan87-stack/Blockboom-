@@ -27,6 +27,12 @@ export class ItemStore {
    else if(kind==="supply")this.expansion.nightfall.supplies[name]=value;
    else this.expansion.living.bag[id]=value;return true;
  }
+ chest(id:string){
+   const chests=this.expansion.living.chests;if(chests[id])return chests[id];
+   for(const [key,items]of Object.entries(chests))if(!Object.values(items).some(n=>n>0))delete chests[key];
+   if(Object.keys(chests).length>=100)return null;
+   return chests[id]={};
+ }
  move(id:string,chest:Record<string,number>,toChest:boolean){if(id.startsWith("tool:"))return false;
    if(toChest){if(!this.add(id,-1))return false;chest[id]=(chest[id]||0)+1;}
    else{if((chest[id]||0)<1||!this.add(id,1))return false;chest[id]--;}return true;

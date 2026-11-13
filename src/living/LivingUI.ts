@@ -22,7 +22,7 @@ export class LivingUI{
   document.querySelectorAll<HTMLButtonElement>("[data-category]").forEach(b=>b.onclick=()=>list(b.dataset.category!));list("Alle");
  }
  chest(cell:Cell){
-  const id=cell.join(","),chest=this.state.chests[id] ||= {};
+  const id=cell.join(","),chest=this.store.chest(id);if(!chest){this.hooks.toast("100 gefüllte Truhen sind gespeichert. Leere zuerst eine davon.");return;}
   this.hooks.open("TRUHE",`<h2>Truhe · ${id}</h2><p>Diese Truhe hat einen eigenen gespeicherten Inhalt.</p><div class="recipe-list">${CATALOG.filter(i=>!i.id.startsWith("tool:")&&(this.store.count(i.id)>0||(chest[i.id]||0)>0)).map(i=>`<div class="storage-row"><span>${i.symbol} ${i.name}</span><button data-store="${i.id}" ${this.store.count(i.id)<1?"disabled":""}>Rein · ${this.store.count(i.id)}</button><button data-take="${i.id}" ${(chest[i.id]||0)<1?"disabled":""}>Raus · ${chest[i.id]||0}</button></div>`).join("")||"<p>Noch leer. Sammle zuerst Material oder Ernte.</p>"}</div>`);
   for(const action of ["store","take"])document.querySelectorAll<HTMLButtonElement>(`[data-${action}]`).forEach(b=>b.onclick=()=>{this.store.move(b.dataset[action]!,chest,action==="store");this.hooks.save();this.chest(cell);});
  }
