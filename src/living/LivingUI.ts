@@ -1,0 +1,49 @@
+import { TYPES, type Cell, type World } from "../world/World";
+import { ItemStore, CATALOG, RECIPES_LIVING, FURNACE, produce, type Category } from "./Items";
+import { CROPS, type Animal } from "./State";
+import { EXPLORER, feed, sheltered } from "./Systems";
+import { REGIONS, regionAt } from "./Regions";
+import { escapeHTML as esc } from "../ui/AdventureUI";
+const $=<E extends HTMLElement=HTMLElement>(id:string)=>document.getElementById(id) as E;
+interface Hooks{open:(tag:string,html:string)=>void;close:()=>void;save:()=>unknown;toast:(s:string)=>void;pos:()=>Cell;equip:(tool:string)=>void;safe:()=>boolean;challenge:()=>void}
+export class LivingUI{
+ constructor(public store:ItemStore,private world:World,private hooks:Hooks){}
+ get state(){return this.store.expansion.living;}
+ hub(){
+  this.hooks.open("LIVING WORLD",`<h2>Dein nächstes Abenteuer</h2><p>Erkunde die Welt, versorge Tiere und mach aus Rohstoffen neue Möglichkeiten.</p><div class="living-tabs"><button id="living-map">Karte & Kompass</button><button id="living-journal">Entdeckungen</button><button id="living-bag">Rucksack</button><button id="living-garden">Garten</button><button id="living-tools">Werkbank</button><button id="living-pets">Begleiter</button><button id="living-challenge">Passende Challenge</button></div>`);
+  $("living-map").onclick=()=>this.map();$("living-journal").onclick=()=>this.journal();$("living-bag").onclick=()=>this.bag();$("living-garden").onclick=()=>this.garden();$("living-tools").onclick=()=>this.recipes(false);$("living-pets").onclick=()=>this.pets();$("living-challenge").onclick=this.hooks.challenge;
+ }
+ bag(){
+  this.hooks.open("RUCKSACK",`<h2>Alles dabei</h2><div class="inventory-tabs">${["Alle","Material","Nahrung","Werkzeug","Waffe","Ausrüstung","Besonderes"].map(c=>`<button data-category="${c}">${c}</button>`).join("")}</div><div id="item-list" class="recipe-list"></div><p class="hint">Die Baustoff-Schnellleiste bleibt unten im Spiel. Fische und Angelrekorde findest du weiterhin im Fangbuch.</p>`);
+  const list=(cat:string)=>{$("item-list").innerHTML=CATALOG.filter(i=>(cat==="Alle"||i.category===cat)&&this.store.count(i.id)>0).map(i=>`<div class="storage-row"><span>${i.symbol} ${i.name}</span><b>${this.store.count(i.id)}</b>${i.id.startsWith("tool:")?`<button data-equip="${i.name}">Ausrüsten</button>`:["Karotte","Kartoffel","Kürbis","Brot","Ofenkartoffel","Gemüsesuppe"].includes(i.id)?`<button data-eat="${i.id}">Essen</button>`:""}</div>`).join("")||"<p>In dieser Kategorie ist noch nichts gesammelt.</p>";
+   document.querySelectorAll<HTMLButtonElement>("[data-equip]").forEach(b=>b.onclick=()=>{this.hooks.equip(b.dataset.equip!);this.hooks.close();this.hooks.save();});
+   document.querySelectorAll<HTMLButtonElement>("[data-eat]").forEach(b=>b.onclick=()=>{if(this.store.add(b.dataset.eat!,-1)){const n=this.store.expansion.nightfall;n.health=Math.min(100,n.health+12);n.hunger=Math.min(100,n.hunger+30);this.hooks.save();list(cat);}});
+  };
+  document.querySelectorAll<HTMLButtonElement>("[data-category]").forEach(b=>b.onclick=()=>list(b.dataset.category!));list("Alle");
+ }
+ chest(cell:Cell){
+  const id=cell.join(","),chest=this.state.chests[id] ||= {};
+  this.hooks.open("TRUHE",`<h2>Truhe · ${id}</h2><p>Diese Truhe hat einen eigenen gespeicherten Inhalt.</p><div class="recipe-list">${CATALOG.filter(i=>!i.id.startsWith("tool:")&&(this.store.count(i.id)>0||(chest[i.id]||0)>0)).map(i=>`<div class="storage-row"><span>${i.symbol} ${i.name}</span><button data-store="${i.id}" ${this.store.count(i.id)<1?"disabled":""}>Rein · ${this.store.count(i.id)}</button><button data-take="${i.id}" ${(chest[i.id]||0)<1?"disabled":""}>Raus · ${chest[i.id]||0}</button></div>`).join("")||"<p>Noch leer. Sammle zuerst Material oder Ernte.</p>"}</div>`);
+  for(const action of ["store","take"])document.querySelectorAll<HTMLButtonElement>(`[data-${action}]`).forEach(b=>b.onclick=()=>{this.store.move(b.dataset[action]!,chest,action==="store");this.hooks.save();this.chest(cell);});
+ }
+ recipes(furnace:boolean){
+  const recipes=furnace?FURNACE:RECIPES_LIVING,creative=this.store.expansion.nightfall.mode==="Kreativ";
+  this.hooks.open(furnace?"OFEN":"WOHNWELT-WERKBANK",`<h2>${furnace?"Aus Rohstoffen wird mehr":"Dein Zuhause wächst"}</h2><div class="recipe-list">${recipes.map(r=>`<button data-living-recipe="${r.id}" ${!creative&&Object.entries(r.cost).some(([id,n])=>this.store.count(id)<n)?"disabled":""}><b>${r.count} × ${r.id}</b><small>${Object.entries(r.cost).map(([id,n])=>`${CATALOG.find(i=>i.id===id)?.name||id}: ${this.store.count(id)}/${n}`).join(" + ")}</small></button>`).join("")}</div><p class="hint">${furnace?"Fischgerichte bereitest du weiterhin im NIGHTFALL-Proviant zu. Metalle brauchen Kohle als Brennstoff.":"Für Metalle und Gerichte benutze einen platzierten Ofen. Hacke und Spitzhacken erscheinen in der Werkzeugauswahl."}</p>`);
+  document.querySelectorAll<HTMLButtonElement>("[data-living-recipe]").forEach(b=>b.onclick=()=>{const r=recipes.find(r=>r.id===b.dataset.livingRecipe)!;if(produce(this.store,r,creative)){if(r.out.startsWith("tool:"))this.hooks.equip(r.id);this.hooks.save();this.recipes(furnace);}});
+ }
+ garden(){
+  this.hooks.open("GARTEN",`<h2>Dein Garten, deine Ernte.</h2><p>Hacke ausrüsten, Gras oder Erde anvisieren und Benutzen drücken. Danach Samen wählen und den Acker benutzen. Reife Pflanzen lassen sich genauso ernten.</p><div class="recipe-list">${CROPS.map(c=>`<button data-seed="${c}" aria-pressed="${this.state.selectedSeed===c}">${c} · ${this.store.count(`Samen:${c}`)} Samen</button>`).join("")}</div><p>Wachstum zählt gespeicherte aktive Spielzeit. Deine Pflanzen brauchen kein offenes Menü und keine Online-Verbindung.</p>`);
+  document.querySelectorAll<HTMLButtonElement>("[data-seed]").forEach(b=>b.onclick=()=>{this.state.selectedSeed=b.dataset.seed as typeof this.state.selectedSeed;this.hooks.save();this.hooks.close();this.hooks.toast(`${this.state.selectedSeed}-Samen ausgewählt.`);});
+ }
+ pet(a:Animal){
+  this.hooks.open("TIERBEGEGNUNG",`<h2>${esc(a.name||a.kind)}</h2><p>${a.tame?"Dein vertrauter Begleiter":"Vertrauen wächst durch passendes Futter."} · Vertrauen ${a.trust}/2 · Sättigung ${Math.round(a.hunger)}%</p><p>${a.kind==="Wolf"||a.kind==="Katze"?"Mag Fisch oder ein Fischgericht.":"Mag Ernte oder Beeren."}</p><div class="learning-help"><button id="animal-feed">Füttern</button><button id="animal-pet">Streicheln</button></div>${a.tame?`<label>Name<input id="animal-name" maxlength="24" value="${esc(a.name)}" placeholder="Dein Name fürs Tier"></label><button id="animal-name-save">Name speichern</button><div class="learning-help">${["Folgen","Warten","Schlafen"].map(m=>`<button data-pet-mode="${m}">${m}</button>`).join("")}<button id="animal-home">Sicheren Ort merken</button></div>`:""}<p id="animal-feedback" role="status"></p>`);
+  $("animal-feed").onclick=()=>{if(feed(a,this.store)){this.hooks.save();this.pet(a);}else $("animal-feedback").textContent="Passendes Futter fehlt. Fische, koche oder ernte etwas.";};
+  $("animal-pet").onclick=()=>{$("animal-feedback").textContent=`${a.name||a.kind} entspannt sich.`;a.action="Ruhen";this.hooks.save();};
+  if(a.tame){$("animal-name-save").onclick=()=>{a.name=$<HTMLInputElement>("animal-name").value.trim().slice(0,24);this.hooks.save();this.pet(a);};$("animal-home").onclick=()=>{a.home=[...a.pos];this.hooks.save();$("animal-feedback").textContent="Dieser sichere Aufenthaltsort ist gespeichert.";};document.querySelectorAll<HTMLButtonElement>("[data-pet-mode]").forEach(b=>b.onclick=()=>{a.mode=b.dataset.petMode as Animal["mode"];this.hooks.save();this.hooks.close();});}
+ }
+ pets(){this.hooks.open("BEGLEITER",`<h2>Deine Tiere</h2><div class="recipe-list">${this.state.animals.filter(a=>a.tame).map(a=>`<button data-animal="${a.id}">${esc(a.name||a.kind)} · ${a.mode}</button>`).join("")||"<p>Finde Tiere in der Welt und füttere sie zweimal.</p>"}</div>`);document.querySelectorAll<HTMLButtonElement>("[data-animal]").forEach(b=>b.onclick=()=>this.pet(this.state.animals.find(a=>a.id===b.dataset.animal)!));}
+ journal(){this.hooks.open("ENTDECKERPFAD",`<h2>Spuren einer lebendigen Welt</h2><div class="mission-list">${EXPLORER.map((m,i)=>`<section><h3>${this.state.completed.includes(m.id)?"✓":"○"} ${i+1}. ${m.name}</h3><p>${m.hint}</p></section>`).join("")}</div><p class="hint">Die Missionen prüfen echte Handlungen. Öffnen eines Fensters allein gibt keine Belohnung. Erkunde und spiele jederzeit frei weiter.</p>`);}
+ map(){const p=this.hooks.pos();this.hooks.open("KARTE & KOMPASS",`<h2>${regionAt(...p).name}</h2><svg class="world-map" viewBox="0 0 240 240" role="img" aria-label="Karte der sechs Regionen"><rect width="240" height="240" fill="#294c3d"/><rect x="72" y="72" width="96" height="96" fill="#4e7556"/>${REGIONS.map(r=>`<circle cx="${(r.x+60)*2}" cy="${(r.z+60)*2}" r="16" fill="${r.color}" opacity=".75"/><text x="${(r.x+60)*2}" y="${(r.z+60)*2+3}" text-anchor="middle" fill="#122c2a" font-size="7">${r.name}</text>`).join("")}<circle cx="${(p[0]+60)*2}" cy="${(p[2]+60)*2}" r="4" fill="#ffe0a0"/>${this.state.home?`<text x="${(this.state.home[0]+60)*2}" y="${(this.state.home[2]+60)*2}" fill="white" font-size="12">⌂</text>`:""}<text x="120" y="12" text-anchor="middle" fill="white">N</text></svg><p>Position ${p.map(Math.round).join(" / ")} · Goldpunkt: du</p><button id="mark-home">Diesen Ort als Zuhause merken</button>`);$("mark-home").onclick=()=>{this.state.home=[...p];this.hooks.save();this.map();};}
+ sleep(cell:Cell){if(!this.hooks.safe()||!sheltered(this.world,[cell[0],cell[1]+1,cell[2]])){this.hooks.toast("Zum Schlafen brauchst du ein geschlossenes Dach und Wände, ohne nahe Zombies.");return;}
+  const n=this.store.expansion.nightfall;n.time=.12;n.health=Math.min(100,n.health+25);this.state.home=[cell[0]+.5,cell[1]+1,cell[2]+.5];this.hooks.save();this.hooks.toast("Ausgeruht. Der Morgen wartet auf dich.");}
+}

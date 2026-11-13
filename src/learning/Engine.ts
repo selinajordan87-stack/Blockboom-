@@ -1,5 +1,6 @@
 import contents from "./challenges.json";
 import fishingContents from "./fishing-challenges.json";
+import { LIVING_CHALLENGES } from "./living-content";
 export type Mode = "Entspannt" | "Abenteuer" | "Lern-Challenge";
 export interface Challenge {
   id: string;
@@ -18,8 +19,9 @@ export interface Challenge {
   /** Fachliche Schwierigkeit und verlangte Schreibmenge werden getrennt. */
   knowledge?: number;
   writing?: number;
+  context?: string;
 }
-export const CHALLENGES: Challenge[] = [...contents, ...fishingContents];
+export const CHALLENGES: Challenge[] = [...contents, ...fishingContents, ...LIVING_CHALLENGES];
 export interface Result {
   attempts: number;
   history: boolean[];
@@ -93,6 +95,7 @@ export function loadProfile(
   }
 }
 export class LearningEngine {
+  context="";
   constructor(
     public profile = freshProfile(),
     public content: Challenge[] = CHALLENGES,
@@ -103,7 +106,9 @@ export class LearningEngine {
       0,
     );
     const level = Math.min(3, 1 + Math.floor(successes / 8));
-    const pool = this.content.filter(
+    const contextual=this.context?this.content.filter(c=>c.context===this.context && c.level<=level&&!this.profile.recent.includes(c.id)):[];
+    this.context="";
+    const pool = contextual.length?contextual:this.content.filter(
       (c) => c.level <= level && !this.profile.recent.includes(c.id),
     );
     const sorted = (pool.length ? pool : this.content)

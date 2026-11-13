@@ -1,5 +1,5 @@
 import * as T from "three";
-import { World, type Block } from "./World";
+import { World, MIN_Y, MAX_Y, type Block } from "./World";
 import { special } from "../nightfall/Defense";
 
 export const colors: Record<Block, number> = {
@@ -20,6 +20,7 @@ export const colors: Record<Block, number> = {
   Kalkstein: 0xc8c4aa,
   Schiefer: 0x53616e,
   Tür:0x976b3d,"Tür offen":0x976b3d,Tor:0x87613b,"Tor offen":0x87613b,Zaun:0x997445,Leiter:0xb89764,Treppe:0x8e9a99,Fackel:0xf5bd5d,Falle:0x788a72,Lagerkiste:0xa37b45,Barriere:0x6d7157,Mauer:0x727d83,
+  Kohleerz:0x4e5357,Kupfererz:0xba8260,Eisenerz:0xa0a3a1,Golderz:0xd1ac4d,Acker:0x68503b,Bett:0x9f7772,Tisch:0xad8256,Stuhl:0x9a734d,Regal:0x8a6847,Truhe:0xba8d51,Werkbank:0xa78a61,Ofen:0x626f78,Laterne:0xf2d18a,Teppich:0x6f96a2,Schatztruhe:0xd1ad55,
 };
 
 const CHUNK = 12;
@@ -44,6 +45,7 @@ const tile: Record<Block, number> = {
   Schiefer: 15,
   Boom: 17,
   Tür:5,"Tür offen":5,Tor:5,"Tor offen":5,Zaun:4,Leiter:4,Treppe:3,Fackel:4,Falle:4,Lagerkiste:5,Barriere:4,Mauer:10,
+  Kohleerz:3,Kupfererz:3,Eisenerz:3,Golderz:3,Acker:2,Bett:5,Tisch:5,Stuhl:5,Regal:5,Truhe:5,Werkbank:5,Ofen:10,Laterne:5,Teppich:5,Schatztruhe:5,
 };
 
 function tileFor(block: Block, normal: readonly number[]) {
@@ -204,6 +206,9 @@ export class WorldView {
   update() {
     if (this.revision === this.world.revision) return;
     const affected = new Set<string>();
+    for(const [id,mesh]of this.meshes)if(!this.world.activeChunks.has(id.split(":")[0])){
+      mesh.geometry.dispose();this.group.remove(mesh);this.meshes.delete(id);
+    }
     if (this.meshes.size === 0) {
       for (const k of this.world.blocks.keys()) {
         const [x, , z] = k.split(",").map(Number);
@@ -228,6 +233,7 @@ export class WorldView {
       }
     }
     for (const id of affected) {
+      if(!this.world.activeChunks.has(id))continue;
       const [cx, cz] = id.split(",").map(Number);
       this.rebuild(cx, cz, false);
       this.rebuild(cx, cz, true);
@@ -248,7 +254,7 @@ export class WorldView {
     const minZ = cz * CHUNK;
     for (let x = minX; x < minX + CHUNK; x++)
       for (let z = minZ; z < minZ + CHUNK; z++)
-        for (let y = -3; y <= 14; y++) {
+        for (let y = MIN_Y; y <= MAX_Y; y++) {
           const block = this.world.get(x, y, z);
           if (!block || special(block) || (block === "Glas") !== glassLayer) continue;
           this.blockFaces(data, x, y, z, block);
@@ -266,6 +272,7 @@ export class WorldView {
       glassLayer ? this.glass : this.material,
     );
     mesh.name = id;
+    mesh.userData.center=[cx*CHUNK+6,cz*CHUNK+6];
     this.meshes.set(id, mesh);
     this.group.add(mesh);
   }
@@ -325,4 +332,5 @@ export class WorldView {
     this.atlas.dispose();
     this.group.removeFromParent();
   }
+  visibility(x:number,z:number){for(const mesh of this.meshes.values()){const [cx,cz]=mesh.userData.center;mesh.visible=Math.hypot(cx-x,cz-z)<48;}}
 }

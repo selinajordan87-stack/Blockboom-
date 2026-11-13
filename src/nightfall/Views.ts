@@ -52,7 +52,7 @@ export class DefenseView {
       const boxes:{cell:Cell;size:number[];position:number[];color:number}[]=[];
       for(const [id,block] of this.world.blocks){
         if(!special(block))continue;const cell=id.split(",").map(Number) as Cell;
-        if(block==="Fackel")this.torches.push(cell);
+        if(block==="Fackel"||block==="Laterne")this.torches.push(cell);
         const add=(size:number[],position:number[],color=0x9b754a)=>boxes.push({cell,size,position,color});
         if(block==="Tür"||block==="Tor") {add([.9,1,.14],[.5,.5,.5]);add([.07,.07,.12],[.83,.5,.61],0xf4d184);}
         else if(block.endsWith("offen"))add([.14,1,.9],[.08,.5,.5]);
@@ -62,6 +62,14 @@ export class DefenseView {
         else if(block==="Fackel") {add([.09,.55,.09],[.5,.38,.5]);add([.18,.24,.18],[.5,.76,.5],0xffd578);}
         else if(block==="Falle") {add([.95,.07,.95],[.5,.035,.5],0x6e9873);for(let x=.15;x<1;x+=.3)add([.06,.16,.8],[x,.1,.5],0xc3a26a);}
         else if(block==="Lagerkiste") {add([.9,.8,.85],[.5,.4,.5]);add([.94,.12,.89],[.5,.84,.5],0x6e4e31);add([.12,.18,.08],[.5,.65,.95],0xe9c77b);}
+        else if(block==="Truhe"||block==="Schatztruhe") {add([.9,.65,.8],[.5,.325,.5]);add([.94,.12,.84],[.5,.7,.5],block==="Schatztruhe"?0xd7b85b:0x6e4e31);add([.12,.16,.08],[.5,.6,.94],0xe6c97c);}
+        else if(block==="Bett"){add([.95,.25,.95],[.5,.24,.5],0x815940);add([.9,.18,.75],[.5,.46,.57],0x818fba);add([.8,.15,.23],[.5,.5,.15],0xe5dfc2);}
+        else if(block==="Tisch"||block==="Werkbank"){add([1,.15,1],[.5,.84,.5],block==="Werkbank"?0xc7a26f:0x9f774e);for(const x of [.13,.87])for(const z of [.13,.87])add([.12,.8,.12],[x,.4,z]);}
+        else if(block==="Stuhl"){add([.65,.14,.65],[.5,.45,.5]);add([.65,.6,.12],[.5,.76,.8]);for(const x of [.25,.75])for(const z of [.25,.75])add([.09,.4,.09],[x,.2,z]);}
+        else if(block==="Regal"){add([.1,1,.5],[.12,.5,.65]);add([.1,1,.5],[.88,.5,.65]);for(const y of [.1,.5,.9])add([.85,.08,.5],[.5,y,.65]);add([.4,.27,.35],[.4,.68,.65],0x71978e);}
+        else if(block==="Ofen"){add([.95,.95,.9],[.5,.475,.5],0x737f83);add([.65,.4,.07],[.5,.4,.98],0x253238);add([.32,.15,.08],[.5,.3,.99],0xe4a55f);}
+        else if(block==="Laterne"){add([.15,.16,.15],[.5,.1,.5],0x705c3c);add([.3,.4,.3],[.5,.4,.5],0xffdfa0);add([.38,.1,.38],[.5,.65,.5],0x6e634b);}
+        else if(block==="Teppich")add([.98,.035,.98],[.5,.025,.5],0x668e9e);
       }
       for(const child of [...this.group.children]){if(child instanceof T.InstancedMesh)child.dispose();this.group.remove(child);}
       if(boxes.length){

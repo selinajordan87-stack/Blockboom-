@@ -1,6 +1,7 @@
 import { TYPES, type Block } from "../world/World";
 import { FISH, type FishName } from "../fishing/Fishing";
 import { freshNight, readNight, type NightState } from "../nightfall/State";
+import { freshLiving, readLiving, type LivingState } from "../living/State";
 import {
   BAITS,
   SPOTS,
@@ -19,6 +20,7 @@ export const TOOLS = [
   "Angel",
   "Holzknüppel",
   "Holzschwert", "Steinschwert", "Steinaxt", "Bogen",
+  "Hacke", "Kupferspitzhacke", "Eisenspitzhacke",
 ] as const;
 export type Tool = (typeof TOOLS)[number];
 export interface CatchRecord {
@@ -48,6 +50,7 @@ export interface Expansion {
   view: { fov: number; sensitivity: number };
   angling: AnglingProgress;
   nightfall: NightState;
+  living: LivingState;
 }
 export const defaultExpansion = (edition: 1 | 2 | 3 | 4 = 1): Expansion => ({
   version: 1,
@@ -62,6 +65,7 @@ export const defaultExpansion = (edition: 1 | 2 | 3 | 4 = 1): Expansion => ({
   view: { fov: 70, sensitivity: 1 },
   angling: defaultAngling(),
   nightfall: freshNight(),
+  living: freshLiving(),
 });
 export function readExpansion(raw: unknown): Expansion {
   const d = defaultExpansion();
@@ -136,5 +140,6 @@ export function readExpansion(raw: unknown): Expansion {
     d.view.sensitivity = Math.max(0.55, Math.min(1.6, sensitivity));
   d.angling = readAngling(r.angling);
   d.nightfall = readNight(r.nightfall);
+  d.living = readLiving(r.living);
   return d;
 }

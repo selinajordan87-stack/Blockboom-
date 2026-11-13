@@ -4,6 +4,13 @@
   background: #a9d6da;
   font-synthesis: none;
 }
+.living-tabs {display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.living-tabs button {text-align:left;min-height:52px;}
+.world-map {display:block;width:min(100%,330px);margin:auto;border:1px solid #b6c9a45c;border-radius:12px;}
+#compass {position:absolute;top:130px;left:28px;font-size:10px;letter-spacing:1px;text-shadow:0 1px 4px #102c28;}
+#mining-progress {position:absolute;left:50%;top:56%;transform:translateX(-50%);padding:10px 16px;background:#173b32e8;border:1px solid #e5c47c;border-radius:12px;font-size:12px;}
+@media(pointer:coarse) and (orientation:landscape){#compass{top:90px;left:calc(env(safe-area-inset-left) + 18px);font-size:9px;}}
+@media(max-width:600px){#compass{top:112px;left:18px;}#living-menu{padding:8px;min-width:44px;}.top-right{gap:6px;}.brand{font-size:19px;}}
 /* NIGHTFALL: compact status and separate combat controls. */
 #survival-hud {position:absolute;top:76px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;padding:9px 13px;border:1px solid #a6c5d13b;border-radius:12px;background:#122c3ad9;font-size:12px;color:#e5f0e6;z-index:4;white-space:nowrap;}
 #health-label {color:#f4b69d;}#hunger-label {color:#e8cf83;}#wave-label {color:#c7d9a4;}

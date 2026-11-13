@@ -18,7 +18,7 @@ describe("Bauen", () => {
     const w = new World();
     expect(place(w, [0, 1, 7], "Stein", player)).toBe(false);
     expect(place(w, [15, 1, 7], "Stein", player)).toBe(false);
-    expect(place(w, [24, 1, 7], "Stein", [23, 1, 7])).toBe(false);
+    expect(place(w, [60, 1, 7], "Stein", [59, 1, 7])).toBe(false);
     expect(place(w, [1, 15, 7], "Stein", player)).toBe(false);
     expect(remove(w, [0, -3, 7], player)).toBe(false);
     expect(remove(w, [20, 0, 7], player)).toBe(false);

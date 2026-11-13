@@ -1,8 +1,8 @@
 import { World, intersectsPlayer, type Block, type Cell, key } from "../world/World";
 import type { NightState } from "./State";
-export const SPECIAL = ["Tür","Tür offen","Tor","Tor offen","Zaun","Leiter","Treppe","Fackel","Falle","Lagerkiste","Barriere"] as const;
+export const SPECIAL = ["Tür","Tür offen","Tor","Tor offen","Zaun","Leiter","Treppe","Fackel","Falle","Lagerkiste","Barriere","Bett","Tisch","Stuhl","Regal","Truhe","Werkbank","Ofen","Laterne","Teppich","Schatztruhe"] as const;
 export function special(block: Block | undefined) { return !!block && (SPECIAL as readonly string[]).includes(block); }
-export function solid(block: Block | undefined) { return !!block && !["Tür offen","Tor offen","Leiter","Fackel","Falle"].includes(block); }
+export function solid(block: Block | undefined) { return !!block && !["Tür offen","Tor offen","Leiter","Fackel","Falle","Teppich","Laterne"].includes(block); }
 /** Shape-aware AABB, shared by the player and zombies. Door cells are conservative closed obstacles. */
 export function collides(world: World, pos: Cell, height=1.75, radius=.28) {
   for(let x=Math.floor(pos[0]-radius);x<=Math.floor(pos[0]+radius);x++)

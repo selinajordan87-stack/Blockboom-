@@ -1,4 +1,4 @@
-import { World, LIMIT, type Cell } from "../world/World";
+import { World, LIMIT, MIN_Y, type Cell } from "../world/World";
 import { collides } from "../nightfall/Defense";
 export class Player {
   pos: Cell = [0, 1.02, 17];
@@ -13,7 +13,7 @@ export class Player {
     return collides(this.world,p);
   }
   safeSpawn() {
-    if (this.blocked(this.pos) || this.pos[1] < -2) {
+    if (this.blocked(this.pos) || this.pos[1] < MIN_Y) {
       this.pos = [0, 16, 17];
       this.vy = 0;
     }
@@ -62,6 +62,6 @@ export class Player {
       }
       this.vy = 0;
     }
-    if (this.pos[1] < -8) this.safeSpawn();
+    if (this.pos[1] < MIN_Y-4) this.safeSpawn();
   }
 }

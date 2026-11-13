@@ -72,9 +72,9 @@ export class ZombieEngine {
     const night=Math.max(1,this.state.night),count=Math.min(this.cap,night===1?2:night===2?3:night===3?4:night===4?5:6);
     for(let i=0;i<count;i++)for(let attempt=0;attempt<80;attempt++){
       const angle=this.rng()*Math.PI*2, radius=9+this.rng()*7;
-      const x=Math.max(-22,Math.min(22,player[0]+Math.cos(angle)*radius));
-      const z=Math.max(-22,Math.min(22,player[2]+Math.sin(angle)*radius));
-      const y=ground(this.world,x,z,4);if(y===null||y<1)continue;
+      const x=Math.max(-LIMIT+2,Math.min(LIMIT-2,player[0]+Math.cos(angle)*radius));
+      const z=Math.max(-LIMIT+2,Math.min(LIMIT-2,player[2]+Math.sin(angle)*radius));
+      const y=ground(this.world,x,z,Math.max(4,player[1]+1));if(y===null||y<1)continue;
       const kind:ZombieKind=night>=4&&i%3===2?"heavy":night>=3&&i%3===1?"fast":"normal";
       if(this.spawn(kind,[x,y+.001,z],player))break;
     }

@@ -15,17 +15,20 @@ export const TYPES = [
   "Kalkstein",
   "Schiefer",
   "Tür", "Tor", "Zaun", "Leiter", "Treppe", "Fackel", "Falle", "Lagerkiste", "Barriere", "Mauer",
+  "Kohleerz", "Kupfererz", "Eisenerz", "Golderz", "Acker", "Bett", "Tisch", "Stuhl", "Regal", "Truhe", "Werkbank", "Ofen", "Laterne", "Teppich", "Schatztruhe",
 ] as const;
 export type Block = (typeof TYPES)[number] | "Boom" | "Tür offen" | "Tor offen";
 export type Cell = [number, number, number];
 export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
-export const LIMIT = 24;
+export const LIMIT = 60;
+export const MIN_Y = -18, MAX_Y = 26;
 export class World {
   blocks = new Map<string, Block>();
   changes: Record<string, Block | null> = {};
   /** Cells changed since the renderer last synchronized its chunk meshes. */
   dirty = new Set<string>();
   revision = 0;
+  activeChunks = new Set<string>();
   get(x: number, y: number, z: number) {
     return this.blocks.get(key(x, y, z));
   }
@@ -38,8 +41,9 @@ export class World {
     this.revision++;
   }
   constructor() {
-    for (let x = -LIMIT; x < LIMIT; x++)
-      for (let z = -LIMIT; z < LIMIT; z++) {
+    for (let cx=-2;cx<2;cx++)for(let cz=-2;cz<2;cz++)this.activeChunks.add(`${cx},${cz}`);
+    for (let x = -24; x < 24; x++)
+      for (let z = -24; z < 24; z++) {
         const lake = (x + 10) ** 2 / 42 + (z + 5) ** 2 / 38 < 1;
         const h = lake
           ? -1
@@ -122,8 +126,8 @@ export function canPlace(world: World, c: Cell, p: Cell) {
     c.every(Number.isInteger) &&
     Math.abs(c[0]) < LIMIT &&
     Math.abs(c[2]) < LIMIT &&
-    c[1] >= -2 &&
-    c[1] <= 14 &&
+    c[1] > MIN_Y &&
+    c[1] <= MAX_Y &&
     Math.hypot(
       c[0] + 0.5 - p[0],
       c[1] + 0.5 - (p[1] + 1.6),
@@ -153,7 +157,7 @@ export function protectedCell(c: Cell) {
 }
 export function remove(world: World, c: Cell, p: Cell) {
   if (
-    c[1] <= -3 ||
+    (c[1] <= (Math.abs(c[0])<24&&Math.abs(c[2])<24?-3:MIN_Y)) ||
     (protectedCell(c) &&
       !Object.prototype.hasOwnProperty.call(world.changes, key(...c))) ||
     Math.hypot(

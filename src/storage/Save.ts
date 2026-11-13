@@ -1,5 +1,5 @@
 import { readExpansion, type Expansion } from "../inventory/Equipment";
-import { TYPES, type Block, type Cell, LIMIT } from "../world/World";
+import { TYPES, type Block, type Cell, LIMIT, MIN_Y, MAX_Y } from "../world/World";
 import { emptyProgress, type LearningProgress } from "../learning/Learning";
 import { FISH } from "../fishing/Fishing";
 export interface Save {
@@ -27,8 +27,8 @@ export function decode(raw: string | null): Save | null {
       !s.position.every(finite) ||
       Math.abs(s.position[0]) >= LIMIT ||
       Math.abs(s.position[2]) >= LIMIT ||
-      s.position[1] < -2 ||
-      s.position[1] > 30 ||
+      s.position[1] < MIN_Y ||
+      s.position[1] > 40 ||
       !finite(s.yaw) ||
       !finite(s.pitch)
     )
@@ -47,8 +47,8 @@ export function decode(raw: string | null): Save | null {
         !c.every(Number.isInteger) ||
         Math.abs(c[0]) >= LIMIT ||
         Math.abs(c[2]) >= LIMIT ||
-        c[1] < -3 ||
-        c[1] > 14 ||
+        c[1] < MIN_Y ||
+        c[1] > MAX_Y ||
         !(
           b === null || [...TYPES, "Laub", "Sand", "Boom", "Tür offen", "Tor offen"].includes(b as string)
         )

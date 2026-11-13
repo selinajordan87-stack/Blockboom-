@@ -1,0 +1,28 @@
+import type { Challenge } from "./Engine";
+const rows:[string,string,string,string,string[],string][]=[
+ ["Deutsch","forest","Welche Schreibweise ist korrekt?","widerstandsfähig",["wiederstandsfähig","widerstandsfähig","widerstandsfähich"],"Widerstand wird ohne ie geschrieben."],
+ ["Deutsch","village","Welcher Satz ist richtig?","Ich weiß, dass die Schmiede verlassen ist.",["Ich weis das die Schmiede verlassen ist.","Ich weiß, dass die Schmiede verlassen ist.","Ich weiß dass die Schmiede verlassen ist."],"weiß mit ß; vor dem dass-Nebensatz steht ein Komma."],
+ ["Deutsch","cave","Welches Wort bezeichnet einen natürlich vorkommenden Stoff, aus dem Metall gewonnen werden kann?","Erz",["Erz","Legende","Nebel"],"Im Spiel enthalten Kupfererze Kupferverbindungen."],
+ ["Deutsch","meadow","Was beschreibt zuverlässig in „Die Laterne leuchtet zuverlässig“?","Wie die Laterne leuchtet",["Wie die Laterne leuchtet","Wo die Laterne steht","Wem die Laterne gehört"],"Das Adjektiv wird hier adverbial gebraucht."],
+ ["Deutsch","mountain","Welche Form passt: Die Forscherin hat den Weg ...","gefunden",["gefunden","gefandet","finden"],"Das Partizip von finden lautet gefunden."],
+ ["Deutsch","meadow","Welche Schreibweise ist richtig?","das Wachstum der Pflanzen",["das wachstum der Pflanzen","das Wachstum der Pflanzen","das Wachstum der pflanzen"],"Wachstum und Pflanzen sind Nomen."],
+ ["Mathematik","meadow","Ein Beet hat 24 Felder. Drei Achtel sind bepflanzt. Wie viele Felder sind das?","9",["9","8","12"],"24 geteilt durch 8, danach mal 3."],
+ ["Mathematik","village","Ein rechteckiger Tisch ist 1,2 m lang und 0,8 m breit. Welche Fläche hat er?","0,96 m²",["0,96 m²","2 m²","9,6 m²"],"Länge mal Breite: 1,2 mal 0,8."],
+ ["Mathematik","cave","Vier Erzstücke ergeben je 0,25 kg Metall. Wie viel ist das zusammen?","1 kg",["1 kg","0,1 kg","4 kg"],"Vier Viertel ergeben ein Ganzes."],
+ ["Mathematik","forest","Ein Weg ist 750 m lang. Wie viele Kilometer sind das?","0,75 km",["0,75 km","7,5 km","75 km"],"1000 Meter sind ein Kilometer."],
+ ["Mathematik","mountain","Ein Würfel hat 2 cm Kantenlänge. Wie groß ist sein Volumen?","8 cm³",["8 cm³","6 cm³","4 cm³"],"Multipliziere Länge, Breite und Höhe."],
+ ["Mathematik","lake","Du hast 1,5 kg Futter und verbrauchst 0,35 kg. Was bleibt?","1,15 kg",["1,15 kg","1,25 kg","0,85 kg"],"Rechne 1,50 minus 0,35."],
+ ["Englisch","forest","Complete: The wolf ... through the forest every morning.","walks",["walks","walk","walking"],"He, she, it: Das Verb bekommt im simple present meist ein s."],
+ ["Englisch","meadow","What is the plural of sheep?","sheep",["sheep","sheeps","sheepen"],"Einzahl und Mehrzahl sind gleich."],
+ ["Englisch","village","Which sentence means „Die Tür ist geschlossen“?","The door is closed.",["The door is closed.","The door is cold.","The floor is closed."],"Door bedeutet Tür; closed bedeutet geschlossen."],
+ ["Englisch","cave","Complete: There ... three torches in the cave.","are",["are","is","am"],"Three torches ist Mehrzahl."],
+ ["Englisch","mountain","Choose the correct question.","Where is the mountain?",["Where is the mountain?","Where the mountain is?","Where are the mountain?"],"Nach Where folgt hier is."],
+ ["Englisch","lake","Read: Tom is fishing, but Mia is planting seeds. Who is gardening?","Mia",["Mia","Tom","Both"],"Planting seeds bedeutet Samen pflanzen."],
+ ["Naturwissenschaft","meadow","Was brauchen grüne Pflanzen zur Fotosynthese?","Licht, Wasser und Kohlenstoffdioxid",["Licht, Wasser und Kohlenstoffdioxid","nur Erde","Metall und Salz"],"Pflanzen wandeln Lichtenergie in chemisch gespeicherte Energie um."],
+ ["Naturwissenschaft","forest","Warum sind verschiedene Lebensräume wichtig?","Sie bieten unterschiedlichen Arten passende Bedingungen.",["Sie bieten unterschiedlichen Arten passende Bedingungen.","Alle Tiere brauchen dieselbe Nahrung.","Bäume verhindern jeden Regen."],"Arten haben unterschiedliche Ansprüche."],
+ ["Naturwissenschaft","cave","Was ist ein Unterschied zwischen Kupfererz und Kupfer?","Erz enthält Kupferverbindungen und weitere Stoffe.",["Erz enthält Kupferverbindungen und weitere Stoffe.","Erz ist immer reines Metall.","Kupfer ist eine Pflanze."],"Metall wird aus geeigneten Erzen gewonnen."],
+ ["Naturwissenschaft","mountain","Warum helfen feste Schuhe auf steinigem Untergrund?","Sie verbessern Halt und schützen die Füße.",["Sie verbessern Halt und schützen die Füße.","Sie machen Felsen weich.","Sie ersetzen jede Vorsicht."],"Schutz und Trittsicherheit sind wichtig."],
+ ["Naturwissenschaft","lake","Warum sollte Dünger nicht unkontrolliert ins Gewässer gelangen?","Zu viele Nährstoffe können starkes Algenwachstum fördern.",["Zu viele Nährstoffe können starkes Algenwachstum fördern.","Wasser wird dadurch immer sauberer.","Fische benötigen keinen Sauerstoff mehr."],"Ein Nährstoffüberschuss kann das Gewässer belasten."],
+ ["Naturwissenschaft","village","Warum isoliert ein geschlossenes Haus besser als ein offener Unterstand?","Wände und Dach begrenzen den Luftaustausch.",["Wände und Dach begrenzen den Luftaustausch.","Holz erzeugt ständig Wärme.","Licht ersetzt die Wände."],"Wärme wird unter anderem durch bewegte Luft transportiert."],
+];
+export const LIVING_CHALLENGES:Challenge[]=rows.map(([domain,context,prompt,solution,options,hint],i)=>({id:`living-${i+1}`,domain,context,kind:"choice",level:1+i%3,target:solution,solution,variants:[],prompt,options,hints:[hint,solution],syllables:solution,speech:prompt,reward:3,knowledge:2+i%2,writing:1}));

@@ -89,11 +89,11 @@ export class HeldTools {
       this.box(group,[.035,.035,.7],[0,.65,-.23],0xa98b59);
     } else {
       this.box(group, [0.075, 0.78, 0.075], [0, 0.43, 0], this.handleMaterial, [0, 0, -0.06]);
-      if (tool === "Spitzhacke") {
+      if (tool === "Spitzhacke" || tool==="Kupferspitzhacke" || tool==="Eisenspitzhacke") {
         this.box(group, [0.62, 0.1, 0.11], [0, 0.8, 0], 0x9cabb0);
         this.box(group, [0.1, 0.2, 0.11], [-0.27, 0.72, 0], 0x9cabb0, [0, 0, -0.45]);
       }
-      if (tool === "Axt" || tool === "Steinaxt") {
+      if (tool === "Axt" || tool === "Steinaxt" || tool==="Hacke") {
         this.box(group, [0.34, 0.3, 0.08], [0.12, 0.72, 0], 0xaab9b9, [0, 0, -0.18]);
       }
       if (tool === "Schaufel") {
