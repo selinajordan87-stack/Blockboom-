@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import {menuPage} from "./ui-helper";
 const artifactDir = process.env.BLOCKBOOM_ARTIFACT_DIR || "artifacts";
 
 const legacySave = (position = [1, 1.01, 9], pitch = -0.65) => ({
@@ -78,7 +79,7 @@ test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await seed(page);
-  await expect(page.locator(".eyebrow")).toContainText("v0.6.0");
+  await expect(page.locator(".eyebrow")).toContainText("v0.6.1");
   await page.locator("#tool-toggle").click();
   await expect(page.locator("[data-tool]")).toHaveCount(14);
   await page.locator('[data-tool="Spitzhacke"]').click();
@@ -102,9 +103,10 @@ test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar
     "Schwert",
   );
   await page.locator("#menu").click();
+  await menuPage(page,"menu-camera");
   await page.locator("#fov").fill("80");
   await page.locator("#sensitivity").fill("125");
-  await page.locator("#resume").click();
+  await page.locator("#close").click();
   await page.keyboard.press("KeyX");
   await expect(page.locator("#zoom")).toHaveAttribute("aria-pressed", "true");
   await expect
@@ -112,7 +114,7 @@ test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar
       const raw = await page.locator("#world").getAttribute("data-performance");
       return raw ? JSON.parse(raw).fov : 0;
     })
-    .toBeCloseTo(49.6, 0);
+    .toBeCloseTo(80, 0);
   const state = await saved(page);
   expect(state.extension.view).toEqual({ fov: 80, sensitivity: 1.25 });
   expect(errors).toEqual([]);

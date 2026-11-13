@@ -1,4 +1,5 @@
 import "./ui/style.css";
+import "./ui/mobile-rescue.css";
 import { installLifecycle } from "./core/Lifecycle";
 import { TouchControls, bindTap } from "./player/TouchControls";
 import * as T from "three";
@@ -47,6 +48,9 @@ import {
 import { WorldView, colors } from "./world/Renderer";
 import { Player } from "./player/Player";
 import { HeldTools } from "./player/HeldTools";
+import {CameraRig} from "./player/CameraRig";
+import {Avatar} from "./player/Avatar";
+import {MobileHUD} from "./ui/MobileHUD";
 import { WaterView } from "./world/WaterView";
 import { Inventory, FISH } from "./fishing/Fishing";
 import { ReadingEngine, mission } from "./learning/Learning";
@@ -85,7 +89,7 @@ $("app").innerHTML = `
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="zoom" aria-label="Zoom umschalten" aria-pressed="false">⌕</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
  <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="tackle">≈ Angelset</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E halten zum Angeln · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">LIVING WORLD · v0.6.0</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Folge Spuren in die Berge, gewinne einen Begleiter<br>und lass deine eigene Welt wachsen.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>06 / LIVING WORLD</span><b>Hinter dem Horizont<br>geht es weiter.</b><p>Höhlen. Tiere. Gärten. Die alte Schmiede.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">MOBILE UX RESCUE · v0.6.1</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Mehr Welt. Mehr Überblick.<br>Dein Abenteuer wartet.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>06.1 / MOBILE UX</span><b>Deine Welt.<br>Deine Perspektive.</b><p>Freier Blick. Ruhige Steuerung. Neue Wege.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
@@ -156,16 +160,26 @@ const zombies = new ZombieEngine(world,night);
 const nightAudio = new NightAudio();
 const regionStream = new RegionStream(world);
 regionStream.ensure(saved?.position[0]||0,saved?.position[2]||17);
+const cameraRig=new CameraRig(world);
 camera.fov = expansion.view.fov;
 camera.updateProjectionMatrix();
-let zoomed = false;
 function updateFov() {
-  camera.fov = zoomed
-    ? Math.max(36, expansion.view.fov * 0.62)
-    : expansion.view.fov;
+  camera.fov = expansion.view.fov;
   camera.updateProjectionMatrix();
-  $("zoom").setAttribute("aria-pressed", String(zoomed));
+  $("zoom").setAttribute("aria-pressed", String(expansion.camera.perspective==="third"));
 }
+function cyclePerspective(){
+ const c=expansion.camera;
+ if(c.perspective==="first")c.perspective="third";else if(c.distance<6)c.distance=6;else if(c.distance<8)c.distance=8;else c.perspective="first";
+ updateFov();updateCamera(0,true);save();
+}
+function updateCamera(dt:number,force=false){
+ if(!player.pos.every(Number.isFinite)){player.pos=[0,16,17];player.vy=0;recordDiagnostic("invalid-player-position");}
+ cameraRig.update(camera,player,expansion.camera,expansion.view.fov,dt,force);
+}
+const diagnosticEvents:{time:number;event:string;detail?:string}[]=[];
+let lastNotice="",webglLost=false;
+function recordDiagnostic(event:string,detail?:string){diagnosticEvents.push({time:Math.round(performance.now()),event,...(detail?{detail:detail.slice(0,160)}:{})});if(diagnosticEvents.length>30)diagnosticEvents.shift();}
 const history = new BuildHistory(),
   missions = new Missions(expansion);
 const learning = new LearningEngine(
@@ -212,6 +226,7 @@ const dayView = new DayView(scene,sun,ambient);
 const zombieView = new ZombieView(scene);
 const defenseView = new DefenseView(world,scene);
 const livingView = new LivingView(scene);
+const avatar=new Avatar(scene);
 const itemStore = new ItemStore(expansion,inventory.fish);
 defenseView.update(camera.position,isNight(night.time));
 // A few distant block clouds and hand-built signs; all artwork is generated here.
@@ -243,15 +258,16 @@ function sign(text: string, x: number, z: number, color: string) {
   ctx.fillStyle = "#fff4d9";
   ctx.font = "bold 44px sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(text, 256, 94);
+  ctx.fillText(text, 256, 94,480);
   const texture = new T.CanvasTexture(c);
   texture.colorSpace = T.SRGBColorSpace;
   const m = new T.Mesh(
-    new T.PlaneGeometry(3.5, 1.1),
-    new T.MeshBasicMaterial({ map: texture, side: T.DoubleSide }),
+    new T.PlaneGeometry(2.3, .72),
+    new T.MeshBasicMaterial({ map: texture, side: T.FrontSide }),
   );
   m.position.set(x, 2.8, z);
   scene.add(m);
+  const back=new T.Mesh(m.geometry,m.material);back.position.set(x,2.8,z-.006);back.rotation.y=Math.PI;scene.add(back);
   const post = new T.Mesh(cube, new T.MeshLambertMaterial({ color: 0x765940 }));
   post.scale.set(0.15, 2, 0.15);
   post.position.set(x, 1.8, z);
@@ -327,6 +343,7 @@ outline.visible = false;
 scene.add(outline);
 scene.add(camera);
 const heldTools = new HeldTools(camera);
+if(matchMedia("(pointer: coarse)").matches)heldTools.root.scale.setScalar(.48);
 
 const ray = new T.Raycaster();
 let target: Cell | null = null,
@@ -334,6 +351,11 @@ let target: Cell | null = null,
 function aim() {
   picks++;
   ray.setFromCamera(new T.Vector2(0, 0), camera);
+  if(expansion.camera.perspective==="third"&&!cameraRig.temporaryFirst){
+    const crosshair=ray.intersectObjects([...view.group.children,...defenseView.group.children,livingView.crops],false)[0];
+    const point=crosshair?.point||ray.ray.at(40,new T.Vector3());
+    const eye=new T.Vector3(player.pos[0],player.pos[1]+1.6,player.pos[2]);ray.ray.set(eye,point.clone().sub(eye).normalize());
+  }
   const hit = ray.intersectObjects([...view.group.children,...defenseView.group.children,livingView.crops], false)[0];
   animalTarget=livingView.hit(ray,expansion.living);
   target = null;
@@ -382,12 +404,13 @@ function aim() {
 let animalTarget:Animal|null=null;
 let miningAction:{cell:Cell;block:import("./world/World").Block;elapsed:number;seconds:number}|null=null;
 function toast(text: string) {
-  $("toast").textContent = text;
+  lastNotice=text;
+  $("toast").textContent = matchMedia("(pointer: coarse)").matches&&text.length>100?"Neuer Hinweis im Menü.":text;
   $("toast").classList.add("visible");
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(
     () => $("toast").classList.remove("visible"),
-    4200,
+    matchMedia("(pointer: coarse)").matches?2800:4200,
   );
 }
 let toastTimer = 0;
@@ -412,12 +435,11 @@ function save() {
   $("save-state").textContent = ok
     ? "Lokal gespeichert"
     : "Speicher nicht verfügbar";
+  $("save-state").classList.toggle("save-error",!ok);
   return ok;
 }
 function syncAim() {
-  camera.position.set(player.pos[0], player.pos[1] + 1.6, player.pos[2]);
-  camera.rotation.set(player.pitch, player.yaw, 0);
-  camera.updateMatrixWorld();
+  updateCamera(0);
   view.update();
   defenseView.update(camera.position,isNight(night.time));
   view.group.updateMatrixWorld(true);
@@ -522,7 +544,8 @@ function openPanel(tag: string, html: string, preserveFishing = false) {
   $("toast").classList.remove("visible");
   unlock();
   if (!preserveFishing) fishing.cancel();
-  $("panel-content").classList.toggle("pause-options", tag === "DEINE WELT");
+  $("panel-content").classList.remove("pause-options");
+  $("panel-content").classList.toggle("game-menu", tag === "DEINE WELT");
   $("panel-tag").textContent = tag;
   $("panel-content").innerHTML = html;
   $("modal").hidden = false;
@@ -534,22 +557,45 @@ function closePanel() {
   paused = false;
   if (!pendingCatch) fishView.hideShowcase();
   nightUI.battle = null;
+  if(suspended)$("interruption").hidden=false;
 }
 $("close").onclick = closePanel;
 function menu() {
-  openPanel(
-    "DEINE WELT",
-    '<h2>Kleine Pause.</h2><p>Dein nächstes Abenteuer wartet schon.</p><button class="primary" id="resume">Weiterspielen ↗</button><button id="save">Jetzt speichern</button><button id="sound">Sound: ' +
-      (settings.sound ? "an" : "aus") +
-      '</button><button id="quality">Auflösung: ' +
-      (settings.quality === 1 ? "sparsam" : "normal") +
-      `</button><label class="range-setting">Sichtfeld <output id="fov-value">${Math.round(expansion.view.fov)}°</output><input id="fov" type="range" min="55" max="90" step="1" value="${expansion.view.fov}"></label><label class="range-setting">Kamera-Empfindlichkeit <output id="sensitivity-value">${Math.round(expansion.view.sensitivity * 100)}%</output><input id="sensitivity" type="range" min="55" max="160" step="5" value="${expansion.view.sensitivity * 100}"></label><button id="home">Zurück zum Startpunkt</button><p class="hint">Desktop: Zum Umsehen ins Spiel klicken. Falls die Maussperre fehlt: mit gedrückter Maus ziehen; die Tasten + und − bauen und entfernen. I öffnet das Inventar, 1–9 wählen Blöcke, X zoomt.</p>`,
-  );
-  const mode = document.createElement("label");
-  mode.className = "mode-select";
-  mode.innerHTML = `Spielmodus <select id="game-mode">${["Entspannt", "Abenteuer", "Lern-Challenge"].map((m) => `<option ${learning.profile.mode === m ? "selected" : ""}>${m}</option>`).join("")}</select>`;
-  $("panel-content").append(mode);
-  const nightButton=document.createElement("button");nightButton.id="night-menu";nightButton.textContent="☾ NIGHTFALL · Werkbank · Proviant";nightButton.onclick=()=>nightUI.settings();$("panel-content").append(nightButton);
+  $("interruption").hidden=true;
+  openPanel("DEINE WELT",`<h2>Dein Abenteuer</h2><div class="menu-priority"><button id="resume" class="primary">Weiter</button><button id="camera-reset">Kamera zurücksetzen</button><button id="save">Speichern</button></div><div class="menu-grid"><button id="menu-inventory">Inventar</button><button id="menu-tools">Werkzeuge</button><button id="menu-building">Baumaterial</button><button id="menu-adventure">Welt & Karte</button><button id="menu-learning">Challenge</button><button id="menu-missions">Aufträge</button><button id="menu-tackle">Angelset</button><button id="night-menu">Crafting & Survival</button><button id="menu-camera">Kamera & Steuerung</button><button id="menu-settings">Einstellungen</button><button id="menu-gather">Beeren sammeln</button><button id="menu-notice">Letzter Hinweis</button>${nearBoom()?'<button id="menu-boom">BOOM-Aufbau</button>':""}${zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<12)?'<button id="menu-battle">Schreibkampf</button>':""}</div>`);
+  const go=(id:string)=>{closePanel();$(id).click();};
+  $("resume").onclick=resumeGame;$("camera-reset").onclick=resetCamera;
+  $("save").onclick=()=>{const ok=save();$("save").textContent=ok?"Gespeichert ✓":"Speicherfehler";toast(ok?"Deine Welt ist gespeichert.":"Speichern fehlgeschlagen. Bitte Speicherplatz prüfen.");};
+  $("menu-inventory").onclick=showInventory;$("menu-tools").onclick=()=>{resumeGame();$("tool-toggle").click();};$("menu-building").onclick=showMaterials;
+  $("menu-adventure").onclick=()=>livingUI.hub();$("menu-learning").onclick=()=>adventure.challenge();$("menu-missions").onclick=()=>adventure.journal();
+  $("menu-tackle").onclick=showTackle;$("night-menu").onclick=()=>nightUI.settings();$("menu-camera").onclick=controlSettings;$("menu-settings").onclick=generalSettings;$("menu-gather").onclick=()=>go("gather");
+  $("menu-notice").onclick=()=>openPanel("HINWEIS",`<h2>Dein letzter Hinweis</h2><p>${escapeHTML(lastNotice||"Hier erscheinen Meldungen aus deiner Welt.")}</p>`);
+  if(nearBoom())$("menu-boom").onclick=()=>go("reset-boom");if($("menu-battle"))$("menu-battle").onclick=()=>{resumeGame();nightUI.startBattle();};
+  if(history.depth){const undoButton=document.createElement("button");undoButton.id="menu-undo";undoButton.textContent=`Bauaktion rückgängig (${history.depth})`;undoButton.onclick=()=>go("undo");$("panel-content").querySelector(".menu-grid")!.append(undoButton);}
+  save();
+}
+function resumeGame(){
+ if(webglLost){toast("3D ist unterbrochen. Warte auf die Wiederherstellung oder lade die Seite neu.");return;}
+ clearInput();suspended=false;$("interruption").hidden=true;closePanel();last=performance.now();accum=0;resize();
+}
+function resetCamera(){
+ clearInput();cameraRig.reset(expansion.camera);expansion.view.fov=70;player.yaw=0;player.pitch=-.12;updateFov();updateCamera(0,true);recordDiagnostic("camera-reset");save();resumeGame();
+}
+function controlSettings(){
+ const c=expansion.camera,s=expansion.controls;
+ openPanel("KAMERA & STEUERUNG",`<h2>Dein Blick auf die Welt</h2><div class="control-settings"><label>Perspektive<select id="camera-perspective"><option value="first" ${c.perspective==="first"?"selected":""}>Ego · mit Hand</option><option value="third" ${c.perspective==="third"?"selected":""}>Third Person · Figur sichtbar</option></select></label><label>Kameraabstand <output id="distance-value">${c.distance} m</output><input id="camera-distance" type="range" min="2" max="9" step=".25" value="${c.distance}"></label><label>Sichtfeld <output id="fov-value">${expansion.view.fov}°</output><input id="fov" type="range" min="55" max="90" step="1" value="${expansion.view.fov}"></label><label>Kamera-Empfindlichkeit <output id="sensitivity-value">${Math.round(expansion.view.sensitivity*100)}%</output><input id="sensitivity" type="range" min="55" max="160" step="5" value="${expansion.view.sensitivity*100}"></label><label>Joystickgröße <output id="joystick-value">${s.joystickSize} px</output><input id="joystick-size" type="range" min="72" max="112" step="4" value="${s.joystickSize}"></label><label>Deckkraft der Tasten <output id="opacity-value">${Math.round(s.opacity*100)}%</output><input id="control-opacity" type="range" min="20" max="75" step="5" value="${s.opacity*100}"></label><label>Daumenbelegung<select id="handedness"><option value="right" ${s.handedness==="right"?"selected":""}>Bewegen links · Kamera rechts</option><option value="left" ${s.handedness==="left"?"selected":""}>Bewegen rechts · Kamera links</option></select></label></div><button id="camera-reset">Kamera zurücksetzen</button><button id="back-menu">Zum Menü</button><p class="hint">Ansicht in der Schnellleiste: Ego → Third Person → weiter heraus. Vor Wänden rückt die Kamera kurz näher und kehrt anschließend zurück.</p>`);
+ const update=()=>{updateFov();updateCamera(0,true);mobileHUD.settings(s);save();viewportDirty=true;};
+ $("camera-perspective").onchange=()=>{c.perspective=$<HTMLSelectElement>("camera-perspective").value as typeof c.perspective;update();};
+ $("camera-distance").oninput=()=>{c.distance=Number($<HTMLInputElement>("camera-distance").value);c.perspective="third";$<HTMLSelectElement>("camera-perspective").value="third";$("distance-value").textContent=`${c.distance} m`;update();};
+ $("joystick-size").oninput=()=>{s.joystickSize=Number($<HTMLInputElement>("joystick-size").value);$("joystick-value").textContent=`${s.joystickSize} px`;update();};
+ $("control-opacity").oninput=()=>{s.opacity=Number($<HTMLInputElement>("control-opacity").value)/100;$("opacity-value").textContent=`${Math.round(s.opacity*100)}%`;update();};
+ $("handedness").onchange=()=>{s.handedness=$<HTMLSelectElement>("handedness").value as typeof s.handedness;update();};
+ $("fov").oninput=()=>{expansion.view.fov=Number($<HTMLInputElement>("fov").value);$("fov-value").textContent=`${expansion.view.fov}°`;update();};
+ $("sensitivity").oninput=()=>{expansion.view.sensitivity=Number($<HTMLInputElement>("sensitivity").value)/100;$("sensitivity-value").textContent=`${Math.round(expansion.view.sensitivity*100)}%`;update();};
+ $("camera-reset").onclick=resetCamera;$("back-menu").onclick=menu;
+}
+function generalSettings(){
+ openPanel("EINSTELLUNGEN",`<h2>Dein Spiel</h2><button id="sound">Sound: ${settings.sound?"an":"aus"}</button><button id="quality">Auflösung: ${settings.quality===1?"sparsam":"normal"}</button><label class="mode-select">Lernmodus<select id="game-mode">${["Entspannt", "Abenteuer", "Lern-Challenge"].map((m)=>`<option ${learning.profile.mode===m?"selected":""}>${m}</option>`).join("")}</select></label><button id="home">Zum Startpunkt</button><button id="diagnostic-export">Kameradiagnose speichern</button><button id="back-menu">Zum Menü</button>`);
   $("game-mode").onchange = () => {
     learning.profile.mode = ($("game-mode") as HTMLSelectElement).value as Mode;
     try {
@@ -559,47 +605,34 @@ function menu() {
       toast("Speicher nicht verfügbar.");
     }
   };
-  $("resume").onclick = closePanel;
-  $("save").onclick = () =>
-    toast(
-      save()
-        ? "Deine Welt ist gespeichert."
-        : "Speichern fehlgeschlagen. Bitte Speicherplatz prüfen.",
-    );
   $("sound").onclick = () => {
     settings.sound = !settings.sound;
     save();
-    menu();
+    generalSettings();
   };
   $("quality").onclick = () => {
     settings.quality = settings.quality === 1 ? 1.5 : 1;
     ratio = settings.quality;
     resize();
     save();
-    menu();
+    generalSettings();
   };
-  $("fov").oninput = () => {
-    expansion.view.fov = Number($<HTMLInputElement>("fov").value);
-    $("fov-value").textContent = `${Math.round(expansion.view.fov)}°`;
-    updateFov();
-    save();
-  };
-  $("sensitivity").oninput = () => {
-    expansion.view.sensitivity =
-      Number($<HTMLInputElement>("sensitivity").value) / 100;
-    $("sensitivity-value").textContent = `${Math.round(expansion.view.sensitivity * 100)}%`;
-    save();
-  };
+  $("diagnostic-export").onclick=()=>downloadJSON("blockboom-diagnose.json",{version:"0.6.1",events:diagnosticEvents,camera:{requested:expansion.camera,actual:cameraRig.actualDistance,blocked:cameraRig.blocked,pos:camera.position.toArray(),fov:camera.fov},controls:touch?.state,viewport:[innerWidth,innerHeight],paused,suspended,webglLost,renderedFrames});
+  $("back-menu").onclick=menu;
   $("home").onclick = () => {
     player.pos = [0, 16, 17];
     player.vy = 0;
     closePanel();
     save();
   };
-  save();
+}
+function downloadJSON(name:string,value:unknown){const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function showMaterials(){
+ openPanel("BAUMATERIAL",`<h2>Woraus baust du?</h2><div class="material-picker">${TYPES.map((b,i)=>`<button data-material="${i}" aria-label="${b} auswählen"><span class="block-icon" style="--block:#${colors[b].toString(16).padStart(6,"0")}"></span>${b}</button>`).join("")}</div>`);
+ document.querySelectorAll<HTMLButtonElement>("[data-material]").forEach(b=>b.onclick=()=>{selected=Number(b.dataset.material);materialPage=Math.floor(selected/5);expansion.tool="Bauwerkzeug";equipment();hotbar();save();closePanel();});
 }
 bindTap($("menu"), () => {
-  if (!suspended) menu();
+  if (started) menu();
 });
 bindTap($("bag"), () => {
   if (canPlay()) showInventory();
@@ -784,6 +817,8 @@ bindTap($("undo"), () => {
 function equipment() {
   $("tool-toggle").textContent = expansion.tool;
   $("tool-toggle").dataset.icon = toolIcon(expansion.tool);
+  $("tool-toggle").dataset.short=({Bauwerkzeug:"Bauen",Spitzhacke:"Hacke",Kupferspitzhacke:"Kupfer",Eisenspitzhacke:"Eisen",Holzschwert:"Schwert",Steinschwert:"Schwert",Holzknüppel:"Knüppel"} as Record<string,string>)[expansion.tool]||expansion.tool;
+  $("tool-toggle").setAttribute("aria-label",`Werkzeug wählen · ${expansion.tool}`);
   $("tool-palette").innerHTML = TOOLS.map(
     (t) =>
       `<button data-tool="${t}" aria-pressed="${expansion.tool === t}"><span>${toolIcon(t)}</span>${t}</button>`,
@@ -1012,6 +1047,7 @@ function interact() {
     }
     if(block==="Lagerkiste"){nightUI.chest();return;}
   }
+  if(nearBoom()){boom();return;}
   if (expansion.tool === "Holzknüppel") {
     strike();
     return;
@@ -1071,8 +1107,8 @@ function anglingRelease(now = performance.now()) {
       toast("Der Wurf wurde abgebrochen: Geh wieder ans Ufer.");
       return;
     }
-    camera.getWorldDirection(castDirection);
-    heldTools.getRodTipWorld(rodTipWorld);
+    syncAim();castDirection.copy(ray.ray.direction);
+    if(expansion.camera.perspective==="third"&&!cameraRig.temporaryFirst)avatar.rodTip(rodTipWorld);else heldTools.getRodTipWorld(rodTipWorld);
     if (
       fishing.releaseCast(
         now,
@@ -1139,8 +1175,7 @@ bindTap($("jump"), () => {
 });
 bindTap($("zoom"), () => {
   if (!canPlay()) return;
-  zoomed = !zoomed;
-  updateFov();
+  cyclePerspective();
 });
 bindTap($("attack"),()=>{if(canPlay())attack();});
 bindTap($("word-battle"),()=>{if(canPlay())nightUI.startBattle();});
@@ -1155,7 +1190,7 @@ bindTap($("gather"),()=>{
 });
 function attack(){
   if(!WEAPONS[expansion.tool]){toast("Wähle den Holzknüppel, ein Schwert, eine Axt oder den Bogen.");return;}
-  heldTools.play("strike");camera.getWorldDirection(castDirection);
+  syncAim();heldTools.play("strike");castDirection.copy(ray.ray.direction);
   const target=zombies.attack(player.pos,[castDirection.x,castDirection.y,castDirection.z],expansion.tool);
   if(target){combatEffect(target.pos);if(settings.sound)nightAudio.cue("hit");save();}
   else if(expansion.tool==="Holzknüppel")strike();
@@ -1294,8 +1329,7 @@ window.addEventListener("keydown", (e) => {
   }
   if (e.code === "KeyZ") $("undo").click();
   if (e.code === "KeyX") {
-    zoomed = !zoomed;
-    updateFov();
+    cyclePerspective();
   }
   if (/Digit[1-9]/.test(e.code)) {
     selected = Number(e.code.slice(-1)) - 1;
@@ -1330,17 +1364,15 @@ installLifecycle(window, document, {
 });
 bindTap($("continue"), () => {
   if (document.hidden) return;
-  clearInput();
-  suspended = false;
-  $("interruption").hidden = true;
-  last = performance.now();
-  accum = 0;
+  resumeGame();
 });
-canvas.addEventListener("webglcontextlost", () => {
+canvas.addEventListener("webglcontextlost", (event) => {
+  event.preventDefault();webglLost=true;recordDiagnostic("webgl-lost");
   interrupt("3D wird wiederhergestellt …");
   $("continue").setAttribute("disabled", "");
 });
 canvas.addEventListener("webglcontextrestored", () => {
+  webglLost=false;recordDiagnostic("webgl-restored");resize();updateCamera(0,true);
   $("interruption-text").textContent = "3D ist wieder bereit.";
   $("continue").removeAttribute("disabled");
   viewportDirty = true;
@@ -1402,6 +1434,7 @@ canvas.addEventListener("dblclick", (e) => {
   }
 });
 function look(x: number, y: number, s: number) {
+  if(!Number.isFinite(x)||!Number.isFinite(y)){recordDiagnostic("invalid-look-delta");return;}
   player.yaw -= x * s * expansion.view.sensitivity;
   player.pitch = Math.max(
     -1.45,
@@ -1415,10 +1448,11 @@ touch = new TouchControls(
   (x, y) => {
     joyX = x;
     joyY = y;
-    $("stick").style.transform = `translate(${x * 34}px,${-y * 34}px)`;
+    const distance=expansion.controls.joystickSize*.28;$("stick").style.transform = `translate(${x * distance}px,${-y * distance}px)`;
   },
   (x, y) => look(x, y, 0.0035),
 );
+const mobileHUD=new MobileHUD(showMaterials);mobileHUD.settings(expansion.controls);
 let ratio = Math.min(devicePixelRatio, settings.quality),
   viewportDirty = true;
 let landscape = innerWidth > innerHeight;
@@ -1431,8 +1465,8 @@ function resize() {
     landscape = nextLandscape;
   }
   renderer.setPixelRatio(ratio);
-  renderer.setSize(innerWidth, innerHeight);
-  camera.aspect = innerWidth / innerHeight;
+  renderer.setSize(Math.max(1,innerWidth), Math.max(1,innerHeight));
+  camera.aspect = Math.max(1,innerWidth) / Math.max(1,innerHeight);
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);
@@ -1468,6 +1502,9 @@ let last = performance.now(),
   frameTime = 0;
 function frame(now: number) {
   requestAnimationFrame(frame);
+  try{tickFrame(now);}catch(error){recordDiagnostic("frame-error",String(error));interrupt("Darstellung unterbrochen. Im Menü kannst du die Kamera zurücksetzen.");}
+}
+function tickFrame(now:number){
   const realElapsed = (now - last) / 1000;
   const elapsed = Math.min(realElapsed, 0.1);
   last = now;
@@ -1521,6 +1558,7 @@ function frame(now: number) {
     if(night.defeated>=1&&!expansion.badges.includes("Nachtwächter"))expansion.badges.push("Nachtwächter");
     if(night.survived>=1&&!expansion.badges.includes("Morgenlicht"))expansion.badges.push("Morgenlicht");
     $("day-label").textContent=`${isNight(night.time)?"☾":"☀"} ${dayPhase(night.time)}`;
+    $("day-label").dataset.phase=isNight(night.time)?"☾":"☀";
     $("health-label").textContent=night.mode==="Kreativ"?"♥ ∞":`♥ ${Math.ceil(night.health)}`;
     $("hunger-label").textContent=`◉ ${Math.ceil(night.hunger)}`;
     $("wave-label").textContent=zombies.actors.length?`${zombies.actors.filter(z=>z.hp>0).length} Zombies`:"";
@@ -1537,8 +1575,7 @@ function frame(now: number) {
       jump = false;
       accum -= 1 / 120;
     }
-    camera.position.set(player.pos[0], player.pos[1] + 1.6, player.pos[2]);
-    camera.rotation.set(player.pitch, player.yaw, 0);
+    updateCamera(elapsed);
     if (now - lastAim >= 50) {
       aim();
       lastAim = now;
@@ -1667,6 +1704,8 @@ function frame(now: number) {
           : "Gedrückt halten, Kraft wählen, dann loslassen.";
     $("reset-boom").hidden = !arena;
     $("mission-pin").hidden = !reading.active;
+    const b=target?world.get(...target):undefined;
+    mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
   } else if (!started) {
     camera.position.set(23, 18, 29);
     camera.lookAt(-2, 0, -2);
@@ -1691,7 +1730,7 @@ function frame(now: number) {
       particles.splice(i, 1);
     }
   }
-  heldTools.visible = canPlay();
+  heldTools.visible = canPlay()&&(expansion.camera.perspective==="first"||cameraRig.temporaryFirst);
   heldTools.equip(
     expansion.tool,
     expansion.badges.includes("Holzhelfer"),
@@ -1707,7 +1746,8 @@ function frame(now: number) {
       ["KeyW", "KeyA", "KeyS", "KeyD"].some((key) => keys.has(key)),
     now / 1000,
   );
-  heldTools.getRodTipWorld(rodTipWorld);
+  avatar.update(player.pos,player.yaw,player.pitch,expansion.tool,Math.abs(joyX)+Math.abs(joyY)>.08||["KeyW","KeyA","KeyS","KeyD"].some(k=>keys.has(k)),now/1000,heldTools.action,started&&cameraRig.thirdVisible);
+  if(expansion.camera.perspective==="third"&&!cameraRig.temporaryFirst)avatar.rodTip(rodTipWorld);else heldTools.getRodTipWorld(rodTipWorld);
   fishingView.update(fishing, rodTipWorld, now);
   canvas.dataset.toolAction = heldTools.action;
   canvas.dataset.activeTool = expansion.tool;
@@ -1727,6 +1767,8 @@ function frame(now: number) {
       chunks: view.group.children.length,
       ratio,
       fov: camera.fov,
+      camera:{perspective:expansion.camera.perspective,desiredDistance:expansion.camera.distance,actualDistance:cameraRig.actualDistance,blocked:cameraRig.blocked,temporaryFirst:cameraRig.temporaryFirst,avatar:avatar.mesh.visible,position:camera.position.toArray(),recoveries:cameraRig.recoveries},
+      input:touch?.state,lifecycle:{paused,suspended,webglLost},events:diagnosticEvents,
       toolAction: heldTools.action,
       particles: particles.length,
       renderedFrames,

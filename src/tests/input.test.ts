@@ -50,6 +50,12 @@ function setup() {
   return { joy, look, move, turn, input, disable: () => (enabled = false) };
 }
 describe("Touchbesitz", () => {
+  it("löst einen außerhalb beendeten Kontakt auch bei abgewiesenem Pointer Capture",()=>{
+    const joy=new Surface(),look=new Surface(),win=new EventTarget(),move=vi.fn();joy.setPointerCapture=()=>{throw Error("Safari capture unavailable");};
+    const input=new TouchControls(joy as unknown as HTMLElement,look as unknown as HTMLElement,()=>true,move,()=>{},win);
+    event(joy,"pointerdown",1,50,16);expect(move).toHaveBeenLastCalledWith(0,1);event(win,"pointerup",1);expect(move).toHaveBeenLastCalledWith(0,0);event(joy,"pointerdown",2,84,50);expect(move).toHaveBeenLastCalledWith(1,-0);input.dispose();
+  });
+  it("aktiviert einen Menübutton nach Wegziehen und Zurückziehen nicht",()=>{const el=new Surface(),action=vi.fn();bindTap(el as unknown as HTMLElement,action);event(el,"pointerdown",1,50,50);event(el,"pointermove",1,90,50);event(el,"pointerup",1,50,50);expect(action).not.toHaveBeenCalled();});
   it("verarbeitet beide Daumen gleichzeitig und lässt sie unabhängig los", () => {
     const s = setup();
     event(s.joy, "pointerdown", 1, 50, 16);

@@ -1,4 +1,5 @@
 import { expect,test,type Page } from "@playwright/test";
+import {shortcut} from "./ui-helper";
 const base=()=>({version:1,position:[0,1.01,9],yaw:0,pitch:-.1,changes:{},fish:{Rotauge:0,Flussbarsch:1,Hecht:0},progress:{completedMissions:[],repetitions:0,successfulAnswers:0,voluntaryHints:0},missionActive:false,settings:{sound:false,quality:1},extension:{version:1,edition:4,materials:{Holz:10,Stein:10},nightfall:{version:1,mode:"Kreativ",time:.3,dayLength:1200}}});
 async function seed(page:Page,save=base()){
   await page.goto("./?diagnostics=1");await page.evaluate(s=>{localStorage.clear();localStorage.setItem("blockboom.save",JSON.stringify(s));},save);await page.reload();await page.locator("#play").click();
@@ -110,7 +111,7 @@ test("drei Touchkontakte: Bewegung, Kamera und Angriff bleiben unabhängig",asyn
 
 for(const viewport of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])test(`Schreibkampf mobil ${viewport.width}×${viewport.height} mit Tastaturhöhe`,async({browser})=>{
   const context=await browser.newContext({viewport,hasTouch:true,isMobile:true}),page=await context.newPage();
-  await seed(page);await setNight(page);await expect(page.locator("#word-battle")).toBeVisible({timeout:15000});await page.locator("#word-battle").tap();
+  await seed(page);await setNight(page);await expect.poll(async()=>{const raw=await page.locator("#world").getAttribute("data-performance");return raw?JSON.parse(raw).nightfall.zombies.length:0;},{timeout:15000}).toBeGreaterThan(0);await shortcut(page,"word-battle");
   await page.locator("#battle-answer").tap();await page.setViewportSize({width:viewport.width,height:240});await page.locator("#battle-answer").fill("Abenteuer");await page.locator("#battle-submit").tap();await expect(page.locator("#battle-feedback")).toContainText("Zauber wirkt");
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:`artifacts/v05/writing-${viewport.width}.png`});await page.locator("#battle-leave").tap();await expect(page.locator("#modal")).toBeHidden();await context.close();

@@ -1,9 +1,14 @@
 let lastPointerType = "mouse";
 const pendingTouchClicks = new Set<number>();
+const activeTaps=new Map<number,()=>void>();
 let captureInstalled = false;
 function installClickCapture() {
   if (captureInstalled || typeof document === "undefined") return;
   captureInstalled = true;
+  const cancelTaps=(e:Event)=>{const id=(e as PointerEvent).pointerId;activeTaps.get(id)?.();};
+  window.addEventListener("pointerup",cancelTaps);
+  window.addEventListener("pointercancel",cancelTaps);
+  window.addEventListener("touchend",e=>{if(!e.touches.length)for(const cancel of [...activeTaps.values()])cancel();},{passive:true});
   document.addEventListener(
     "pointerdown",
     () => pendingTouchClicks.clear(),
@@ -38,9 +43,15 @@ export class TouchControls {
     private enabled: () => boolean,
     private movement: (x: number, y: number) => void,
     private turn: (x: number, y: number) => void,
+    private globalTarget:EventTarget|undefined=typeof window==="undefined"?undefined:window,
   ) {
     installClickCapture();
     for (const surface of [joystick, lookArea]) this.bind(surface);
+    const end=(event:Event)=>{const id=(event as PointerEvent).pointerId;for(const [surface,owner]of this.owners)if(owner===id){pendingTouchClicks.add(id);this.release(surface);}};
+    const empty=(event:Event)=>{if(!(event as TouchEvent).touches.length)this.reset();};
+    for(const name of ["pointerup","pointercancel"])this.globalTarget?.addEventListener(name,end);
+    for(const name of ["touchend","touchcancel"])this.globalTarget?.addEventListener(name,empty);
+    this.disposers.push(()=>{for(const name of ["pointerup","pointercancel"])this.globalTarget?.removeEventListener(name,end);for(const name of ["touchend","touchcancel"])this.globalTarget?.removeEventListener(name,empty);});
   }
   private bind(surface: HTMLElement) {
     let lx = 0,
@@ -91,7 +102,7 @@ export class TouchControls {
     // Legacy touchcancel is a surface-local fallback; Pointer Events do the normal work.
     const cancel = (e: TouchEvent) => {
       stop(e);
-      this.release(surface);
+      if(!e.targetTouches?.length)this.release(surface);
     };
     const lost = (e: PointerEvent) => {
       if (e.target === surface) end(e);
@@ -141,6 +152,7 @@ export class TouchControls {
     this.release(this.joystick);
     this.release(this.lookArea);
   }
+  get state(){return {joystick:this.owners.get(this.joystick)??null,look:this.owners.get(this.lookArea)??null};}
   dispose() {
     this.reset();
     for (const off of this.disposers) off();
@@ -154,6 +166,7 @@ export function bindTap(button: HTMLElement, action: () => void) {
     x = 0,
     y = 0,
     handled = false;
+  let moved=false;
   button.addEventListener("pointerdown", (e) => {
     lastPointerType = e.pointerType;
     if (e.pointerType === "mouse") {
@@ -163,9 +176,11 @@ export function bindTap(button: HTMLElement, action: () => void) {
     e.stopPropagation();
     if (owner !== null) return;
     owner = e.pointerId;
+    moved=false;
     x = e.clientX;
     y = e.clientY;
     handled = false;
+    activeTaps.set(owner,()=>{if(owner!==null){pendingTouchClicks.add(owner);activeTaps.delete(owner);}owner=null;handled=true;});
     try {
       button.setPointerCapture(e.pointerId);
     } catch {}
@@ -173,16 +188,19 @@ export function bindTap(button: HTMLElement, action: () => void) {
   button.addEventListener("pointerup", (e) => {
     if (owner !== e.pointerId) return;
     e.stopPropagation();
+    activeTaps.delete(e.pointerId);
     owner = null;
     handled = true;
     pendingTouchClicks.add(e.pointerId);
     // Some mobile touch sequences do not emit click at all. Complete a valid tap
     // here; document capture swallows any later compatibility click, even if a
     // newly opened dialog is now under the finger. No timing heuristic needed.
-    if (Math.hypot(e.clientX - x, e.clientY - y) < 14) action();
+    if (!moved&&Math.hypot(e.clientX - x, e.clientY - y) < 14) action();
   });
+  button.addEventListener("pointermove",e=>{if(owner===e.pointerId&&Math.hypot(e.clientX-x,e.clientY-y)>=14)moved=true;});
   const cancel = (e: PointerEvent) => {
     if (owner === e.pointerId) {
+      activeTaps.delete(e.pointerId);
       owner = null;
       handled = true;
       pendingTouchClicks.add(e.pointerId);

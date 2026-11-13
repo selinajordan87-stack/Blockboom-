@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { landFish } from "./fishing-helper";
+import {shortcut,menuPage} from "./ui-helper";
 const errors = new WeakMap<Page, string[]>();
 test.beforeEach(async ({ page }) => {
   const list: string[] = [];
@@ -64,7 +65,7 @@ async function travel(page: Page, position: number[], yaw = 0, pitch = -0.1) {
   await page.locator("#play").click();
 }
 async function mission(page: Page, id: string) {
-  await page.locator("#journal").click();
+  await shortcut(page,"journal");
   await page.locator(`[data-mission="${id}"]`).click();
 }
 async function answer(page: Page, text: string) {
@@ -261,7 +262,7 @@ test("Challenge: Fehler, Silben, langsames Wort, lokale Stimme und getrennte Ler
   page,
 }) => {
   await seeded(page);
-  await page.locator("#learn").click();
+  await shortcut(page,"learn");
   await answer(page, "falsch");
   await expect(page.locator("#learning-feedback")).toContainText("Noch nicht");
   await page.locator("#challenge-syllables").click();
@@ -317,7 +318,7 @@ test("mobiles Lernformular bleibt bei kleiner Tastaturhöhe bedienbar; Moduswech
   });
   const page = await context.newPage();
   await seeded(page);
-  await page.locator("#learn").tap();
+  await shortcut(page,"learn");
   await page.locator("#learning-answer").tap();
   await page.setViewportSize({ width: 390, height: 360 });
   await page.keyboard.type("Fisch");
@@ -327,7 +328,7 @@ test("mobiles Lernformular bleibt bei kleiner Tastaturhöhe bedienbar; Moduswech
   await page.locator("#close").tap();
   await page.setViewportSize({ width: 844, height: 390 });
   await page.locator("#menu").tap();
-  await page.locator("#game-mode").selectOption("Entspannt");
+  await menuPage(page,"menu-settings");await page.locator("#game-mode").selectOption("Entspannt");
   await page.locator("#resume").tap();
   await expect(page.locator("#modal")).toBeHidden();
   await page.locator("#tool-toggle").tap();
@@ -348,7 +349,7 @@ test("Schatzmission auf Touchscreen: drei Texteingaben mit Tastaturhöhe und ges
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await seeded(page, [7, 1.01, -2]);
-  await page.locator("#journal").tap();
+  await shortcut(page,"journal");
   await page.locator('[data-mission="treasure"]').tap();
   await page.locator("#mission-accept").tap();
   await page.setViewportSize({ width: 844, height: 260 });

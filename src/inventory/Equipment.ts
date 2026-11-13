@@ -2,6 +2,7 @@ import { TYPES, type Block } from "../world/World";
 import { FISH, type FishName } from "../fishing/Fishing";
 import { freshNight, readNight, type NightState } from "../nightfall/State";
 import { freshLiving, readLiving, type LivingState } from "../living/State";
+import {defaultCamera,defaultControls,readCamera,readControls,type CameraSettings,type ControlSettings} from "../player/CameraRig";
 import {
   BAITS,
   SPOTS,
@@ -48,6 +49,8 @@ export interface Expansion {
   badges: string[];
   missions: Record<string, MissionState>;
   view: { fov: number; sensitivity: number };
+  camera:CameraSettings;
+  controls:ControlSettings;
   angling: AnglingProgress;
   nightfall: NightState;
   living: LivingState;
@@ -63,6 +66,7 @@ export const defaultExpansion = (edition: 1 | 2 | 3 | 4 = 1): Expansion => ({
   badges: [],
   missions: {},
   view: { fov: 70, sensitivity: 1 },
+  camera:defaultCamera(),controls:defaultControls(),
   angling: defaultAngling(),
   nightfall: freshNight(),
   living: freshLiving(),
@@ -139,6 +143,7 @@ export function readExpansion(raw: unknown): Expansion {
   if (typeof sensitivity === "number" && Number.isFinite(sensitivity))
     d.view.sensitivity = Math.max(0.55, Math.min(1.6, sensitivity));
   d.angling = readAngling(r.angling);
+  d.camera=readCamera(r.camera);d.controls=readControls(r.controls);
   d.nightfall = readNight(r.nightfall);
   d.living = readLiving(r.living);
   return d;

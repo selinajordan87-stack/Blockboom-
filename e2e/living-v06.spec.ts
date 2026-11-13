@@ -1,5 +1,6 @@
 import {test,expect,type Page} from "@playwright/test";
 import {defaultExpansion} from "../src/inventory/Equipment";
+import {shortcut} from "./ui-helper";
 const blank=(position=[0,1.01,9],yaw=0,pitch=-.65)=>({version:1,position,yaw,pitch,changes:{} as Record<string,string|null>,fish:{Rotauge:2,Flussbarsch:1,Hecht:0},progress:{completedMissions:[],repetitions:0,successfulAnswers:0,voluntaryHints:0},missionActive:false,settings:{sound:false,quality:1},extension:defaultExpansion(4)});
 async function seed(page:Page,s=blank()){
  await page.goto("./?diagnostics=1");await page.evaluate(v=>{localStorage.clear();localStorage.setItem("blockboom.save",JSON.stringify(v));},s);await page.reload();await page.locator("#play").click();await expect(page.locator("#hud")).toBeVisible();
@@ -74,9 +75,9 @@ test("alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte S
 
 for(const viewport of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])test(`Wohnwelt mobil ${viewport.width}×${viewport.height}: Karte, Nahrung und Tiername mit Tastaturhöhe`,async({browser})=>{
  const context=await browser.newContext({viewport,isMobile:true,hasTouch:true}),page=await context.newPage(),s=blank();s.extension.living.animals[0].tame=true;s.extension.living.bag.Karotte=2;s.extension.nightfall.hunger=40;
- await seed(page,s);const compass=(await page.locator("#compass").boundingBox())!,location=(await page.locator(".location").boundingBox())!;expect(compass.y).toBeGreaterThanOrEqual(location.y+location.height);
- await page.locator("#living-menu").tap();await page.locator("#living-map").tap();await expect(page.locator(".world-map")).toBeVisible();await page.locator("#mark-home").tap();await page.locator("#close").tap();
- await page.locator("#living-menu").tap();await page.locator("#living-bag").tap();await page.locator('[data-category="Nahrung"]').tap();await page.locator('[data-eat="Karotte"]').tap();await page.locator("#close").tap();
- await page.locator("#living-menu").tap();await page.locator("#living-pets").tap();await page.locator('[data-animal="animal-0"]').tap();await page.locator("#animal-name").tap();await page.setViewportSize({width:viewport.width,height:240});await page.locator("#animal-name").fill("Nala");await page.locator("#animal-name-save").tap();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.locator("#close").tap();
+ await seed(page,s);await expect(page.locator("#compass")).toBeHidden();await expect(page.locator(".location")).toBeHidden();
+ await shortcut(page,"living-menu");await page.locator("#living-map").tap();await expect(page.locator(".world-map")).toBeVisible();await page.locator("#mark-home").tap();await page.locator("#close").tap();
+ await shortcut(page,"living-menu");await page.locator("#living-bag").tap();await page.locator('[data-category="Nahrung"]').tap();await page.locator('[data-eat="Karotte"]').tap();await page.locator("#close").tap();
+ await shortcut(page,"living-menu");await page.locator("#living-pets").tap();await page.locator('[data-animal="animal-0"]').tap();await page.locator("#animal-name").tap();await page.setViewportSize({width:viewport.width,height:240});await page.locator("#animal-name").fill("Nala");await page.locator("#animal-name-save").tap();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.locator("#close").tap();
  const state=await save(page);expect(state.extension.living.animals[0].name).toBe("Nala");expect(state.extension.living.bag.Karotte).toBe(1);expect(state.extension.nightfall.hunger).toBeGreaterThan(65);expect(state.extension.living.home).not.toBeNull();await expect(page.locator("#interruption")).toBeHidden();await context.close();
 });

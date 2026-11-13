@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { landFish } from "./fishing-helper";
+import {shortcut} from "./ui-helper";
 const artifactDir = process.env.BLOCKBOOM_ARTIFACT_DIR || "artifacts";
 const blank = (position = [0, 1.01, 17], yaw = 0, pitch = 0) => ({
   version: 1,
@@ -84,7 +85,7 @@ test("Angeln, freiwillige Mission, Sammlung und Neuladen", async ({ page }) => {
   await page.locator("#accept").click();
   await landFish(page, "keep", `${artifactDir}/fishing-landing.png`);
   await expect(page.locator("#toast")).toContainText("Auftrag geschafft");
-  await page.locator("#bag").click();
+  await shortcut(page,"bag");
   await expect(page.locator(".fish-list")).toContainText("Flussbarsch");
   await page.screenshot({ path: `${artifactDir}/fish-collection.png` });
   await page.locator('[data-fish-preview="Flussbarsch"]').click();
@@ -98,7 +99,7 @@ test("Angeln, freiwillige Mission, Sammlung und Neuladen", async ({ page }) => {
   await page.reload();
   await page.locator("#play").click();
   await expect(page.locator("#mission-pin")).toBeHidden();
-  await page.locator("#bag").click();
+  await shortcut(page,"bag");
   await expect(page.locator(".fish-list strong").nth(1)).toHaveText("1");
 });
 test("BOOM zerstört und setzt zurück", async ({ page }) => {
@@ -107,7 +108,7 @@ test("BOOM zerstört und setzt zurück", async ({ page }) => {
   await expect(page.locator("#toast")).toContainText("BOOOM");
   let s = await getSave(page);
   expect(s.changes["12,1,9"]).toBeNull();
-  await page.locator("#reset-boom").click();
+  await shortcut(page,"reset-boom");
   s = await getSave(page);
   expect(s.changes["12,1,9"]).toBe("Boom");
 });
@@ -160,7 +161,7 @@ for (const width of [360, 390, 430])
     expect(s.position[2]).toBeLessThan(17);
     expect(s.yaw).toBeLessThan(0);
     await page.locator("#resume").tap();
-    await page.locator("#bag").tap();
+    await shortcut(page,"bag");
     await expect(page.locator("h2")).toHaveText("Deine Sammlung");
     await page.locator("#close").tap();
     expect(
@@ -206,7 +207,7 @@ test("Touch: Blöcke setzen/entfernen, Barsch fangen und BOOM zurücksetzen", as
   await seed(page, blank([14, 1.01, 17], 0, -0.15));
   await page.locator("#interact").tap();
   await expect(page.locator("#toast")).toContainText("BOOOM");
-  await page.locator("#reset-boom").tap();
+  await shortcut(page,"reset-boom");
   await expect(page.locator("#toast")).toContainText(
     "Die Struktur steht wieder",
   );

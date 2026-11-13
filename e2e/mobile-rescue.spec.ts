@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import {shortcut} from "./ui-helper";
 
 const browserErrors = new WeakMap<Page, string[]>();
 test.beforeEach(async ({ page }) => {
@@ -319,7 +320,7 @@ test("Altspielstand, Reload und Landschaft: Inventar, Mission, Baublöcke erhalt
   );
   await page.reload();
   await page.locator("#play").tap();
-  await page.locator("#bag").tap();
+  await shortcut(page,"bag");
   await expect(page.locator(".fish-list strong").nth(1)).toHaveText("3");
   await page.locator("#close").tap();
   await page.reload();
