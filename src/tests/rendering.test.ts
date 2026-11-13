@@ -3,6 +3,9 @@ import * as T from "three";
 import { World } from "../world/World";
 import { WorldView } from "../world/Renderer";
 import { RegionStream } from "../living/Regions";
+import { ZombieView } from "../nightfall/Views";
+import { ZombieEngine } from "../nightfall/Zombies";
+import { freshNight } from "../nightfall/State";
 it("behält eine begrenzte Geometriezahl und baut nur betroffene Chunks neu", () => {
   const w = new World(),
     scene = new T.Scene(),
@@ -52,6 +55,15 @@ it("behält eine begrenzte Geometriezahl und baut nur betroffene Chunks neu", ()
       rebuiltMeshes: disposed,
     }),
   );
+});
+
+it("rendert einen tatsächlich sichtbaren Zombie auch in der äußeren Weltecke",()=>{
+ const w=new World();w.set(57,0,57,"Gras");const engine=new ZombieEngine(w,freshNight());expect(engine.spawn("normal",[57.5,1.001,57.5],[49.5,1.001,49.5])).not.toBeNull();
+ const scene=new T.Scene(),view=new ZombieView(scene);view.update(engine);scene.updateMatrixWorld(true);
+ const camera=new T.PerspectiveCamera(70,1.7,.08,80);camera.position.set(55,2.6,55);camera.lookAt(57.5,1.8,57.5);camera.updateMatrixWorld();
+ const frustum=new T.Frustum().setFromProjectionMatrix(new T.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
+ expect(frustum.intersectsSphere(new T.Sphere(new T.Vector3(57.5,1.8,57.5),1))).toBe(true);
+ expect(frustum.intersectsObject(view.mesh)).toBe(true);
 });
 
 it("gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam",()=>{

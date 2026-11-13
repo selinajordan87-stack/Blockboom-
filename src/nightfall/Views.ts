@@ -1,5 +1,5 @@
 import * as T from "three";
-import { World, type Cell } from "../world/World";
+import { World, LIMIT, MAX_Y, type Cell } from "../world/World";
 import { special } from "./Defense";
 import { ZOMBIES, type ZombieEngine } from "./Zombies";
 export class ZombieView {
@@ -8,7 +8,7 @@ export class ZombieView {
   constructor(scene:T.Scene) {
     this.mesh=new T.InstancedMesh(new T.BoxGeometry(1,1,1),new T.MeshLambertMaterial({color:0xffffff}),8*9);
     this.mesh.name="NIGHTFALL voxel zombies";this.mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
-    this.mesh.boundingSphere=new T.Sphere(new T.Vector3(),60);scene.add(this.mesh);this.mesh.count=0;
+    this.mesh.boundingSphere=new T.Sphere(new T.Vector3(),Math.hypot(LIMIT,LIMIT,MAX_Y+3));scene.add(this.mesh);this.mesh.count=0;
   }
   update(engine:ZombieEngine) {
     let instance=0;
