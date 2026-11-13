@@ -42,5 +42,6 @@ export class MobileHUD {
   const material=$("selected-material");material.querySelector("small")!.textContent=s.block;
   (material.querySelector(".block-icon") as HTMLElement).style.setProperty("--block",s.blockColor);material.setAttribute("aria-label",`Baumaterial auswählen · ${s.block}`);
   $("zoom").dataset.label=camera.perspective==="third"?`${camera.distance} m`:"Ansicht";
+  $("zoom").setAttribute("aria-label",camera.perspective==="third"?`Ansicht wechseln · Third Person, ${camera.distance} Meter`:"Ansicht wechseln · Ego-Perspektive");
  }
 }

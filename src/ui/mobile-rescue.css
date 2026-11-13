@@ -20,7 +20,7 @@
 .mobile-game #survival-hud{left:calc(var(--safe-left) + 12px);top:calc(var(--safe-top) + 10px);transform:none;padding:5px 8px;gap:8px;font-size:11px;border:0;background:#12322b8a;border-radius:8px;height:26px;}
 .mobile-game #day-label{font-size:0;}.mobile-game #day-label::after{content:attr(data-phase);font-size:12px;}.mobile-game #wave-label{font-size:10px;}
 .mobile-game #look{display:block;left:50%;right:0;top:0;bottom:0;width:auto;height:auto;pointer-events:auto;z-index:1;}
-.mobile-game #joystick{display:block;width:var(--joystick-size);height:var(--joystick-size);left:calc(var(--safe-left) + 14px);bottom:calc(var(--safe-bottom) + 14px);background:rgb(15 39 36 / var(--control-opacity));border:1px solid #f3f8e861;z-index:5;}
+.mobile-game #joystick{display:flex;width:var(--joystick-size);height:var(--joystick-size);left:calc(var(--safe-left) + 14px);bottom:calc(var(--safe-bottom) + 14px);background:rgb(15 39 36 / var(--control-opacity));border:1px solid #f3f8e861;z-index:5;}
 .mobile-game #stick{width:38%;height:38%;left:31%;top:31%;transform:translate(0,0);background:#e0edcf69;pointer-events:none;}
 .mobile-game #mobile-actions{position:absolute;right:calc(var(--safe-right) + 14px);bottom:calc(var(--safe-bottom) + 14px);display:grid;grid-template-columns:48px 48px;grid-template-rows:48px 48px;gap:8px;z-index:5;pointer-events:none;}
 .mobile-game #mobile-actions button{position:relative;width:48px;height:48px;min-width:48px;min-height:48px;padding:0;font-size:22px;line-height:1;border-radius:13px;pointer-events:auto;color:#fbf7e6;}

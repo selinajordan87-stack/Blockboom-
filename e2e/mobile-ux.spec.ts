@@ -16,6 +16,7 @@ for(const viewport of [{width:667,height:375},{width:844,height:390},{width:932,
  expect(await page.locator("#mobile-quickbar button").count()).toBeLessThanOrEqual(6);
  const layout=await page.evaluate(()=>{const ids=["joystick","mobile-actions","mobile-quickbar","menu","survival-hud"],r=ids.map(id=>({id,rect:document.getElementById(id)!.getBoundingClientRect()}));return {overflow:document.documentElement.scrollWidth>innerWidth,rects:r.map(({id,rect:b})=>({id,x:b.x,y:b.y,right:b.right,bottom:b.bottom,w:b.width,h:b.height})),overlap:r.some((a,i)=>r.slice(i+1).some(b=>a.rect.x<b.rect.right&&a.rect.right>b.rect.x&&a.rect.y<b.rect.bottom&&a.rect.bottom>b.rect.y))};});
  expect(layout.overflow).toBe(false);expect(layout.overlap).toBe(false);for(const b of layout.rects){expect(b.x).toBeGreaterThanOrEqual(44);expect(b.right).toBeLessThanOrEqual(viewport.width-44);expect(b.bottom).toBeLessThanOrEqual(viewport.height-21);}
+ const joystick=(await page.locator("#joystick").boundingBox())!,stick=(await page.locator("#stick").boundingBox())!;expect(stick.x+stick.width/2).toBeCloseTo(joystick.x+joystick.width/2,0);expect(stick.y+stick.height/2).toBeCloseTo(joystick.y+joystick.height/2,0);
  await page.screenshot({path:`artifacts/v061/after/${viewport.width}-safe.png`});expect(errors).toEqual([]);await context.close();
 });
 
