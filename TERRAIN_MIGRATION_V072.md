@@ -1,0 +1,9 @@
+# Terrainstrategie v0.7.2 – Generation 2, erster Schritt
+
+Vor jeder Terrainänderung geprüft: Edition 1–4 steuert bestehende zentrale Landschaften; der äußere Generator ist davon bislang unabhängig. Weltänderungen werden als einzelne Blockdeltas gespeichert und nach Chunkaufbau wieder angewandt. Ein Delta allein schützt KEINE Kellerluft oder das Fundament eines Hauses gegen eine andere Basishöhe. Eine bloße „bearbeitete Spalte überspringen“-Regel wäre auch für neue Häuser auf neuen Bergen beim nächsten Reload falsch.
+
+Deshalb: neue additive Kennung `extension.terrainRevision`, unabhängig von Edition. Fehlende/ungültige Werte bedeuten Generation 1. Alte Welten werden nicht automatisch umgeformt. So bleiben auch nie editierte Nachbarfundamente, Dächer, Keller, Möbel, Pflanzen, Tiere und gespeicherte Positionen auf demselben Untergrund. Generation 2 muss anschließend unveränderlich bleiben. Ein künftig gewünschter Wechsel braucht einen ausdrücklichen Export und einen gesonderten geprüften Import-/Regionserhaltungsplan. Keine automatische Freigabe allein aus „keine Deltas vorhanden“.
+
+Der erste Generation-2-Prototyp modelliert ausschließlich Teile des äußeren Silbergebirges. See, Steg, Fluss, Siedlung, bestehende Regionswege und Höhlenkoordinaten bleiben unverändert. Höhlen werden anschließend weiterhin durch denselben Generator ausgespart. Manuelle Deltas bleiben maßgeblich. Der Prototyp ist NICHT standardmäßig für neue oder bestehende Welten aktiviert: Nur vorbereitete Tests können `terrainRevision:2` setzen. Keine Migration und kein neues Release werden behauptet.
+
+Offen: durchgängiger realer Auf-/Abstieg mit Player-Physik, Übergänge zu den unveränderten Wegen, Deckendicke über beiden Kammern, neue Fotos, Chunk-/Renderbudget, passende Fern-LOD und übrige Landschaftsregionen. Erst nach diesen Prüfungen darf Generation 2 für tatsächlich neue Welten aktiviert werden. Alte Spielstände behalten Revision 1.
