@@ -36,3 +36,7 @@ Es wird kein bestandener Gerätetest behauptet; hier steht Chromium mit emuliert
 Der vollständige Gesamtlauf gehört zu `index-BdAeCH9T.js`. Danach bestand die Wegverbindung acht Nachtests, der erweiterte Gartenschutz zehn Nachtests (`index-unVfjpAn.js`). Die zuletzt entfernte unpassierbare Stichverbindung besteht 157 Logiktests und vier passende Browserfälle (`index-DR5BWunQ.js`). Keine Behauptung, alle 82 seien auf jedem Zwischenbundle erneut ausgeführt worden. Die Kernlogik blieb bei den letzten Kartenänderungen unverändert.
 
 Die normale Wanderung setzte ihre unveränderten, zuvor über die Exportfunktion erzeugten Dateien über das Importmenü fort. Das ist ein fortgesetzter tatsächlich gespielter Stand und kein zweiter frischer Start. Separate Tageslichtaufnahmen dürfen die vorhandene Kreativ-/Tageszeiteinstellung verwenden und sind entsprechend bezeichnet.
+
+## Letzter Gesamt- und Fehlernachlauf
+
+Der abschließende Lauf umfasste 83 Fälle: 82 bestanden, ein Desktop-BOOM-Feedbackfehler. Eine nachträgliche Regionsmeldung überschrieb die Aktionsmeldung. Der korrigierte Stand (`index-s5m-G2nK.js`) bestand 159 Logiktests und sechs Browser-Wiederholungen (BOOM und frischer Einstieg mit erhaltenem Notizbuchhinweis je dreimal). Kein Test wurde entfernt oder seine Material-/Weltprüfung abgeschwächt. Das ist eine gezielte Nachprüfung nach dem Gesamtlauf; kein erfundener vollständig erneut ausgeführter 83-Fälle-Lauf.

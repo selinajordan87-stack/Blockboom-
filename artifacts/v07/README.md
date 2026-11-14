@@ -7,6 +7,9 @@ Alle Bilder stammen aus tatsächlich laufenden Builds. Keine Mockups oder Bilder
 | Vorheriger Start v0.6.1 | [Vorher](before/01-new-player-start.png) | neuer Spielstand, normaler Eingabepfad |
 | Neuer Start / wenig HUD | [Start](journey-first-pass/01-start-region.png), [HUD](journey-first-pass/16-mobile-hud.png) | frischer Survivalstart |
 | Wald und See | [Wald](journey-first-pass/02-forest.png), [See](journey-first-pass/04-lake.png) | zu Fuß vom Start, keine Teleportation |
+| Äußerer Wald nach Bugfix | [Vorher: leer](failures/empty-forest.png), [nachher: Baumgruppen](forest-fixed-walk/02b-outer-forest.png) | tatsächlicher Eingabeweg aus regulär exportiertem Stand, ohne Teleportation |
+| Großer See und Fluss | [See](forest-fixed-walk/04b-great-lake.png), [Fluss](forest-fixed-walk/05-connected-river.png) | zu Fuß über Waldwege; anschließend normaler Save/Reload |
+| Angel am großen Steg | [Sichtbare Rute](great-lake-play/12-rod-on-great-lake-jetty.png), [tatsächlicher Fang](great-lake-play/12-great-lake-catch.png) | unveränderten erspielten Stand im UI importiert, auf den Steg gegangen, reale Touch-Halteaktionen für Wurf und Drill |
 | Nahe Höhle | [Eingang](journey-first-pass/06-cave-entrance.png), [Kammer](journey-first-pass/07-cave-interior.png) | echter Hin- und Rückweg |
 | Berg vom Minenweg | [Tageslichtaufnahme](mountain-overview/03-mountain-overview.png) | zu Fuß; separate Kreativ-/Mittagseinstellung über normale Menüs; Grafik bleibt einfach |
 | Größere Siedlung | [Gebäude](journey-first-pass/08b-larger-settlement.png), [Schmiede innen](journey-first-pass/08c-inside-forge.png) | zu Fuß, Tür tatsächlich geöffnet |

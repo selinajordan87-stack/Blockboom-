@@ -6,6 +6,7 @@ const stored=(page:Page)=>page.evaluate(()=>JSON.parse(localStorage.getItem('blo
 
 test('v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik',async({browser})=>{
  test.setTimeout(120000);const context=await browser.newContext({viewport:{width:844,height:390},isMobile:true,hasTouch:true}),page=await context.newPage(),j=await fresh(page,context);
+ await j.menu('menu-notice');await expect(page.locator('#panel-content')).toContainText('Notizbücher');await j.close();
  expect(await page.locator('#mobile-quickbar button').count()).toBe(6);
  for(const tool of ['Spitzhacke','Axt','Schwert','Angel']){await page.locator(`[data-quick-tool="${tool}"]`).tap();await expect(page.locator('#world')).toHaveAttribute('data-active-tool',tool);}
  const actions=await page.locator('#mobile-actions button:not(#jump)').evaluateAll(bs=>bs.filter(b=>!b.hidden&&getComputedStyle(b).display!=='none').length);expect(actions).toBeLessThanOrEqual(2);

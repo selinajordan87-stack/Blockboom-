@@ -58,7 +58,7 @@ Anschließend führen Brief, Erdweg, Turm und Rauch zur größeren Schmiede. Das
 
 Save-Key `blockboom.save`, Rootformat v1, Welteditionen und getrennte bisherige Lernspeicherung bleiben erhalten. Discovery ist eine additive versionierte Erweiterung. Vor der ersten v0.7-Speicherung wird, soweit Speicher verfügbar ist, `blockboom.save.pre-v07` gesichert. Export/Import bleibt erhalten. Der letzte lesbare Stand wird bei Speicherfehlern nicht ersetzt.
 
-Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlich gewanderte Stand hatte 7.574 Zeichen (geschätzt 15.148 UTF-16-Bytes), sechs Weltänderungen und 75 Kartenkacheln; der formatierte Export war rund 17 KB. Das rechtfertigt noch keinen Wechsel zu IndexedDB. Es ist kein Lasttest einer maximal bebauten Welt. Ein älterer manuell importierter Stand erhält nicht in jedem Fall automatisch das Beispielbeet; eigenes Farming bleibt über die Hacke möglich.
+Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlich gewanderte Stand hatte 8.450 Zeichen (geschätzt 16.900 UTF-16-Bytes), sechs Weltänderungen und 158 Kartenkacheln; der formatierte Export war rund 17 KB. Das rechtfertigt noch keinen Wechsel zu IndexedDB. Es ist kein Lasttest einer maximal bebauten Welt. Ein älterer manuell importierter Stand erhält nicht in jedem Fall automatisch das Beispielbeet; eigenes Farming bleibt über die Hacke möglich.
 
 ## Tatsächlich ausgeführte Prüfungen
 
@@ -85,15 +85,15 @@ Kein alter Test wurde gelöscht. Frühere erfolglose Läufe und ihre Ursachen bl
 Gemessen auf diesem Cloud-Rechner, Chromium mit Software-WebGL; keine Aussage über reale Smartphone-FPS.
 
 - Letzter Logiklauf: Rendererbudget 4 ms, 18 Slices, maximal 4,27 ms, Mittel 2,25 ms. Runtime-Terraingenerierung maximal 7,88 ms in dieser Probe.
-- Im tatsächlichen Gehweg wurden bis 38,9 ms Runtime-Generierung beobachtet. Einzelspalten, Garbage Collection und atomare Abschlüsse können das Budget überschreiten. Ein vollständiger synchroner Startaufbau dauerte dort 137,1 ms; der Maximalzähler enthält diesen Startwert.
-- Gehweg-Snapshots: etwa 13,3–28,9 FPS, Frame-p95 66,7–166,7 ms in Software-WebGL. Das ist **kein Nachweis stabiler 30 FPS** auf einem Handy.
+- Im tatsächlichen Gehweg wurden bis 42,2 ms Runtime-Generierung beobachtet. Einzelspalten, Garbage Collection und atomare Abschlüsse können das Budget überschreiten. Vollständige synchrone Start-/Import-/Reloadaufbauten lagen in den verschiedenen Durchläufen bei etwa 137–313 ms; der Maximalzähler enthält diese Startwerte. Ein stotterfreier Start wird damit nicht behauptet.
+- Gehweg-Snapshots: etwa 10,1–29,2 FPS, Frame-p95 66,7–216,6 ms einschließlich der Startfenster in Software-WebGL. Das ist **kein Nachweis stabiler 30 FPS** auf einem Handy.
 - JS-Heap in den aufgezeichneten Snapshots etwa 22,5–48,1 MB, zwischenzeitlich wieder gefallen; kein Beleg für dauerhafte Leckfreiheit.
 - Start-Renderprüfung: 93 Draw Calls, 39.114 Dreiecke, vier Texturen, 28 Chunks. Nach wiederholtem Bauen/Undo blieben 54 Geometrien und vier Texturen. Der Entladetest gab 152 Geometrien frei.
 - Kleine Spezialblockindizes vermeiden globale Möbel-Neubauten bei normalen Terrainänderungen. Tier-/Fischpopulation und Rauch bleiben begrenzt. Diagnose zeigt echte Frame-, Chunk-, Heap- und Akteurswerte; sichtbare Szenenmeshes sind nicht gleich tatsächlich gezeichnete Draw Calls.
 
 ## Bekannte Grenzen und bewusst offene Arbeit
 
-Die zentrale alte Landschaft wirkt weiterhin einfacher und flacher als die äußeren Regionen. Auch die Berggestaltung ist noch sehr kantig und plattenartig; die Tageslichtaufnahme vom tatsächlich begangenen Minenweg zeigt diese Grenze offen. Fern-LOD ist bewusst grob, Übergänge können sichtbar sein. Die Referenzbilder wurden weder als Spielassets übernommen noch als erreichter Grafikstand ausgegeben. Kein durchgehender menschlicher Hausbau-/Storytest, keine bestätigte 20–30-Minuten-Abenteuerdauer und keine echte Geräteperformance.
+Die zentrale alte Landschaft wirkt weiterhin einfacher und flacher als die äußeren Regionen. Die Ufer und der Fluss sind weiterhin sehr geometrisch und kanalartig. Auch die Berggestaltung ist noch sehr kantig und plattenartig; die Tageslichtaufnahme vom tatsächlich begangenen Minenweg zeigt diese Grenze offen. Fern-LOD ist bewusst grob, Übergänge können sichtbar sein. Die Referenzbilder wurden weder als Spielassets übernommen noch als erreichter Grafikstand ausgegeben. Kein durchgehender menschlicher Hausbau-/Storytest, keine bestätigte 20–30-Minuten-Abenteuerdauer und keine echte Geräteperformance.
 
 Neue passive Wissensboni auf Fangwahrscheinlichkeit, Farming als zusätzlicher Köderkreislauf, ein allgemeines mehrstufiges Gameplay-Hilfesystem und weitergehende Tierweltsimulation sind nicht Teil dieses geprüften Standes. Vorhandenes Wissen hilft über echte Werkzeug-/Köderentscheidungen. Lesen und Schreiben bleiben freiwillig; es werden keine diagnostischen oder handschrifttherapeutischen Wirkungen behauptet.
 
@@ -110,6 +110,9 @@ Neue passive Wissensboni auf Fangwahrscheinlichkeit, Farming als zusätzlicher K
 | `eb38a5b` | 82 bestandene Browserfälle mit Nachweisen |
 | `98d386e` | Wegverbindung, hoher/tiefer Gartenschutz, 157 Logiktests |
 | `27375f2` | irreführende Stichverbindung entfernt, tiefer Schatz tatsächlich erreicht |
+| `40eeeab` | Fundtexte ohne schulische Stufenetiketten, ehrliche Grafiknachweise |
+| `ef35cac` | tatsächliche Waldgenerierung und freier Weg statt leerer Regionsmarke |
+| `ded5323` | tatsächlicher Steg als Angelzone und erfolgreicher Touchfang |
 
 Weg-/Gartenschutzfix ist mit 157 Logiktests und zehn gezielten Browserfällen gesichert. Abschließende Gehwegbelege und Live-Prüfung werden nach ihren tatsächlichen Ergebnissen ergänzt. Es wurde bisher nicht auf `main` gepusht.
 
@@ -149,7 +152,7 @@ Der Journalpfad kennt technische Wegpunkte; er ist keine menschliche Bewertung v
 
 Der erste Weg erreichte den äußeren Wald und großen See tatsächlich, aber die Waldaufnahme zeigte lediglich Büsche und Stümpfe. Der unveröffentlichte Außenweltgenerator verwendete ein Vierer-Raster mit `x,z ≡ 2 mod 4`; sein Hash `31*x+73*z` war damit immer durch vier teilbar. Die Baum-Bedingung war dort nie erfüllt. Ein neuer Test reproduzierte **null höhere Stammblöcke**. Die vorherigen grünen Browserfälle hatten dieses sichtbare Problem nicht erfasst.
 
-Der Fix mischt ganzzahlige Rasterkoordinaten, verwendet einen günstigeren Sechser-Abstand und lässt Wege und kleine Tierlichtungen frei. Der Test prüft tatsächliche höhere Stämme beider Holzarten, einen vollständigen begehbaren Weg und die resultierende Geometrie. Ergebnis: 43.488 Dreiecke in 37 Chunk-Meshes, 69.466 geladene Blöcke, 43 Buildslices, maximal beobachtet 5,25 ms. Alte Landschaft innerhalb der bisherigen Grenze und gespeicherte Blockänderungen bleiben erhalten. Der echte Eingabeweg wird nach diesem Fix nochmals fotografiert. [Fehlaufnahme](artifacts/v07/failures/empty-forest.png), [roter Test](artifacts/v07/failures/empty-forest-red.log).
+Der Fix mischt ganzzahlige Rasterkoordinaten, verwendet einen günstigeren Sechser-Abstand und lässt Wege und kleine Tierlichtungen frei. Der Test prüft tatsächliche höhere Stämme beider Holzarten, einen vollständigen begehbaren Weg und die resultierende Geometrie. Ergebnis: 43.488 Dreiecke in 37 Chunk-Meshes, 69.466 geladene Blöcke, 43 Buildslices, maximal beobachtet 5,25 ms. Alte Landschaft innerhalb der bisherigen Grenze und gespeicherte Blockänderungen bleiben erhalten. Der echte Eingabeweg wurde nach diesem Fix vollständig bis zum großen See und durch Reload geprüft, ohne JavaScript-Seitenfehler. [Wald nach Fix](artifacts/v07/forest-fixed-walk/02b-outer-forest.png), [See](artifacts/v07/forest-fixed-walk/04b-great-lake.png), [Fluss](artifacts/v07/forest-fixed-walk/05-connected-river.png), [Journal](artifacts/v07/forest-fixed-walk/journey.json). [Fehlaufnahme](artifacts/v07/failures/empty-forest.png), [roter Test](artifacts/v07/failures/empty-forest-red.log).
 
 ## Angelsteg im echten Spielerablauf
 
@@ -157,4 +160,14 @@ Der große See wurde nach dem Waldfix erneut über normale Eingaben erreicht. Ei
 
 Der neue Browserfall importiert eine unveränderte Exportdatei des wirklich gelaufenen Entdeckerstands über das normale Menü, geht auf den Holzsteg, rüstet die sichtbare Angel aus und verwendet echte CDP-Touchkontakte für Kraftwurf, Anschlag und Drill. Ein tatsächlich vorhandener Fisch aus dem großen See wird angelandet und zurückgesetzt; Fangbuchdaten bleiben nach Reload erhalten. **1/1 bestanden in 54,0 s**, [Log](artifacts/v07/great-lake-browser.log), [Angel am Steg](artifacts/v07/great-lake-play/12-rod-on-great-lake-jetty.png), [Fang](artifacts/v07/great-lake-play/12-great-lake-catch.png).
 
-Der vor diesem Fix laufende Gesamttest wurde bewusst unterbrochen: 23 bestanden, ein laufender Fall unterbrochen, 58 nicht ausgeführt. Das ist kein erfolgreicher Gesamtlauf. Die abschließende vollständige Suite umfasst jetzt **83 Fälle** und läuft auf `index-aiUri2qf.js`.
+Der vor diesem Fix laufende Gesamttest wurde bewusst unterbrochen: 23 bestanden, ein laufender Fall unterbrochen, 58 nicht ausgeführt. Das ist kein erfolgreicher Gesamtlauf. Die vollständige Suite mit **83 Fällen** endete auf `index-aiUri2qf.js` mit **82 bestanden / einem Feedbackfehler**. Der Fehler und die erfolgreichen Nachprüfungen des korrigierten Bundles sind unten getrennt aufgeführt.
+
+## Abschließende Rückmeldungsregression
+
+Der letzte vollständige 83-Fälle-Lauf bestand 82 Fälle. Einzig der Desktop-BOOM-Test scheiterte: Die erwartete Aktionsmeldung wurde in derselben Startphase von „Entdeckt: Wiesenland“ überschrieben. Damit war auch der nützliche erste Hinweis auf die Notizbücher gefährdet. [Vollständiges Log](artifacts/v07/83-browser-before-notice-fix.log), [Fehlerkontext](artifacts/v07/failures/boom-feedback-context.md).
+
+Aktionsmeldungen haben nun für ihre sichtbare Dauer Vorrang vor gewöhnlichen Regions-/Angelplatzmeldungen. Entdeckungsdaten werden dennoch gespeichert; Abzeichen und wichtige Meldungen bleiben möglich. Kein zusätzliches Overlay und keine neue Speicherung. Eine neue Browserassertion prüft, dass der Einstiegshinweis im Menü erneut lesbar bleibt.
+
+Auf dem korrigierten Produktionsbundle **`index-s5m-G2nK.js`** bestanden TypeScript, alle **159 Logiktests** und Build sowie **6/6 Wiederholungen**: BOOM mit tatsächlicher Blockentfernung und Reset sowie frischer Einstieg mit Lesen/Touch, jeweils dreimal. [Nachprüfungslog](artifacts/v07/notice-browser.log). Es wird ausdrücklich kein zweiter vollständig grüner 83-Fälle-Gesamtlauf nach dieser lokalisierten Änderung behauptet.
+
+Alle 83 unterschiedlichen Szenarien wurden damit geprüft; der einzige im Gesamtlauf fehlgeschlagene Fall wurde korrigiert und erfolgreich nachgeprüft. Die Live-Smokeprüfung folgt auf genau diesem Bundle. Die Veröffentlichung gilt erst mit erfolgreichem Workflow, erreichbarer Website und geprüftem ausgeliefertem Bundle als bestätigt.

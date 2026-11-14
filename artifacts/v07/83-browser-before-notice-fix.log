@@ -1,0 +1,126 @@
+
+Running 83 tests using 1 worker
+
+(node:64357) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/blueprint-v07.spec.ts:6:1 › Bauplan aus einem vorhandenen Spielstand: Vorschau, echte Kosten, Aufstieg und Reload (32.2s)
+  ✓   2 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (15.8s)
+  ✓   3 e2e/discovery-v07.spec.ts:19:1 › v0.7 neue Entdeckerkarte verbirgt unbekannte Orte und normale Bewegung erschließt den Wald (1.1m)
+  ✓   4 e2e/discovery-v07.spec.ts:25:1 › v0.7 Feld ist vom Start aus zu Fuß nutzbar: echte Ernte, Aussaat, aktive Wachstumszeit und Reload (2.7m)
+  ✓   5 e2e/discovery-v07.spec.ts:36:1 › v0.7 Langdruck-Inventar und zwei Daumen bleiben unabhängig vom neuen HUD (5.8s)
+  ✓   6 e2e/entry-loop-v07.spec.ts:4:1 › Neuer Survivalstart: Holz und Stein sammeln, Gartenblatt anwenden, Grundrezepte und eigenes Beet (57.0s)
+  ✓   7 e2e/fishing-v04.spec.ts:31:1 › v0.1-Spielstand erhält Welt, Fänge und Lernfortschritt mit pre-v04-Sicherung (4.1s)
+  ✓   8 e2e/fishing-v04.spec.ts:56:1 › Angelset speichert Regelhilfe und Jahreszeit ohne Lernpflicht (6.1s)
+  ✓   9 e2e/fishing-v04.spec.ts:73:1 › mobile Angelaktion beendet touchcancel ohne Wurf, Hänger oder Pausenmenü (4.6s)
+  ✓  10 e2e/fishing-v04.spec.ts:104:1 › alle vier Angelplätze werden durch Erkundung dauerhaft entdeckt (16.4s)
+  ✓  11 e2e/game.spec.ts:40:1 › Desktop: Start, Bewegung, Kamera, Bauen und dauerhafter Spielstand (24.4s)
+  ✓  12 e2e/game.spec.ts:79:1 › Angeln, freiwillige Mission, Sammlung und Neuladen (45.6s)
+  ✘  13 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (9.0s)
+(node:65052) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  14 e2e/game.spec.ts:116:3 › Touch 360px: Start, Joystick, Kamera, Inventar und Menü (5.5s)
+  ✓  15 e2e/game.spec.ts:116:3 › Touch 390px: Start, Joystick, Kamera, Inventar und Menü (4.4s)
+  ✓  16 e2e/game.spec.ts:116:3 › Touch 430px: Start, Joystick, Kamera, Inventar und Menü (5.4s)
+  ✓  17 e2e/game.spec.ts:176:1 › Touch: Blöcke setzen/entfernen, Barsch fangen und BOOM zurücksetzen (34.9s)
+  ✓  18 e2e/great-lake-v07.spec.ts:6:1 › großer See: erspielten Stand importieren, Steg betreten und einen echten Fisch mit Touch angeln (52.1s)
+  ✓  19 e2e/living-v06.spec.ts:14:1 › Regionen und Höhle sind erreichbar, äußere Bauwerke und alte Welt bleiben nach Reload (1.0m)
+  ✓  20 e2e/living-v06.spec.ts:23:1 › sichtbares Erz wird zeitgesteuert abgebaut; Ofen und Kupferwerkzeug verbrauchen echte Vorräte (20.5s)
+  ✓  21 e2e/living-v06.spec.ts:33:1 › Tier wird durch Füttern gezähmt, benannt und folgt nach Reload (13.3s)
+  ✓  22 e2e/living-v06.spec.ts:39:1 › Hacke, Aussaat, gespeichertes Wachstum und Ernte funktionieren auf Touch (8.3s)
+  ✓  23 e2e/living-v06.spec.ts:45:1 › Möbelplatzierung und getrennte Truhe behalten Inhalt und Bauwerk (24.9s)
+  ✓  24 e2e/living-v06.spec.ts:51:1 › alte Welt wird vor v0.6 gesichert; echte Speicherquote schützt den letzten Stand (15.0s)
+  ✓  25 e2e/living-v06.spec.ts:63:1 › alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte Schatztruhen (1.4m)
+  ✓  26 e2e/living-v06.spec.ts:76:94 › Wohnwelt mobil 667×375: Karte, Nahrung und Tiername mit Tastaturhöhe (6.0s)
+  ✓  27 e2e/living-v06.spec.ts:76:94 › Wohnwelt mobil 844×390: Karte, Nahrung und Tiername mit Tastaturhöhe (6.8s)
+  ✓  28 e2e/living-v06.spec.ts:76:94 › Wohnwelt mobil 932×430: Karte, Nahrung und Tiername mit Tastaturhöhe (7.4s)
+  ✓  29 e2e/living-world.spec.ts:76:1 › neun Baustoffe, Bauen außerhalb des Bauplatzes, Undo und Reload (10.7s)
+  ✓  30 e2e/living-world.spec.ts:100:1 › acht sichtbare Arten bewegen sich; Angel drillt ein wirkliches Tier (37.3s)
+  ✓  31 e2e/living-world.spec.ts:131:1 › direkter Fang trifft ein sichtbares Fischmodell in Reichweite (6.8s)
+  ✓  32 e2e/living-world.spec.ts:198:1 › Holzauftrag: tatsächliches Abbauen, Schreiben und Abgeben belohnt einmal (37.5s)
+  ✓  33 e2e/living-world.spec.ts:230:1 › Fischmission und Schatzmission: Fang, drei Rätsel, Abschluss und Save (1.0m)
+  ✓  34 e2e/living-world.spec.ts:261:1 › Challenge: Fehler, Silben, langsames Wort, lokale Stimme und getrennte Lernspeicherung (7.9s)
+  ✓  35 e2e/living-world.spec.ts:311:1 › mobiles Lernformular bleibt bei kleiner Tastaturhöhe bedienbar; Moduswechsel sperrt nichts (5.6s)
+  ✓  36 e2e/living-world.spec.ts:340:1 › Schatzmission auf Touchscreen: drei Texteingaben mit Tastaturhöhe und gespeicherter Belohnung (5.3s)
+  ✓  37 e2e/living-world.spec.ts:382:3 › Kompatibilitätsklick auf Touchgeräten › Touchaktion ohne Klick: ein Folgeklick darf nicht in das neue Angelmenü fallen (3.2s)
+  ✓  38 e2e/mobile-rescue.spec.ts:21:1 › P0: sichtbarer Fokusverlust während Bewegung öffnet keine manuelle Pause (2.5s)
+  ✓  39 e2e/mobile-rescue.spec.ts:65:1 › Bewegung, Kamera, beide Finger gleichzeitig und unabhängiges Loslassen (4.9s)
+  ✓  40 e2e/mobile-rescue.spec.ts:127:1 › Kamerabewegung allein und 20 schnelle Touchfolgen öffnen kein Menü (10.8s)
+  ✓  41 e2e/mobile-rescue.spec.ts:155:3 › pointercancel: keine hängende Bewegung, nächster Kontakt funktioniert (2.6s)
+  ✓  42 e2e/mobile-rescue.spec.ts:155:3 › lostpointercapture: keine hängende Bewegung, nächster Kontakt funktioniert (2.6s)
+  ✓  43 e2e/mobile-rescue.spec.ts:155:3 › touchcancel: keine hängende Bewegung, nächster Kontakt funktioniert (2.6s)
+  ✓  44 e2e/mobile-rescue.spec.ts:182:1 › Echter Touchcancel bei zwei Kontakten endet ohne Pause (2.6s)
+  ✓  45 e2e/mobile-rescue.spec.ts:204:1 › Manuelle Pause nur per Tippen; Ziehen von Kamera oder Menü aktiviert kein Menü (4.4s)
+  ✓  46 e2e/mobile-rescue.spec.ts:246:1 › Hintergrund unterbricht getrennt, sichtbares Blur bewahrt aktive Daumen (2.6s)
+  ✓  47 e2e/mobile-rescue.spec.ts:296:1 › Altspielstand, Reload und Landschaft: Inventar, Mission, Baublöcke erhalten (10.1s)
+  ✓  48 e2e/mobile-rescue.spec.ts:353:1 › Joystick startet auch auf dem Knopf; Browserleisten-Resize erhält Kontakte (4.2s)
+  ✓  49 e2e/mobile-rescue.spec.ts:389:1 › Dritter Finger auf dem Joystick ersetzt und beendet keinen aktiven Daumen (3.9s)
+  ✓  50 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 667×375 (3.9s)
+  ✓  51 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 844×390 (4.2s)
+  ✓  52 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 932×430 (4.2s)
+  ✓  53 e2e/mobile-ux.spec.ts:23:1 › Third Person zeigt die Figur, erhöht echte Kameradistanz und speichert die Auswahl (9.6s)
+  ✓  54 e2e/mobile-ux.spec.ts:29:1 › Baumkollision verkürzt die Sicht vorübergehend; Weglaufen stellt den Abstand wieder her (6.5s)
+  ✓  55 e2e/mobile-ux.spec.ts:35:1 › Kamera-Reset löst enge Sicht, bleibt nach Menüwechsel erreichbar und stoppt alte Eingaben (6.3s)
+  ✓  56 e2e/mobile-ux.spec.ts:42:1 › zwei Daumen, zusätzlicher Finger, Rotation und Browserwechsel behalten stabile Steuerung (4.9s)
+  ✓  57 e2e/mobile-ux.spec.ts:50:1 › Third-Person-Bauen, Abbauen und Inventar sind über kleine Touchflächen nutzbar (9.7s)
+  ✓  58 e2e/mobile-ux.spec.ts:56:1 › sichtbare Third-Person-Angel führt einen wirklichen Fang bis ins Inventar (27.9s)
+  ✓  59 e2e/mobile-ux.spec.ts:61:1 › Steuerungsoptionen, Linkshand-Belegung und Diagnoseexport bleiben gespeichert (6.0s)
+  ✓  60 e2e/mobile-ux.spec.ts:66:1 › Export ist eine echte Datei; geprüfter Import überlebt Reload und legt eine Sicherung an (12.2s)
+  ✓  61 e2e/mobile-ux.spec.ts:72:1 › WebGL-Unterbrechung hält Menü und Kamera-Reset erreichbar und kann wieder fortgesetzt werden (7.7s)
+  ✓  62 e2e/mobile-ux.spec.ts:78:1 › Browser-Vergrößerung wird vom Kameraabstand getrennt diagnostiziert (8.1s)
+  ✓  63 e2e/nightfall.spec.ts:12:1 › Tag/Nacht, drei Zombiearten, echte Verfolgung und friedlicher Modus (7.4s)
+  ✓  64 e2e/nightfall.spec.ts:25:1 › Survival-Werkbank verbraucht Material; Fisch kochen, essen und Reload (16.2s)
+  ✓  65 e2e/nightfall.spec.ts:38:1 › Schreibkampf schützt die Eingabe, hilft nach Fehlern und wirkt ohne Zeitlimit (8.4s)
+  ✓  66 e2e/nightfall.spec.ts:46:1 › Pause friert einen laufenden Angriff ein; alte Saves erhalten eine Sicherung (7.7s)
+  ✓  67 e2e/nightfall.spec.ts:51:1 › echter Zombieangriff führt zum freundlichen Wiedereinstieg ohne Inventarverlust (13.9s)
+  ✓  68 e2e/nightfall.spec.ts:57:1 › Haustür öffnet beide Zellen, Spieler geht hindurch und offene Tür bleibt gespeichert (15.6s)
+  ✓  69 e2e/nightfall.spec.ts:65:1 › v0.4-Save erhält eine pre-v05-Sicherung und alle bisherigen Angelwerte (4.6s)
+  ✓  70 e2e/nightfall.spec.ts:70:1 › offene Tür abbauen und Undo erhalten einen gültigen Tür-Vorrat nach Reload (13.8s)
+  ✓  71 e2e/nightfall.spec.ts:79:1 › Nahkampf über sichtbare Waffe trifft einen echten Zombie und belohnt den Sieg (16.1s)
+  ✓  72 e2e/nightfall.spec.ts:98:1 › drei Touchkontakte: Bewegung, Kamera und Angriff bleiben unabhängig (7.1s)
+  ✓  73 e2e/nightfall.spec.ts:112:94 › Schreibkampf mobil 667×375 mit Tastaturhöhe (5.9s)
+  ✓  74 e2e/nightfall.spec.ts:112:94 › Schreibkampf mobil 844×390 mit Tastaturhöhe (6.5s)
+  ✓  75 e2e/nightfall.spec.ts:112:94 › Schreibkampf mobil 932×430 mit Tastaturhöhe (8.3s)
+  ✓  76 e2e/pages.spec.ts:7:1 › Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang (3.3s)
+{"v03NewWorld":{"calls":93,"triangles":39114,"geometries":52,"textures":4,"chunks":28,"ratio":1}}
+  ✓  77 e2e/v03.spec.ts:42:1 › neue Welt migriert auf Edition 4 mit begrenztem Renderbudget (6.6s)
+  ✓  78 e2e/v03.spec.ts:76:1 › v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar (8.6s)
+  ✓  79 e2e/v03.spec.ts:123:1 › 15 Materialien, mehrere Undo-Schritte und Reload (13.9s)
+  ✓  80 e2e/v03.spec.ts:157:3 › mobile Landschaft 667×375: Zoom und Werkzeuge ohne Pause (4.6s)
+  ✓  81 e2e/v03.spec.ts:157:3 › mobile Landschaft 844×390: Zoom und Werkzeuge ohne Pause (4.7s)
+  ✓  82 e2e/v03.spec.ts:157:3 › mobile Landschaft 932×430: Zoom und Werkzeuge ohne Pause (5.2s)
+{"v03BuildUndoPlateau":{"first":{"geometries":54,"textures":4},"second":{"geometries":54,"textures":4}}}
+  ✓  83 e2e/v03.spec.ts:185:1 › diagnostics: selektive Chunks und GPU-Zähler bleiben bei Bau/Undo begrenzt (9.0s)
+
+
+  1) e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück ───────────────────────────────────────
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#toast')
+    Expected substring: "BOOOM"
+    Received string:    "Entdeckt: Wiesenland"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" locator('#toast') with timeout 5000ms
+      - waiting for locator('#toast')
+        12 × locator resolved to <div id="toast" role="status" class="visible">Entdeckt: Wiesenland</div>
+           - unexpected value "Entdeckt: Wiesenland"
+        2 × locator resolved to <div class="" id="toast" role="status">Entdeckt: Wiesenland</div>
+          - unexpected value "Entdeckt: Wiesenland"
+
+
+      106 |   await seed(page, blank([14, 1.01, 17], 0, -0.15));
+      107 |   await page.locator("#interact").click();
+    > 108 |   await expect(page.locator("#toast")).toContainText("BOOOM");
+          |                                        ^
+      109 |   let s = await getSave(page);
+      110 |   expect(s.changes["12,1,9"]).toBeNull();
+      111 |   await shortcut(page,"reset-boom");
+        at /workspace/blockboom/e2e/game.spec.ts:108:40
+
+    Error Context: test-results/game-BOOM-zerstört-und-setzt-zurück/error-context.md
+
+  1 failed
+    e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück ────────────────────────────────────────
+  82 passed (22.1m)

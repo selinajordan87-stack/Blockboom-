@@ -436,14 +436,18 @@ function aim() {
 let animalTarget:Animal|null=null;
 let noteTarget:import("./discovery/Content").WorldNote|null=null;
 let miningAction:{cell:Cell;block:import("./world/World").Block;elapsed:number;seconds:number}|null=null;
-function toast(text: string) {
+let noticeUntil=0;
+function toast(text: string,priority:"action"|"discovery"="action") {
+  const coarse=matchMedia("(pointer: coarse)").matches,now=performance.now(),duration=coarse?2800:4200;
+  if(priority==="discovery"&&now<noticeUntil)return;
+  noticeUntil=now+duration;
   lastNotice=text;
-  $("toast").textContent = matchMedia("(pointer: coarse)").matches?compactNotice(text):text;
+  $("toast").textContent = coarse?compactNotice(text):text;
   $("toast").classList.add("visible");
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(
     () => $("toast").classList.remove("visible"),
-    matchMedia("(pointer: coarse)").matches?2800:4200,
+    duration,
   );
 }
 let toastTimer = 0;
@@ -1612,7 +1616,7 @@ function tickFrame(now:number){
     livingAccum+=elapsed;
     if(livingAccum>.2){
       updateAnimals(expansion.living,world,player.pos,livingAccum);livingAccum=0;
-      const found=discover(expansion.living,player.pos);if(found){toast(`Entdeckt: ${found.name}`);save();}
+      const found=discover(expansion.living,player.pos);if(found){toast(`Entdeckt: ${found.name}`,"discovery");save();}
     }
     missionAccum+=elapsed;if(missionAccum>=1){missionAccum=0;const chapters=discovery.tick(world,player.pos);if(chapters.length){toast(`Abenteuer: ${chapters.join(", ")}`);save();}const earned=checkMissions(expansion.living,world);if(earned.length){toast(`Entdeckerpfad geschafft: ${earned.join(", ")}`);save();}}
     if(expansion.living.clock>dogAlertAt){const dog=expansion.living.animals.find(a=>a.tame&&a.kind==="Wolf"&&Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<12);if(dog&&zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<10)){toast(`${dog.name||"Dein Wolf"} warnt dich vor nahen Zombies.`);dogAlertAt=expansion.living.clock+20;}}
@@ -1684,6 +1688,7 @@ function tickFrame(now:number){
       save();
       toast(
         `Angelplatz entdeckt: ${discovered.name}.${achievements.length ? ` Abzeichen: ${achievements.join(", ")}` : ""}`,
+        achievements.length?"action":"discovery",
       );
     }
     const localMission = (Object.keys(MISSIONS) as MissionId[]).find((id) =>

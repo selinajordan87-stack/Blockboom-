@@ -1,0 +1,17 @@
+
+Running 6 tests using 1 worker
+
+(node:68880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (17.4s)
+  ✓  2 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (6.1s)
+(node:69127) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (17.6s)
+  ✓  4 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (6.1s)
+(node:69332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (17.3s)
+  ✓  6 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (5.7s)
+
+  6 passed (1.2m)

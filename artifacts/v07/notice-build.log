@@ -1,0 +1,14 @@
+
+> blockboom@0.7.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.8 building client environment for production...
+transforming...
+✓ 64 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.78 kB │ gzip:   0.42 kB
+dist/assets/index-CyU1qMwR.css   31.45 kB │ gzip:   7.44 kB
+dist/assets/index-s5m-G2nK.js   318.48 kB │ gzip: 107.30 kB
+dist/assets/three-CxgTLceN.js   493.02 kB │ gzip: 123.24 kB
+✓ built in 1.75s
