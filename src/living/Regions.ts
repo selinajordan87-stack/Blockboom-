@@ -62,7 +62,7 @@ export class RegionStream {
     for(const id of [...this.world.activeChunks]){
       const [a,b]=id.split(",").map(Number);if(a>=-2&&a<2&&b>=-2&&b<2)continue;
       if(!wanted.has(id)){
-        for(let xx=a*12;xx<a*12+12;xx++)for(let zz=b*12;zz<b*12+12;zz++)for(let y=MIN_Y;y<=MAX_Y;y++)this.world.blocks.delete(`${xx},${y},${zz}`);
+        for(let xx=a*12;xx<a*12+12;xx++)for(let zz=b*12;zz<b*12+12;zz++)for(let y=MIN_Y;y<=MAX_Y;y++)this.world.forgetGenerated(xx,y,zz);
         this.world.activeChunks.delete(id);this.world.revision++;
         for(const [dx,dz]of [[0,0],[1,0],[-1,0],[0,1],[0,-1]])this.world.dirtyChunks.add(`${a+dx},${b+dz}`);
         // Adjacent meshes must expose the faces formerly hidden by this chunk.
@@ -96,7 +96,7 @@ export class RegionStream {
     // Deleting one whole region used to block the same frame as its replacement.
     let removed=0;while(this.unloading.size&&(drain||removed<8)){
       const[id,column]=this.unloading.entries().next().value!,[a,b]=id.split(",").map(Number),xx=a*12+Math.floor(column/12),zz=b*12+column%12;
-      for(let y=MIN_Y;y<=MAX_Y;y++)this.world.blocks.delete(`${xx},${y},${zz}`);
+      for(let y=MIN_Y;y<=MAX_Y;y++)this.world.forgetGenerated(xx,y,zz);
       removed++;if(column===143){this.unloading.delete(id);this.metrics.unloadedChunks++;this.invalidate(a,b);}else this.unloading.set(id,column+1);
     }
     let columns=0;while(drain||columns<8){

@@ -1837,7 +1837,7 @@ function tickFrame(now:number){
       calls: renderer.info.render.calls,
       frame:frameStats.snapshot(),chunk:view.metrics,streaming:regionStream.metrics,
       heap:(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory?.usedJSHeapSize??null,
-      activeMeshes:renderer.info.render.calls,activeAnimals:expansion.living.animals.filter(a=>Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<32).length,activeZombies:zombies.actors.filter(z=>z.hp>0).length,
+      activeMeshes:(()=>{let count=0;scene.traverseVisible(o=>{if((o as T.Mesh).isMesh)count++;});return count;})(),activeAnimals:expansion.living.animals.filter(a=>Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<32).length,activeZombies:zombies.actors.filter(z=>z.hp>0).length,
       discovery:{enabled:expansion.discovery.enabled,notes:expansion.discovery.read,chapters:expansion.discovery.completed,goals:discovery.activeGoals().map(g=>g.id)},
       blueprint:{planning:planningTower,origin:adjacent,valid:planningTower&&!towerValidity(world,adjacent,player.pos),cells:towerPreview.mesh.visible?towerPreview.mesh.count:0},
       triangles: renderer.info.render.triangles,

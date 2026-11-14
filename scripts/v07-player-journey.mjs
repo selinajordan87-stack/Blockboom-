@@ -15,7 +15,7 @@ export class FreshJourney{
  }
  async metrics(){const raw=await this.page.locator('#world').getAttribute('data-performance');return raw?JSON.parse(raw):null;}
  async fresh(){const before=(await this.metrics())?.renderedFrames??-1;for(let i=0;i<40;i++){await delay(80);const m=await this.metrics();if(m&&m.renderedFrames>before)return m;}throw Error('No fresh diagnostic frame; game may be paused/interrupted');}
- async capture(name){const m=await this.fresh();await this.page.screenshot({path:`${this.out}/${name}.png`});this.events.push({event:'capture',name,seconds:(Date.now()-this.startedAt)/1000,position:m.nightfall.player.pos,region:m.living.region,frames:m.renderedFrames,performance:{calls:m.calls,geometries:m.geometries,textures:m.textures,...m.streaming}});return m;}
+ async capture(name){const m=await this.fresh();await this.page.screenshot({path:`${this.out}/${name}.png`});this.events.push({event:'capture',name,seconds:(Date.now()-this.startedAt)/1000,position:m.nightfall.player.pos,region:m.living.region,frames:m.renderedFrames,performance:{calls:m.calls,geometries:m.geometries,textures:m.textures,frame:m.frame,chunk:m.chunk,stream:m.streaming,activeMeshes:m.activeMeshes,activeAnimals:m.activeAnimals,activeZombies:m.activeZombies,heap:m.heap}});return m;}
  async swipe(dx,dy=0){
   // Separate short swipes keep the contact in the right camera half and outside buttons.
   const size=this.page.viewportSize(),x=size.width*.72,y=Math.min(130,size.height*.33),n=Math.max(1,Math.ceil(Math.max(Math.abs(dx),Math.abs(dy))/70));

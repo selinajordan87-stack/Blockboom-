@@ -18,12 +18,16 @@ export const TYPES = [
   "Kohleerz", "Kupfererz", "Eisenerz", "Golderz", "Acker", "Bett", "Tisch", "Stuhl", "Regal", "Truhe", "Werkbank", "Ofen", "Laterne", "Teppich",
 ] as const;
 export type Block = (typeof TYPES)[number] | "Boom" | "Tür offen" | "Tor offen" | "Schatztruhe";
+export const SPECIAL_TYPES = ["Tür","Tür offen","Tor","Tor offen","Zaun","Leiter","Treppe","Fackel","Falle","Lagerkiste","Barriere","Bett","Tisch","Stuhl","Regal","Truhe","Werkbank","Ofen","Laterne","Teppich","Schatztruhe"] as const;
+const specialTypes=new Set<string>(SPECIAL_TYPES);
 export type Cell = [number, number, number];
 export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
 export const LIMIT = 336;
 export const MIN_Y = -18, MAX_Y = 26;
 export class World {
   blocks = new Map<string, Block>();
+  specialBlocks=new Map<string,Block>();
+  propsRevision=0;
   changes: Record<string, Block | null> = {};
   /** Cells changed since the renderer last synchronized its chunk meshes. */
   dirty = new Set<string>();
@@ -37,8 +41,11 @@ export class World {
   }
   set(x: number, y: number, z: number, b: Block | null, record = true) {
     const k = key(x, y, z);
+    const previous=this.blocks.get(k);
     if (b) this.blocks.set(k, b);
     else this.blocks.delete(k);
+    if(b&&specialTypes.has(b))this.specialBlocks.set(k,b);else this.specialBlocks.delete(k);
+    if(previous!==b&&(specialTypes.has(previous||"")||specialTypes.has(b||"")))this.propsRevision++;
     const cx=Math.floor(x/12),cz=Math.floor(z/12),id=`${cx},${cz}`;
     if (record) {
       this.changes[k] = b;
@@ -51,6 +58,8 @@ export class World {
     if(lz===0)this.dirtyChunks.add(`${cx},${cz-1}`);if(lz===11)this.dirtyChunks.add(`${cx},${cz+1}`);
     this.revision++;
   }
+  /** Streaming forgets generated blocks, never their authoritative saved delta. */
+  forgetGenerated(x:number,y:number,z:number){const id=key(x,y,z);this.blocks.delete(id);if(this.specialBlocks.delete(id))this.propsRevision++;}
   constructor() {
     for (let cx=-2;cx<2;cx++)for(let cz=-2;cz<2;cz++)this.activeChunks.add(`${cx},${cz}`);
     for (let x = -24; x < 24; x++)

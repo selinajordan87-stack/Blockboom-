@@ -47,10 +47,10 @@ export class DefenseView {
     for(let i=0;i<3;i++){const light=new T.PointLight(0xffba64,0,8,2);scene.add(light);this.lights.push(light);}
   }
   update(origin:T.Vector3,night:boolean) {
-    if(this.revision!==this.world.revision){
+    if(this.revision!==this.world.propsRevision){
       this.torches=[];
       const boxes:{cell:Cell;size:number[];position:number[];color:number}[]=[];
-      for(const [id,block] of this.world.blocks){
+      for(const [id,block] of this.world.specialBlocks){
         if(!special(block))continue;const cell=id.split(",").map(Number) as Cell;
         if(block==="Fackel"||block==="Laterne")this.torches.push(cell);
         const add=(size:number[],position:number[],color=0x9b754a)=>boxes.push({cell,size,position,color});
@@ -78,7 +78,7 @@ export class DefenseView {
         boxes.forEach((box,i)=>{this.dummy.position.set(box.cell[0]+box.position[0],box.cell[1]+box.position[1],box.cell[2]+box.position[2]);this.dummy.scale.set(...box.size as [number,number,number]);this.dummy.updateMatrix();mesh.setMatrixAt(i,this.dummy.matrix);mesh.setColorAt(i,color.set(box.color));});
         this.group.add(mesh);
       }
-      this.revision=this.world.revision;
+      this.revision=this.world.propsRevision;
     }
     const torches=this.torches.sort((a,b)=>Math.hypot(a[0]-origin.x,a[2]-origin.z)-Math.hypot(b[0]-origin.x,b[2]-origin.z));
     this.lights.forEach((light,i)=>{light.intensity=night&&torches[i]?2.6:0;if(torches[i])light.position.set(torches[i][0]+.5,torches[i][1]+.9,torches[i][2]+.5);});
