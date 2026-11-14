@@ -12,7 +12,7 @@ Der [Reality Audit](REALITY_AUDIT.md) enthält die vollständige Funktionsmatrix
 
 **Entdecken:** Die innere Landschaft und ihre gespeicherten Bauten bleiben an ihren Koordinaten. Eine additive Außenwelt ergänzt einen felsigeren Berg, dichtere Waldgruppen, einen großen See, verbindenden Fluss und größere Siedlung. Vereinfachte Berg-/Wald-/Turmsilhouetten und begrenzter Schmiederauch dienen als Fernsignale. Große Starttafeln sind entfernt; nur kleine, von beiden Seiten richtig lesbare Wegweiser bleiben. Der Startsee ist wieder eine horizontale Wasserfläche – vorher wurde irrtümlich die Y-Achse skaliert.
 
-**Finden und benutzen:** Kleine physische Notizbücher bieten Bauhinweise, Gartenfolge, Vorratsrechnung, Angelwissen, eine Rauchspur, Erz-/Werkzeugfolge und Kammerhinweise. Text bleibt bis zum Schließen offen, ist linksbündig mit mindestens 16 px gesetzt und später im Entdeckerbuch erneut verfügbar. Vorlesen wird ausdrücklich gestartet und verwendet eine verfügbare lokale deutsche Stimme. Fehlt sie, bleibt alles lesbar. Kein Lesetimer und kein automatisches Aufgabenfenster.
+**Finden und benutzen:** Kleine physische Notizbücher bieten Bauhinweise, Gartenfolge, Vorratsrechnung, Angelwissen, eine Rauchspur, Erz-/Werkzeugfolge und Kammerhinweise. Text bleibt bis zum Schließen offen, ist linksbündig mit mindestens 16 px gesetzt und später im Entdeckerbuch erneut verfügbar. Die sichtbaren Fundtexte zeigen ihre Kategorie, keine schulischen Lesestufen-Etiketten; die Schwierigkeitsdaten bleiben intern erhalten. Vorlesen wird ausdrücklich gestartet und verwendet eine verfügbare lokale deutsche Stimme. Fehlt sie, bleibt alles lesbar. Kein Lesetimer und kein automatisches Aufgabenfenster.
 
 **Handeln:** Sechs direkte Hotbar-Slots wechseln Werkzeug, Baumaterial und Nahrung. Langdruck öffnet das Inventar. Wenige Zielaktionen ersetzen dauerhafte Funktionsbuttons; Log, Buch, Garten, Werkbank, Karte, Angelset und Kamera sind im Menü erreichbar. Die Unterscheidung zwischen ausgewähltem Material und tatsächlich anvisiertem Objekt verhindert falsche Truhen-/Bauaktionen. Schnelles Bauen trifft jetzt den verbindlichen Voxelzustand, statt auf den verzögerten GPU-Chunkaufbau zu warten.
 
@@ -74,6 +74,7 @@ Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlic
 | Kamera, unabhängige Finger, Abbruch, Safe Areas, Rotation, WebGL-Unterbrechung | im Gesamtlauf bestanden; Chromiumemulation |
 | Farmingwachstum ohne vorgestellte Uhr | bestanden, etwa zwei Minuten echte aktive Spielzeit einschließlich Reload |
 | Letzte Kartenkorrektur | 157 Logiktests, TypeScript, Build und **4/4** Browserfälle auf `index-DR5BWunQ.js`; [Log](artifacts/v07/release-browser.log) |
+| Abschließende Text-UX | **2/2** Lese-/Touch- und Pagesfälle auf `index-C5EsXfER.js`; [Log](artifacts/v07/copy-browser.log) |
 | Echter iPhone-/Android-Test | nicht ausgeführt |
 
 Kein alter Test wurde gelöscht. Frühere erfolglose Läufe und ihre Ursachen bleiben dokumentiert. Vorbereitete Save-Fixtures sichern gezielt Funktionen; sie gelten nicht als Beweis für normale Auffindbarkeit.
@@ -91,7 +92,7 @@ Gemessen auf diesem Cloud-Rechner, Chromium mit Software-WebGL; keine Aussage ü
 
 ## Bekannte Grenzen und bewusst offene Arbeit
 
-Die zentrale alte Landschaft wirkt weiterhin einfacher und flacher als die äußeren Regionen. Fern-LOD ist bewusst grob, Übergänge können sichtbar sein. Die Referenzbilder wurden weder als Spielassets übernommen noch als erreichter Grafikstand ausgegeben. Kein durchgehender menschlicher Hausbau-/Storytest, keine bestätigte 20–30-Minuten-Abenteuerdauer und keine echte Geräteperformance.
+Die zentrale alte Landschaft wirkt weiterhin einfacher und flacher als die äußeren Regionen. Auch die Berggestaltung ist noch sehr kantig und plattenartig; die Tageslichtaufnahme vom tatsächlich begangenen Minenweg zeigt diese Grenze offen. Fern-LOD ist bewusst grob, Übergänge können sichtbar sein. Die Referenzbilder wurden weder als Spielassets übernommen noch als erreichter Grafikstand ausgegeben. Kein durchgehender menschlicher Hausbau-/Storytest, keine bestätigte 20–30-Minuten-Abenteuerdauer und keine echte Geräteperformance.
 
 Neue passive Wissensboni auf Fangwahrscheinlichkeit, Farming als zusätzlicher Köderkreislauf, ein allgemeines mehrstufiges Gameplay-Hilfesystem und weitergehende Tierweltsimulation sind nicht Teil dieses geprüften Standes. Vorhandenes Wissen hilft über echte Werkzeug-/Köderentscheidungen. Lesen und Schreiben bleiben freiwillig; es werden keine diagnostischen oder handschrifttherapeutischen Wirkungen behauptet.
 
@@ -107,6 +108,7 @@ Neue passive Wissensboni auf Fangwahrscheinlichkeit, Farming als zusätzlicher K
 | `bab5d86` | direkte Voxelziele und frischer Sammel-/Gartenweg |
 | `eb38a5b` | 82 bestandene Browserfälle mit Nachweisen |
 | `98d386e` | Wegverbindung, hoher/tiefer Gartenschutz, 157 Logiktests |
+| `27375f2` | irreführende Stichverbindung entfernt, tiefer Schatz tatsächlich erreicht |
 
 Weg-/Gartenschutzfix ist mit 157 Logiktests und zehn gezielten Browserfällen gesichert. Abschließende Gehwegbelege und Live-Prüfung werden nach ihren tatsächlichen Ergebnissen ergänzt. Es wurde bisher nicht auf `main` gepusht.
 
@@ -137,3 +139,7 @@ Der Journalpfad kennt technische Wegpunkte; er ist keine menschliche Bewertung v
 8. Angel ausrüsten und einen vollständigen Fang spielen; anschließend eine Zombiebegegnung oder den friedlichen Modus prüfen. Schreibkampf mit Bildschirmtastatur öffnen/schließen.
 9. Eigenen Block, Pflanze, Fundtext und gegebenenfalls Haustier speichern. Safari kurz verlassen, zurückkehren und neu laden. Alles muss erhalten bleiben. Abschließend eine neue Exportdatei sichern.
 10. iPhone-Modell, iOS/Safari-Version, störende Überlagerungen, Kameraprobleme und subjektive Flüssigkeit nach etwa zehn Minuten notieren. Eine reale Smartphone-Framerate oder endgültige Abnahme wird hier nicht vorweggenommen.
+
+## Visuelle Nachweise
+
+[Galerie mit Prüfmethode und Grenzen](artifacts/v07/README.md). Die separate [Bergübersicht](artifacts/v07/mountain-overview/03-mountain-overview.png) wurde zu Fuß aus einem regulär exportierten Stand erreicht. Für die Sichtaufnahme wurde ausschließlich das vorhandene Kreativ-/Tageszeitmenü auf Mittag gestellt. Sie gilt nicht als frischer Survivalablauf.

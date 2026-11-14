@@ -1,0 +1,177 @@
+{
+  "kind": "input-only known-route technical gameplay proof, not independent human exploration",
+  "events": [
+    {
+      "event": "start",
+      "version": "WORLD DISCOVERY · v0.7.0",
+      "method": "fresh isolated context, UI and input only; technical known route, no save/position injection; no human finding-time claim"
+    },
+    {
+      "event": "continue",
+      "method": "actual previously exported played save imported through normal UI"
+    },
+    {
+      "event": "capture",
+      "name": "00-continued-played-position",
+      "seconds": 10.449,
+      "position": [
+        60.30203511719884,
+        2.0000090460715234,
+        -30.863449372996772
+      ],
+      "region": "meadow",
+      "frames": 40,
+      "performance": {
+        "calls": 88,
+        "geometries": 62,
+        "textures": 4,
+        "frame": {
+          "fps": 14.014803135812203,
+          "frameMs": 50.099999999999454,
+          "p95Ms": 150,
+          "samples": 32
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 289.59999999403954,
+          "totalBuildMs": 289.59999999403954,
+          "lastChunkMs": 5.4000000059604645,
+          "maxChunkMs": 37.099999994039536,
+          "queue": 0,
+          "rebuilt": 37,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0.10000000894069672,
+          "maxColumnMs": 39.5,
+          "generatedChunks": 21,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 3024
+        },
+        "activeMeshes": 90,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 20021516
+      }
+    },
+    {
+      "event": "capture",
+      "name": "16-mobile-hud",
+      "seconds": 11.438,
+      "position": [
+        60.30203511719884,
+        2.000009071841956,
+        -30.863449372996772
+      ],
+      "region": "meadow",
+      "frames": 53,
+      "performance": {
+        "calls": 88,
+        "geometries": 62,
+        "textures": 4,
+        "frame": {
+          "fps": 13.50094506615463,
+          "frameMs": 50,
+          "p95Ms": 150,
+          "samples": 45
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 289.59999999403954,
+          "totalBuildMs": 289.59999999403954,
+          "lastChunkMs": 5.4000000059604645,
+          "maxChunkMs": 37.099999994039536,
+          "queue": 0,
+          "rebuilt": 37,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0.10000000894069672,
+          "maxColumnMs": 39.5,
+          "generatedChunks": 21,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 3024
+        },
+        "activeMeshes": 90,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 17493678
+      }
+    },
+    {
+      "event": "read-text",
+      "id": "start-plan",
+      "text": "Bauwissen · Lesestufe A\n\nEin Platz für die Nacht\n\nSammle Holz am Baum und Stein am Felsen; wähle danach einen Block und setze ihn am durchsichtigen Umriss.\n\nEigene Wände, Tür, Dach und Licht bilden deinen Unterschlupf – ergänze Werkbank, Bett und Truhe.\n\n▷ Vorlesen\nHinweis\n\nGelesen · weiter\nIm Buch blättern"
+    },
+    {
+      "event": "setting",
+      "difficulty": "Friedlich",
+      "method": "normal settings UI; exploration control run, combat tested separately"
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:64,-30",
+      "position": [
+        63.88077440290495,
+        1.0000090022621597,
+        -30.027835751193518
+      ],
+      "seconds": 6.874
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:64,27",
+      "position": [
+        63.99961997550987,
+        1.000009011484691,
+        26.82204002465879
+      ],
+      "seconds": 38.825
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:54,23",
+      "position": [
+        54.18683039121461,
+        1.0000090353561926,
+        23.07794646990253
+      ],
+      "seconds": 16.369
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:24,23",
+      "position": [
+        24.224430271884046,
+        1.000009026946549,
+        22.978989020027484
+      ],
+      "seconds": 26.498
+    },
+    {
+      "event": "failure",
+      "message": "Error: Walk timeout at outer-forest:-24,23; position [8.297247088437295,1.0000090562425004,22.702149528984535]; no teleport fallback was used"
+    },
+    {
+      "event": "export",
+      "method": "normal save export UI, actual played state",
+      "storage": {
+        "characters": 7985,
+        "estimatedUTF16Bytes": 15970,
+        "worldChanges": 6,
+        "mapTiles": 106
+      }
+    }
+  ],
+  "errors": []
+}
