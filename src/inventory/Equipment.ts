@@ -42,6 +42,7 @@ export interface MissionState {
 export interface Expansion {
   version: 1;
   edition: 1 | 2 | 3 | 4;
+  terrainRevision?:1|2;
   tool: Tool;
   materials: Partial<Record<Block, number>>;
   catches: CatchRecord[];
@@ -60,6 +61,7 @@ export interface Expansion {
 export const defaultExpansion = (edition: 1 | 2 | 3 | 4 = 1): Expansion => ({
   version: 1,
   edition,
+  terrainRevision:1,
   tool: "Bauwerkzeug",
   materials: {},
   catches: [],
@@ -81,6 +83,7 @@ export function readExpansion(raw: unknown): Expansion {
   if (r.version !== 1) return d;
   d.edition =
     r.edition === 4 ? 4 : r.edition === 3 ? 3 : r.edition === 2 ? 2 : 1;
+  d.terrainRevision=r.terrainRevision===2?2:1;
   d.tool = TOOLS.includes(r.tool as Tool) ? r.tool! : "Bauwerkzeug";
   const count = (v: unknown): v is number =>
     Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= 1e9;

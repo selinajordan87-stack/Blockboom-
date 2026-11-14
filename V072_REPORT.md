@@ -65,3 +65,16 @@ Branch: `polish/v072-visual`.
 `main` und `origin/main` bleiben auf `bab0537`. Kein Push und kein Deployment dieses Zwischenstands. Der nächste Umsetzungsschritt ist eine sichere, versionierte Terrainstrategie für **wirklich** modellierte Berge/Ufer und begehbare Höhlen – erst danach weitere Art-Details und Veröffentlichung. Das bisherige Live-Spiel bleibt unter https://selinajordan87-stack.github.io/Blockboom-/ verfügbar.
 
 Wiederholen: `npm run build`, `npm run preview -- --port 4208`, anschließend `VISUAL_OUT=artifacts/v072/recheck node scripts/visual-v072.mjs`. Die Screenshots verwenden absichtlich kontrollierte Test-Speicherstände; nicht mit dem persönlichen Spielstand ausführen.
+
+
+## Fortsetzung: Terrainstrategie und Bergprototyp
+
+Auf demselben Branch weitergearbeitet; `main` wurde nicht neu als Arbeitsbasis verwendet. Strategie: [TERRAIN_MIGRATION_V072.md](TERRAIN_MIGRATION_V072.md). Eine neue optionale, eigenständige `terrainRevision` wird von alten Spielständen als 1 gelesen. Eine geänderte Basishöhe wird ausdrücklich nicht automatisch auf alte Welten angewandt. Das schützt auch nie editierte Kellerluft und Nachbarfundamente. Einzelne Deltas allein reichen dafür nicht aus.
+
+Revision 2 enthält einen ersten tatsächlichen Berggenerator mit drei Gipfelbereichen, Materialstaffelung und einem entworfenen Serpentinenband. Bäume verwenden dieselbe gewählte Basishöhe. See/Steg, Siedlung, bisherige Wege und Höhlenkoordinaten bleiben im Prototyp reserviert. **Revision 2 ist weder für neue noch bestehende Welten standardmäßig aktiviert**; kontrollierte Fixtures können sie auswählen. Die bisherigen Vergleichsfotos bleiben Revision 1 und werden NICHT als Beleg für den Prototyp ausgegeben.
+
+Geprüft: TypeScript, **174/174 Logiktests (29 Dateien)**, Produktionsbuild. Die neuen Tests prüfen alte/ungültige Revisionswerte, ausdrückliche Auswahl von 2, tatsächlich veränderte Bergspalten sowie identische reservierte Bereiche. **2/2** Browserfälle zu Export/Import und Pages bestanden auf aktivem Revision-1-Build vor der letzten rein revisionsabhängigen Baumhöhenkorrektur. Nach dieser Korrektur wurden TypeScript, alle 174 Logiktests und Build erneut ausgeführt. [Protokolle](artifacts/v072/terrain/).
+
+Noch NICHT geprüft oder fertig: vollständiger Berg-Auf-/Abstieg mit Player-Physik, harmlose Übergänge zwischen Generation-2-Berg und altem Umfeld, geeignete Kammerüberdeckung, prototypeigene Vorher-/Nachher-Aufnahmen, GPU-Budget des neuen Bergs, Terrainänderungen an Ufer/Fluss/Höhle/Wald/Siedlung sowie der komplette neue Eingabeweg. Es wird keine vollständige Terrainmigration, kein bestandener Bergweg und kein fertiges v0.7.2-Release behauptet. Die Phase bleibt ein experimenteller, rückwärtskompatibel gesperrter Zwischenstand.
+
+Experimentelle Revision-2-Saves dürfen nicht mit dem alten veröffentlichten v0.7.1-Client geöffnet werden, der diese neue Kennung noch nicht kennt. Vor einer Freigabe sind auch Export-Versionsgrenzen und ein ausdrücklicher Sicherungs-/Auswahlablauf zu klären. Aktive Revision-1-Saves bleiben unverändert nutzbar.

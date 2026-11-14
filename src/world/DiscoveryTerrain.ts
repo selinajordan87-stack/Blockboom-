@@ -1,3 +1,4 @@
+import {mountainSculpt} from "./TerrainSculpt";
 import {World,MIN_Y,MAX_Y,type Block,type Cell} from "./World";
 
 /** v0.7 is an additive outer ring. All v0.1–v0.6 terrain coordinates survive. */
@@ -38,7 +39,7 @@ export function segmentDistance(x:number,z:number,a:readonly[number,number],b:re
 }
 export function trailDistance(x:number,z:number){let distance=Infinity;for(const path of TRAILS)for(let i=1;i<path.length;i++)distance=Math.min(distance,segmentDistance(x,z,path[i-1],path[i]));return distance;}
 export function riverDistance(x:number,z:number){let distance=Infinity;for(let i=1;i<RIVER_POINTS.length;i++)distance=Math.min(distance,segmentDistance(x,z,RIVER_POINTS[i-1],RIVER_POINTS[i]));return distance;}
-export function terrainProfile(x:number,z:number){
+export function terrainProfile(x:number,z:number,revision:1|2=1){
  const lake=Math.hypot((x-GREAT_LAKE.x)/GREAT_LAKE.rx,(z-GREAT_LAKE.z)/GREAT_LAKE.rz),island=Math.hypot(x+110,z+110)<5.5;
  const river=riverDistance(x,z),trail=trailDistance(x,z);
  const village=x>=88&&x<=126&&z>=70&&z<=114;
@@ -51,6 +52,8 @@ export function terrainProfile(x:number,z:number){
  if(lake<1.08){top=lake<.74?-2-Math.floor((.74-lake)*4):lake<.94?-1:0;surface="Sand";}
  if(river<3.7){top=river<1.5?-2:river<2.4?-1:0;surface=river<2.4?"Sand":"Ton";}
  if(island){top=1;surface="Gras";}
+ const sculpt=revision===2?mountainSculpt(x,z):null;
+ if(sculpt&&!village&&lake>1.1&&river>5&&trail>2.15){top=sculpt.top;surface=sculpt.surface;}
  // A timber crossing at the river, and a jetty to the island, are real solids.
  const bridge=river<3.9&&trail<2.15;
  const jetty=Math.abs(x+115)<1.6&&z>=-111&&z<=-77;
@@ -75,7 +78,7 @@ export function caveRange(x:number,z:number):AirRange|null{
 }
 function generated(w:World,x:number,y:number,z:number,b:Block|null){if((w.get(x,y,z)||null)!==b)w.set(x,y,z,b,false);}
 export function generateDiscoveryColumn(w:World,x:number,z:number){
- const p=terrainProfile(x,z),air=caveRange(x,z);
+ const p=terrainProfile(x,z,w.terrainRevision),air=caveRange(x,z);
  for(let y=MIN_Y;y<=MAX_Y;y++){
   let b:Block|null=null;
   if(y<=p.top){b=y===p.top?p.surface:y>=p.top-2?"Erde":"Stein";
@@ -87,9 +90,9 @@ export function generateDiscoveryColumn(w:World,x:number,z:number){
   generated(w,x,y,z,b);
  }
 }
-function scopedWorld(w:World,cx:number,cz:number){return {set:(x:number,y:number,z:number,b:Block|null)=>{if(Math.floor(x/12)===cx&&Math.floor(z/12)===cz&&!Object.hasOwn(w.changes,`${x},${y},${z}`))generated(w,x,y,z,b);}} as World;}
+function scopedWorld(w:World,cx:number,cz:number){return {terrainRevision:w.terrainRevision,set:(x:number,y:number,z:number,b:Block|null)=>{if(Math.floor(x/12)===cx&&Math.floor(z/12)===cz&&!Object.hasOwn(w.changes,`${x},${y},${z}`))generated(w,x,y,z,b);}} as World;}
 function tree(w:World,x:number,z:number,h:number,dark:boolean){
- const base=terrainProfile(x,z).top;
+ const base=terrainProfile(x,z,w.terrainRevision).top;
  for(let y=1;y<=h;y++)w.set(x,base+y,z,dark?"Dunkelholz":"Holz",false);
  for(let y=h-1;y<=h+2;y++){const r=y===h+2?1:2;for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++)if(Math.abs(dx)+Math.abs(dz)<=r+1)w.set(x+dx,base+y,z+dz,"Laub",false);}
 }
@@ -114,7 +117,7 @@ export function decorateDiscoveryChunk(world:World,cx:number,cz:number){
  const w=scopedWorld(world,cx,cz);
  for(let x=cx*12+2;x<cx*12+12;x+=6)for(let z=cz*12+2;z<cz*12+12;z+=6){
   // Mix grid coordinates: the former 4-cell grid made (31*x+73*z)%4 always zero.
-  if(legacyArea(x,z))continue;const p=terrainProfile(x,z),hash=(Math.imul(Math.floor(x/2),73856093)^Math.imul(Math.floor(z/2),19349663))>>>0;
+  if(legacyArea(x,z))continue;const p=terrainProfile(x,z,world.terrainRevision),hash=(Math.imul(Math.floor(x/2),73856093)^Math.imul(Math.floor(z/2),19349663))>>>0;
   if(p.lake<1.1||p.river<5||p.trail<3.5||p.village||caveRange(x,z)||p.top>9)continue;
   const dense=Math.hypot(x+100,z-30)<62;
   if(dense&&(Math.hypot(x+100,z-30)<6||Math.hypot(x+108,z-39)<5))continue;

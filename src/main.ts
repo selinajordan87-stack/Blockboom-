@@ -178,6 +178,7 @@ const night = expansion.nightfall;
 const vitals = new Vitals(night);
 const zombies = new ZombieEngine(world,night);
 const nightAudio = new NightAudio();
+world.terrainRevision=expansion.terrainRevision===2?2:1;
 const regionStream = new RegionStream(world,true);
 regionStream.ensure(saved?.position[0]||0,saved?.position[2]||17);
 const cameraRig=new CameraRig(world);

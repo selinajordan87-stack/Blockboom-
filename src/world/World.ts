@@ -25,6 +25,7 @@ export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
 export const LIMIT = 336;
 export const MIN_Y = -18, MAX_Y = 26;
 export class World {
+  terrainRevision:1|2=1;
   blocks = new Map<string, Block>();
   specialBlocks=new Map<string,Block>();
   propsRevision=0;
