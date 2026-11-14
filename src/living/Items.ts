@@ -40,6 +40,12 @@ export class ItemStore {
 }
 export interface LivingRecipe{id:string;cost:Record<string,number>;out:string;count:number;}
 export const RECIPES_LIVING:LivingRecipe[]=[
+ {id:"Bretter",cost:{"block:Holz":2},out:"block:Bretter",count:4},
+ {id:"Bretter aus Dunkelholz",cost:{"block:Dunkelholz":2},out:"block:Bretter",count:4},
+ {id:"Tür",cost:{"block:Bretter":3},out:"block:Tür",count:2},
+ {id:"Fackel",cost:{"block:Holz":1,"supply:Kohle":1},out:"block:Fackel",count:4},
+ {id:"Leiter",cost:{"block:Holz":2},out:"block:Leiter",count:4},
+ {id:"Kohle",cost:{"block:Holz":3},out:"supply:Kohle",count:2},
  {id:"Bett",cost:{"block:Holz":3,"block:Bretter":3},out:"block:Bett",count:1},
  ...["Tisch","Stuhl","Regal","Truhe","Werkbank"].map(id=>({id,cost:{"block:Bretter":3},out:`block:${id}`,count:1})),
  {id:"Ofen",cost:{"block:Stein":6},out:"block:Ofen",count:1},

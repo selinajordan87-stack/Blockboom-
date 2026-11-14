@@ -25,3 +25,51 @@ Chromium mit Software-WebGL und emulierten Mobilansichten; kein echtes iPhone od
 Alte Spielstände bleiben im bestehenden Save-v1-Format. Neue Daten liegen additiv in versionierten Erweiterungen. Vor der ersten v0.7-Speicherung wird eine verfügbare Altdatei unter `blockboom.save.pre-v07` gesichert; Export/Import bleibt erhalten. Die bisherige Grenze von 50.000 gespeicherten Weltänderungen bleibt bestehen.
 
 Die abschließenden Gameplay-Ergebnisse, Messwerte, Grenzen, Commits und der tatsächliche Deploymentstatus werden nach den jeweiligen Prüfungen ergänzt. Zurzeit ist weiterhin **v0.6.1** live; ein v0.7-Erfolg wird noch nicht behauptet.
+
+## Tatsächliche Änderungen
+
+- **Welt lesen können:** große Starttafeln entfernt, kleine Wegweiser erhalten. Berg-, Wald- und Turmsilhouetten sowie begrenzte Rauchanimation geben Fernziele. Die bestehende innere Welt und ihre gespeicherten Änderungen bleiben erhalten; äußere Regionen ergänzen begehbares Gelände. Der Startsee wird korrekt horizontal dargestellt.
+- **Körperlich erkunden:** nahe Kupferhöhle, weitere Minen und eine größere Siedlung mit unterschiedlicher Gebäudegestalt. Ein draußen stehender Spieler entdeckt nicht mehr fälschlich einen Höhleninnenraum. Die kontrollierte Wanderung erreichte tatsächlich den alten Höhlengang, seine Kammer und den Rückweg sowie die alte Siedlung. Der äußere Abschnitt ist noch separat nachzuprüfen.
+- **Nützliche Welttexte:** Bücher liegen als kleine dreidimensionale Objekte in der Welt. Sie erklären Baufolge, Saat, Angelverhalten, Werkzeugstufen, die Rauchspur und die Kammer. Text bleibt bis zum Schließen sichtbar. Vorlesen nutzt eine verfügbare lokale deutsche Stimme; ohne Stimme bleibt alles lesbar. Gefundene Informationen sind im Entdeckerbuch erneut erreichbar.
+- **Abenteuer:** das Log zeigt höchstens drei aktive Ziele. Die neue Kapitelkette verbindet ein selbst gebautes Zuhause, einen sicheren Schlaf, Flussspur, Schmiede, Mine, Eisenverarbeitung und Fundkammer. Ein generiertes Schutzhaus oder bloß geöffnetes Fenster zählt nicht als eigener Hausbau. Die alte Haustiermission blockiert die Bergbauziele nicht mehr.
+- **Bauplan:** ein gefundener Schmiedeplan ermöglicht einen echten Aussichtsturm mit transparenter Platzierungsvorschau. Die Materialliste stimmt mit den gesetzten Zellen überein: 24 Bretter, zwölf Stein, vier Fackeln und vier Leitern. Verbrauch und freier, tragfähiger Platz werden vor dem Bauen geprüft. Erst das tatsächliche Hochklettern deckt Umgebungskacheln auf und vergibt das Abzeichen. Der Browserablauf einschließlich Reload bestand mit einem kontrollierten vorhandenen Spielstand; er ist kein frischer Survival-Ressourcensammeltest.
+- **Garten und Tiere:** sichtbarer kleiner Garten mit echten Pflanzen und Wachstumsstufen; Hacke, Saat, Ernte, Nahrung und Tierfutter verwenden die vorhandenen Systeme. Ein begrenzter regionaler Tierpool wird nur in Spielnähe simuliert. Vorhandene gezähmte Tiere und Namen haben beim Laden Vorrang. Der zusätzliche große See hat tatsächliche sichtbare, fangbare Fische statt nur eine dekorative Wasserfläche.
+- **Mobile Bedienung:** sechs kleine direkte Slots, wenige passende Aktionen und kompakter Kompass. Werkzeugwechsel, Materialvorrat und Zielaktion sind getrennte Daten. Ein Truhenziel wird deshalb als Truhe erkannt, nicht als das zufällig ausgewählte Baumaterial. Langdruck öffnet das Inventar. Kamera und Mehrfingerbesitz aus v0.6.1 bleiben erhalten.
+
+## Lernmomente und Spielerpfad
+
+Ein sinnvoller Einstieg beginnt mit dem sichtbaren Buch und erreichbarem Baumaterial. Der kurze Bauhinweis erklärt Vorschau, Setzen und eigene Wände. Eine freiwillige Wandrechnung fragt nach dem tatsächlichen Reihenprinzip; falsche Antworten geben Hilfen und nehmen keine Vorräte weg. Am sichtbaren Beet wird die gelesene Reihenfolge Bearbeiten → Samen → Pflanzen → Ernte angewendet. Das Angelblatt beschreibt Hecht, Wasserpflanzen und Kunstköder; diese Auswahl nutzt das vorhandene Angelsystem. In der Schmiede erklärt das Tagebuch die im Spiel funktionierende Folge Kupfer → Kupferspitzhacke → Eisen. Die Kammer verbindet räumliche Hinweise mit einem kurzen Zielwort. Der Bauplan verbindet Materialrechnung, Sammeln, Bauen und eine nutzbare Aussicht.
+
+Für 15–30 Minuten ist vorgesehen: zuerst Material und Unterschlupf, zwischendurch Garten oder Angeln, dann Flussspur/Rauch und Schmiede, anschließend Minenwerkzeug und erste Erze. **Das ist ein vorgeschlagener Ablauf, keine gemessene menschliche Spieldauer.** Die strengere Hausprüfung, komplette Survival-Ressourcenwirtschaft und alle Kapitel am Stück wurden noch nicht als unabhängiger Erstspielertest abgeschlossen.
+
+## Technische Architektur und Messungen
+
+`DiscoveryState` wird additiv in der bestehenden `Expansion` gespeichert. `DiscoveryEngine` prüft Weltänderungen und reale Ereignisse; `DiscoveryUI` verbindet Log, Texte und Buch mit den vorhandenen Menüs. `Blueprint` verwendet einen gemeinsamen Bauplan für Materialliste, Vorschau, Bau und Vollständigkeitsprüfung.
+
+`RegionStream` priorisiert nahe Abschnitte und verteilt Generierung und Entladen auf Spalten. `WorldView` baut Chunks budgetiert und tauscht ihre beiden Materialebenen erst vollständig aus. Gespeicherte Änderungen werden über einen Chunkindex wieder angewendet. `World.specialBlocks` und eine eigene Änderungsnummer vermeiden globale Möbel-Rebuilds bei reinen Erd-/Steinänderungen. Ferngeometrie ist bewusst vereinfachtes LOD; die Kollision kommt ausschließlich aus der tatsächlichen Voxelwelt.
+
+Gemessener lokaler Logiklauf auf diesem Cloud-Rechner: Renderer-Budgetziel 4 ms, maximal beobachteter Slice 4,07 ms, Mittel 2,13 ms; Runtime-Generierung maximal 4,79 ms in dieser Probe. Achtungsgrenze: einzelne Spalten, atomarer Geometrieabschluss oder Garbage Collection können das Ziel überschreiten; andere Entwicklungsläufe lagen bei rund 5–11 ms. Der alte synchrone Streamingtest bleibt zur Kompatibilität vorhanden und ist kein Nachweis für das neue Runtime-Budget.
+
+Der Diagnoseexport enthält Framerate, Framezeit, Chunk-/Generierungszeiten, sichtbare Szenenmeshes, Draw Calls, aktive Tiere/Gegner und gegebenenfalls Chromiums JS-Heap. Sichtbare Szenenmeshes sind keine Behauptung über nach Frustum-Culling tatsächlich gezeichnete Objekte. Es gibt keine gemessene reale iPhone-/Android-Framerate.
+
+## Checkpoints
+
+| Commit | Zweck |
+| --- | --- |
+| `a1e6655` | tatsächlicher v0.6.1-Spieler-Audit und Vorherbilder |
+| `49d1db3` | abgebrochene Arbeit integriert und baubar gesichert |
+| `3b7c2c4` | gefundene Uferfalle behoben, Lesbarkeit und Fernsignale verbessert |
+| `08f08d1` | echter Turmbauplan mit Aufstieg, Verbrauch und Save/Reload |
+| `494769a` | Spezialblockindex verhindert unnötige globale Rebuilds |
+
+## Noch offen vor der Veröffentlichung
+
+Vollständige Browserregression, Abschluss der äußeren Wanderung, konsistenter Einstieg in die Grundrezepte an der Werkbank, abschließende Live-Prüfung und ein echter iPhone-Test. Eine dauerhafte Tierzucht, Endloswelt, Multiplayer oder Cloud-Synchronisierung wurden nicht begonnen.
+
+## Stabilisierung nach vollständiger Regression
+
+Der erste Gesamtlauf bestand 78/81 Browsertests. Die drei Fehler wurden einzeln untersucht: (1) Der Regionentest speicherte nach direkter Testpositionierung vor dem nächsten Simulationsschritt; er wartet jetzt auf echte aktive Spielzeit. (2) Fern-LOD lag mit 40.414 Dreiecken knapp über dem unveränderten 40.000-Budget; nicht sichtbare rückwärtige Ferngeometrie wird jetzt ausgespart (Nachprüfung: 39.078). (3) Zwei schnelle Bauaktionen trafen wegen verzögerten GPU-Chunkaufbaus dieselbe alte Fläche. Die neue Voxel-Strahlprüfung arbeitet direkt auf dem verbindlichen Weltzustand. Alle drei gezielten Wiederholungen bestanden; keine Budgetgrenze wurde erhöht.
+
+Zusätzlicher frischer Survivalpfad ohne Vorrats-/Positionsinjektion: Holz an zwei erreichbaren Bäumen sammeln, Stein abbauen, Gartenblatt mit optionalem Vorlesen lesen, Bretter und Hacke im gleichen Werkbankmenü herstellen, Boden bearbeiten, Karotten pflanzen, speichern und neu laden. Bestanden in 57,8 Sekunden automatisierter Bedienung. Ein zunächst falscher Test zielte auf das Laub des alten dreiblöckigen Stamms; er wurde auf einen echten zweiten Baum korrigiert.
+
+Alle **154 Logiktests in 23 Dateien**, TypeScript strict und Produktionsbuild bestanden am 14.11.2026. Erneute vollständige Browserregression läuft auf dem unveränderten Build `index-BdAeCH9T.js`. Grundrezepte sind jetzt gemeinsam mit Möbeln erreichbar, kreative Vorräte korrekt mit ∞ gekennzeichnet und Höhlenfackeln auch bei Tageslicht aktiv. Ein zusätzlicher Brief erklärt den Unterschied zwischen altem Außenposten und größerer Siedlung. Grenztests sichern Haustierpositionen an hohen Baublöcken und die Bauplan-Metadaten am Welt-/Höhenrand.

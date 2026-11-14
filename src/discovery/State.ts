@@ -33,7 +33,7 @@ export function readDiscovery(raw:unknown):DiscoveryState {
   state.enabled=r.enabled!==false;
   for(const field of ["visited","read","applied","completed","skipped","crafted","harvested","caught"] as const)state[field]=ids(r[field]);
   state.gatheredHolz=count(r.gatheredHolz);state.gatheredStein=count(r.gatheredStein);state.slept=r.slept===true;
-  const t=r.tower;if(t&&Array.isArray(t.origin)&&t.origin.length===3&&t.origin.every(Number.isInteger)&&Math.abs(t.origin[0])<LIMIT-4&&Math.abs(t.origin[2])<LIMIT-5&&t.origin[1]>MIN_Y&&t.origin[1]<MAX_Y-5)state.tower={origin:[...t.origin],rewarded:t.rewarded===true};
+  const t=r.tower;if(t&&Array.isArray(t.origin)&&t.origin.length===3&&t.origin.every(Number.isInteger)&&t.origin[0]>-LIMIT&&t.origin[0]+2<LIMIT&&t.origin[2]>-LIMIT&&t.origin[2]+3<LIMIT&&t.origin[1]>MIN_Y&&t.origin[1]+5<=MAX_Y)state.tower={origin:[...t.origin],rewarded:t.rewarded===true};
   if(r.answers&&typeof r.answers==="object")for(const [id,result]of Object.entries(r.answers).slice(0,100)){
     if(!/^[a-z][a-z\d-]{0,79}$/.test(id)||!result||typeof result!=="object")continue;
     state.answers[id]={attempts:count(result.attempts),hints:count(result.hints),history:Array.isArray(result.history)?result.history.filter(v=>typeof v==="boolean").slice(-20):[]};

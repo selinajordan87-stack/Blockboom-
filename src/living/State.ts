@@ -17,7 +17,7 @@ export function freshLiving():LivingState{
  return {version:1,clock:0,bag:{"Samen:Weizen":4,"Samen:Karotte":4,"Samen:Kartoffel":4,"Samen:Kürbis":4},chests:{},crops:[],regions:[],looted:[],mined:[],completed:[],placed:[],blueprint:false,home:null,selectedSeed:"Weizen",explored:[],entrances:[],
  animals:kinds.map((kind,i)=>({id:`animal-${i}`,kind,name:"",pos:positions[i],home:[...positions[i]],tame:false,trust:0,hunger:75,mode:"Warten",phase:i,heading:0,action:"Ruhen"}))};
 }
-export const validCell=(v:unknown):v is Cell=>Array.isArray(v)&&v.length===3&&v.every(n=>typeof n==="number"&&Number.isFinite(n))&&Math.abs(v[0])<LIMIT&&Math.abs(v[2])<LIMIT&&v[1]>=MIN_Y&&v[1]<=MAX_Y+1;
+export const validCell=(v:unknown):v is Cell=>Array.isArray(v)&&v.length===3&&v.every(n=>typeof n==="number"&&Number.isFinite(n))&&Math.abs(v[0])<LIMIT&&Math.abs(v[2])<LIMIT&&v[1]>=MIN_Y&&v[1]<=MAX_Y+2;
 export const safeCount=(n:unknown)=>Number.isSafeInteger(n)&&Number(n)>=0&&Number(n)<=1e7?Number(n):0;
 export function readLiving(raw:unknown){
  const s=freshLiving();if(!raw||typeof raw!=="object")return s;const r=raw as Partial<LivingState>;if(r.version!==1)return s;

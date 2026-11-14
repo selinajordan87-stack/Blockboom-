@@ -2,6 +2,7 @@ import "./ui/style.css";
 import "./ui/mobile-rescue.css";
 import { installLifecycle } from "./core/Lifecycle";
 import {FrameStats} from "./core/FrameStats";
+import {castVoxels} from "./building/Target";
 import { TouchControls, bindTap } from "./player/TouchControls";
 import * as T from "three";
 import { BuildHistory } from "./building/History";
@@ -250,7 +251,7 @@ const discoveryView=new DiscoveryView(scene);
 const towerPreview=new BlueprintPreview(scene);
 const landmarks=new LandmarkView(scene,world);
 const itemStore = new ItemStore(expansion,inventory.fish);
-defenseView.update(camera.position,isNight(night.time));
+defenseView.update(camera.position,isNight(night.time)||player.pos[1]<-1);
 // A few distant block clouds and hand-built signs; all artwork is generated here.
 const cloudMaterial = new T.MeshLambertMaterial({ color: 0xf4f6e9 });
 const cube = new T.BoxGeometry(1, 1, 1);
@@ -368,17 +369,24 @@ const heldTools = new HeldTools(camera);
 if(matchMedia("(pointer: coarse)").matches)heldTools.root.scale.setScalar(.48);
 
 const ray = new T.Raycaster();
+function worldHit(reach=6):T.Intersection|undefined{
+ const candidate=ray.intersectObjects([...defenseView.group.children,livingView.crops],false)[0],props=candidate&&candidate.distance<=reach?candidate:undefined;
+ const cube=castVoxels(world,ray.ray.origin,ray.ray.direction,reach);
+ if(!cube)return props;
+ if(props&&props.distance<cube.distance)return props;
+ return {distance:cube.distance,point:new T.Vector3(...cube.point),object:view.group,face:{a:0,b:0,c:0,normal:new T.Vector3(...cube.normal),materialIndex:0}};
+}
 let target: Cell | null = null,
   adjacent: Cell | null = null;
 function aim() {
   picks++;
   ray.setFromCamera(new T.Vector2(0, 0), camera);
   if(expansion.camera.perspective==="third"&&!cameraRig.temporaryFirst){
-    const crosshair=ray.intersectObjects([...view.group.children,...defenseView.group.children,livingView.crops],false)[0];
+    const crosshair=worldHit(40);
     const point=crosshair?.point||ray.ray.at(40,new T.Vector3());
     const eye=new T.Vector3(player.pos[0],player.pos[1]+1.6,player.pos[2]);ray.ray.set(eye,point.clone().sub(eye).normalize());
   }
-  const hit = ray.intersectObjects([...view.group.children,...defenseView.group.children,livingView.crops], false)[0];
+  const hit = worldHit();
   animalTarget=livingView.hit(ray,expansion.living);
   noteTarget=discoveryView.hit(ray);if(noteTarget&&hit&&hit.distance<ray.ray.origin.distanceTo(new T.Vector3(...noteTarget.position))-.8)noteTarget=null;
   target = null;
@@ -470,7 +478,7 @@ function save() {
 function syncAim() {
   updateCamera(0);
   view.setFocus(player.pos[0],player.pos[2]);view.update(4);
-  defenseView.update(camera.position,isNight(night.time));
+  defenseView.update(camera.position,isNight(night.time)||player.pos[1]<-1);
   view.group.updateMatrixWorld(true);
   aim();
 }
@@ -797,7 +805,7 @@ function showInventory() {
   $("tool-tab").onclick = tools;
   $("material-tab").onclick = () => {
     $("inventory-body").innerHTML =
-      `<h3>Gesammelte Vorräte</h3><p>Für Aufträge verwendbar. Freies Bauen hat unbegrenzte Baustoffe.</p><div class="material-grid">${TYPES.map((t) => `<span>${t === "Laub" ? "Blätter" : t}: <b>${expansion.materials[t] || 0}</b></span>`).join("")}</div><h3>Deine Schätze</h3><p>${expansion.badges.map(escapeHTML).join(" · ") || "Hier erscheinen deine Missionsabzeichen."}</p>`;
+      `<h3>Gesammelte Vorräte</h3><p>Für Aufträge verwendbar. ${night.mode==="Kreativ"?"Im Kreativmodus sind Baustoffe unbegrenzt.":"Im Survivalmodus verbrauchst du beim Bauen die gesammelten Vorräte."}</p><div class="material-grid">${TYPES.map((t) => `<span>${t === "Laub" ? "Blätter" : t}: <b>${expansion.materials[t] || 0}</b></span>`).join("")}</div><h3>Deine Schätze</h3><p>${expansion.badges.map(escapeHTML).join(" · ") || "Hier erscheinen deine Missionsabzeichen."}</p>`;
   };
   fish();
 }
@@ -1030,7 +1038,7 @@ $("play").onclick = () => {
     player.pitch = -0.12;
   }
   toast(
-    "Auf dem Stein liegt ein Notizbuch. Die Welt und dein nächstes Abenteuer warten draußen.",
+    "Auf der Wiese liegen Notizbücher. Die Welt und dein nächstes Abenteuer warten draußen.",
   );
 };
 function nearLake() {
@@ -1775,7 +1783,7 @@ function tickFrame(now:number){
     $("reset-boom").hidden = !arena;
     $("mission-pin").hidden = !reading.active;
     const b=target?world.get(...target):undefined;
-    mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
+    mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:night.mode==="Kreativ"?"∞":expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
     $("place").dataset.label=planningTower?"Turm":"Bauen";$("place").setAttribute("aria-label",planningTower?"Aussichtsturm am Vorschauplatz bauen":"Block platzieren");
   } else if (!started) {
     camera.position.set(23, 18, 29);
@@ -1786,9 +1794,9 @@ function tickFrame(now:number){
   if(player.pos[1]<-3)ambient.intensity*=.25;
   livingView.update(expansion.living,camera.position);
   discoveryView.update(player.pos,expansion.discovery.read);
-  landmarks.update(player.pos,now);
+  landmarks.update(player.pos,now,camera);
   zombieView.update(zombies);
-  defenseView.update(camera.position,isNight(night.time)||player.pos[1]<-3);
+  defenseView.update(camera.position,isNight(night.time)||player.pos[1]<-1);
   if(canPlay())nightAudio.tick(elapsed,isNight(night.time),zombies.actors.length,settings.sound);
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];

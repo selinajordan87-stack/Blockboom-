@@ -7,6 +7,7 @@ export class LandmarkView {
  readonly group=new T.Group();
  private far:T.Mesh;private silhouettes:T.InstancedMesh;private smoke:T.InstancedMesh;
  private tileCenters:[number,number][]=[];private indices:Uint32Array;private key="";private dummy=new T.Object3D();private color=new T.Color();
+ private forward=new T.Vector3(0,0,-1);
  private landmarks:[number,number,number,number,number,number,number][]=[];
  constructor(scene:T.Scene,private world:World){
   this.group.name="Discovery distant LOD and river";this.group.userData.lod=true;scene.add(this.group);
@@ -40,10 +41,15 @@ export class LandmarkView {
   const waterGeometry=new T.BufferGeometry();waterGeometry.setAttribute("position",new T.Float32BufferAttribute(waterPoints,3));waterGeometry.computeVertexNormals();const river=new T.Mesh(waterGeometry,new T.MeshPhongMaterial({color:0x4e9bac,transparent:true,opacity:.54,depthWrite:false,side:T.DoubleSide}));river.name="connected river";this.group.add(river);
   const arrowsGeometry=new T.BufferGeometry();arrowsGeometry.setAttribute("position",new T.Float32BufferAttribute(arrows,3));this.group.add(new T.LineSegments(arrowsGeometry,new T.LineBasicMaterial({color:0xc4e4d8,transparent:true,opacity:.35})));
  }
- update(position:Cell,time:number){
-  const[x,,z]=position,key=`${Math.floor(x/12)},${Math.floor(z/12)}:${[...this.world.activeChunks].join("|")}`;
-  if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z);if(distance>270||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;const v=i*4;for(const a of [v,v+2,v+1,v+1,v+2,v+3])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
-  let i=0;for(const[px,py,pz,sx,sy,sz,c]of this.landmarks){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.silhouettes.setMatrixAt(i,this.dummy.matrix);this.silhouettes.setColorAt(i++,this.color.set(c));}this.silhouettes.count=i;this.silhouettes.instanceMatrix.needsUpdate=true;if(this.silhouettes.instanceColor)this.silhouettes.instanceColor.needsUpdate=true;
+ update(position:Cell,time:number,camera?:T.Camera){
+  if(camera)camera.getWorldDirection(this.forward);
+  const[x,,z]=position,yaw=Math.atan2(this.forward.x,this.forward.z),key=`${Math.floor(x/12)},${Math.floor(z/12)}:${Math.round(yaw*8/Math.PI)}:${[...this.world.activeChunks].join("|")}`;
+  // A generous forward sector retains every visible distant tile while avoiding
+  // thousands of triangles behind the camera in the single LOD batch.
+  const horizontal=Math.hypot(this.forward.x,this.forward.z)||1;
+  const behind=(px:number,pz:number,d:number)=>d>72&&((px-x)*this.forward.x+(pz-z)*this.forward.z)/horizontal<-.2*d;
+  if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z);if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;const v=i*4;for(const a of [v,v+2,v+1,v+1,v+2,v+3])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
+  let i=0;for(const[px,py,pz,sx,sy,sz,c]of this.landmarks){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||behind(px,pz,distance)||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.silhouettes.setMatrixAt(i,this.dummy.matrix);this.silhouettes.setColorAt(i++,this.color.set(c));}this.silhouettes.count=i;this.silhouettes.instanceMatrix.needsUpdate=true;if(this.silhouettes.instanceColor)this.silhouettes.instanceColor.needsUpdate=true;
   i=0;for(const[cx,cz,h]of [[104,90,10],[44,28,6]])for(let j=0;j<5;j++){const t=((time*.0006+j*.23)%1);this.dummy.position.set(cx+Math.sin(t*3)*1.3,h+t*9,cz+t*2);this.dummy.scale.setScalar(.6+t*2);this.dummy.updateMatrix();this.smoke.setMatrixAt(i++,this.dummy.matrix);}this.smoke.instanceMatrix.needsUpdate=true;
  }
  dispose(){const resources=new Set<T.BufferGeometry|T.Material>();this.group.traverse(o=>{const m=o as T.Mesh;if(m.geometry)resources.add(m.geometry);if(m.material)for(const a of Array.isArray(m.material)?m.material:[m.material])resources.add(a);});for(const resource of resources)resource.dispose();this.group.removeFromParent();}

@@ -10,7 +10,7 @@ export function compactNotice(text:string){
 export interface MobileContext {
  tool:Tool;functional:boolean;nearby:boolean;spot:boolean;fishing:string;zombie:boolean;
  /** Selected material, independent of the object under the crosshair. */
- block:string;blockColor:string;blockCount?:number;
+ block:string;blockColor:string;blockCount?:number|string;
  targetBlock?:string;targetLabel?:string;hasTarget?:boolean;animal?:boolean;
  cropAction?:"Pflanzen"|"Ernten"|"Wächst";noteAction?:string;
 }
