@@ -59,7 +59,7 @@ export class FishingWaters {
           specular: 0xb8eff5,
           shininess: 75,
           transparent: true,
-          opacity: 0.5,
+          opacity: spot.id === "great" ? 0.32 : 0.5,
           depthWrite: false,
           side: T.DoubleSide,
         }),

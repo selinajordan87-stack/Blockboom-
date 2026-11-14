@@ -1,0 +1,69 @@
+
+ RUN  v3.2.7 /workspace/blockboom
+
+ ❯ src/tests/rescue-v071.test.ts (3 tests | 3 failed) 30ms
+   × wechselt bei stark zusammengedrückter Kamera in einen bedienbaren Ego-Blick und kommt wieder heraus 20ms
+     → expected false to be true // Object.is equality
+   × erkennt dasselbe Tier nach Bewegung über seine frühere Trefferbegrenzung hinaus 8ms
+     → expected undefined to be 'animal-3' // Object.is equality
+   × verteilt sichtbare Fische im großen See auf mehrere Ufergruppen innerhalb des festen Limits 1ms
+     → expected 5 to be greater than or equal to 8
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/tests/rescue-v071.test.ts > wechselt bei stark zusammengedrückter Kamera in einen bedienbaren Ego-Blick und kommt wieder heraus
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/tests/rescue-v071.test.ts:15:29
+     13|  rig.update(camera,actor,settings,70,1/60,true);
+     14|  expect(rig.actualDistance).toBeGreaterThan(.32);expect(rig.actualDist…
+     15|  expect(rig.temporaryFirst).toBe(true);expect(camera.position.y).toBeC…
+       |                             ^
+     16|  expect(settings.perspective).toBe("third");expect(settings.distance).…
+     17|  world.set(0,2,10,null);world.set(0,3,10,null);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/tests/rescue-v071.test.ts > erkennt dasselbe Tier nach Bewegung über seine frühere Trefferbegrenzung hinaus
+AssertionError: expected undefined to be 'animal-3' // Object.is equality
+
+- Expected: 
+"animal-3"
+
++ Received: 
+undefined
+
+ ❯ src/tests/rescue-v071.test.ts:27:34
+     25|  view.update(state,new T.Vector3(0,2,3));expect(view.hit(ray,state)?.i…
+     26|  a.pos=[20,1,0];view.update(state,new T.Vector3(20,2,3));ray.ray.origi…
+     27|  expect(view.hit(ray,state)?.id).toBe(a.id);
+       |                                  ^
+     28| });
+     29| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/tests/rescue-v071.test.ts > verteilt sichtbare Fische im großen See auf mehrere Ufergruppen innerhalb des festen Limits
+AssertionError: expected 5 to be greater than or equal to 8
+ ❯ src/tests/rescue-v071.test.ts:32:87
+     30| it("verteilt sichtbare Fische im großen See auf mehrere Ufergruppen in…
+     31|  const shoal=new Shoal(),fish=shoal.actors.filter(a=>a.spot==="great");
+     32|  expect(shoal.actors.length).toBeLessThanOrEqual(MAX_FISH_ACTORS);expe…
+       |                                                                                       ^
+     33|  expect(fish.filter(a=>Math.hypot(a.x+115,a.z+91)<6).length).toBeGreat…
+     34|  expect(Math.max(...fish.map(a=>a.x))-Math.min(...fish.map(a=>a.x))).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  20:23:01
+   Duration  522ms (transform 165ms, setup 0ms, collect 250ms, tests 30ms, environment 0ms, prepare 84ms)
+

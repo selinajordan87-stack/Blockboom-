@@ -1,0 +1,37 @@
+
+Running 7 tests using 1 worker
+
+(node:2260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/mobile-ux.spec.ts:23:1 › Third Person zeigt die Figur, erhöht echte Kameradistanz und speichert die Auswahl (11.6s)
+  ✓  2 e2e/mobile-ux.spec.ts:29:1 › Baumkollision verkürzt die Sicht vorübergehend; Weglaufen stellt den Abstand wieder her (6.6s)
+  ✓  3 e2e/mobile-ux.spec.ts:35:1 › Kamera-Reset löst enge Sicht, bleibt nach Menüwechsel erreichbar und stoppt alte Eingaben (5.8s)
+  ✓  4 e2e/mobile-ux.spec.ts:50:1 › Third-Person-Bauen, Abbauen und Inventar sind über kleine Touchflächen nutzbar (10.4s)
+  ✓  5 e2e/mobile-ux.spec.ts:72:1 › WebGL-Unterbrechung hält Menü und Kamera-Reset erreichbar und kann wieder fortgesetzt werden (8.6s)
+  ✘  6 e2e/rescue-v071.spec.ts:14:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen (6.3s)
+(node:2649) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  7 e2e/rescue-v071.spec.ts:27:1 › enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körper zu bleiben (6.7s)
+
+
+  1) e2e/rescue-v071.spec.ts:14:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "first"
+    Received: "third"
+
+      21 |  await cdp.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[a,b]});await cdp.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[a,{...b,x:590}]});await page.waitForTimeout(500);await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+      22 |  expect((await metrics(page)).nightfall.player.yaw).not.toBe(before.yaw);expect((await metrics(page)).nightfall.player.pos[2]).toBeLessThan(before.pos[2]);await expect(page.locator("#modal")).toBeHidden();
+    > 23 |  await page.locator("#camera-shortcut").tap();await page.locator("#quick-camera-reset").tap();await expect(page.locator("#modal")).toBeHidden();expect((await metrics(page)).camera.perspective).toBe("first");expect((await metrics(page)).fov).toBe(70);expect(errors).toEqual([]);
+         |                                                                                                                                                                                                  ^
+      24 |  await page.screenshot({path:"artifacts/v071/direct-camera.png"});
+      25 | });
+      26 |
+        at /workspace/blockboom/e2e/rescue-v071.spec.ts:23:194
+
+    Error Context: test-results/rescue-v071-Kamerawahl-ist-95a52-eien-und-unabhängige-Daumen/error-context.md
+
+  1 failed
+    e2e/rescue-v071.spec.ts:14:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen 
+  6 passed (58.0s)

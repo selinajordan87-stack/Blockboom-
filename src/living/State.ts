@@ -2,7 +2,7 @@ import { LIMIT, MIN_Y, MAX_Y, type Cell } from "../world/World";
 export const ANIMALS=["Wolf","Katze","Huhn","Kuh","Schaf","Schwein"] as const;
 export type AnimalKind=typeof ANIMALS[number];
 export const MAX_ANIMALS=18;
-export interface Animal {id:string;kind:AnimalKind;name:string;pos:Cell;home:Cell;tame:boolean;trust:number;hunger:number;mode:"Folgen"|"Warten"|"Schlafen";phase:number;heading:number;action:string}
+export interface Animal {id:string;kind:AnimalKind;name:string;pos:Cell;home:Cell;tame:boolean;trust:number;hunger:number;mode:"Folgen"|"Warten"|"Schlafen";phase:number;heading:number;action:string;health?:number;respawnAt?:number}
 export const CROPS=["Weizen","Karotte","Kartoffel","Kürbis"] as const;
 export type CropKind=typeof CROPS[number];
 export interface Crop {cell:Cell;kind:CropKind;planted:number;growthOffset?:number;}

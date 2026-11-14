@@ -68,7 +68,7 @@ import {LandmarkView} from "./world/LandmarkView";
 import {speak} from "./learning/Speech";
 import { DayView, advanceDay, dayPhase, isNight } from "./nightfall/DayCycle";
 import { Vitals } from "./nightfall/State";
-import { ZombieEngine, WEAPONS, ZOMBIES } from "./nightfall/Zombies";
+import { ZombieEngine, WEAPONS, ZOMBIES, lineOfSight } from "./nightfall/Zombies";
 import { DefenseView, ZombieView, NightAudio } from "./nightfall/Views";
 import { buildRefuge, toggleDoor, restoreNightDamage } from "./nightfall/Defense";
 import { NightUI } from "./nightfall/NightUI";
@@ -80,12 +80,13 @@ import {initializeDiscoveryGarden} from "./living/StarterGarden";
 import {stage} from "./living/Systems";
 import { farm, mining, updateAnimals, discover, checkMissions, loot } from "./living/Systems";
 import type { Animal } from "./living/State";
+import {animalScale} from "./living/AnimalTarget";
 const $ = <E extends HTMLElement = HTMLElement>(id: string) =>
   document.getElementById(id) as E;
 $("app").innerHTML = `
 <canvas id="world" aria-label="BLOCKBOOM 3D-Spielwelt"></canvas>
 <div id="hud" hidden>
- <header><a class="brand" id="brand">BLOCK<span>BOOM</span><small>DEINE KLEINE GROSSE WELT</small></a><div class="top-right"><span class="save-state" id="save-state">Lokal gespeichert</span><button id="living-menu" aria-label="Entdecken und Karte">◇</button><button id="bag" aria-label="Inventar öffnen">▦ <span>Inventar</span></button><button id="menu" aria-label="Menü öffnen">☰</button></div></header>
+ <header><a class="brand" id="brand">BLOCK<span>BOOM</span><small>DEINE KLEINE GROSSE WELT</small></a><div class="top-right"><span class="save-state" id="save-state">Lokal gespeichert</span><button id="living-menu" aria-label="Entdecken und Karte">◇</button><button id="bag" aria-label="Inventar öffnen">▦ <span>Inventar</span></button><button id="camera-shortcut" aria-label="Kamera ändern"><span>▣</span><small>Ansicht</small></button><button id="menu" aria-label="Menü öffnen">☰</button></div></header>
  <div class="location"><i></i><span id="location">Wiesenland</span><small>ENTDECKEN · BAUEN · AUSPROBIEREN</small></div>
  <div id="mission-pin" hidden><span>FREIWILLIGER AUFTRAG</span><b>Fange einen Barsch.</b></div>
  <div id="rotate-tip">↻ Im Querformat hast du mehr Platz.</div>
@@ -383,11 +384,16 @@ function aim() {
   ray.setFromCamera(new T.Vector2(0, 0), camera);
   if(expansion.camera.perspective==="third"&&!cameraRig.temporaryFirst){
     const crosshair=worldHit(40);
-    const point=crosshair?.point||ray.ray.at(40,new T.Vector3());
+    const seenAnimal=livingView.hit(ray,expansion.living,18);
+    const animalPoint=seenAnimal?new T.Vector3(seenAnimal.pos[0],seenAnimal.pos[1]+.6*animalScale(seenAnimal),seenAnimal.pos[2]):null;
+    const visibleAnimal=animalPoint&&lineOfSight(world,camera.position.toArray() as Cell,animalPoint.toArray() as Cell);
+    const point=visibleAnimal?animalPoint:crosshair?.point||ray.ray.at(40,new T.Vector3());
     const eye=new T.Vector3(player.pos[0],player.pos[1]+1.6,player.pos[2]);ray.ray.set(eye,point.clone().sub(eye).normalize());
   }
   const hit = worldHit();
   animalTarget=livingView.hit(ray,expansion.living);
+  if(animalTarget&&!lineOfSight(world,ray.ray.origin.toArray() as Cell,[animalTarget.pos[0],animalTarget.pos[1]+.6*animalScale(animalTarget),animalTarget.pos[2]]))animalTarget=null;
+  document.querySelector(".crosshair")!.classList.toggle("animal-aim",!!animalTarget);
   noteTarget=discoveryView.hit(ray);if(noteTarget&&hit&&hit.distance<ray.ray.origin.distanceTo(new T.Vector3(...noteTarget.position))-.8)noteTarget=null;
   target = null;
   adjacent = null;
@@ -632,6 +638,14 @@ function resumeGame(){
 }
 function resetCamera(){
  clearInput();cameraRig.reset(expansion.camera);expansion.view.fov=70;player.yaw=0;player.pitch=-.12;updateFov();updateCamera(0,true);recordDiagnostic("camera-reset");save();resumeGame();
+}
+function quickCamera(){
+ openPanel("ANSICHT",`<h2>Wie möchtest du die Welt sehen?</h2><div class="camera-choices"><button id="view-first" aria-pressed="${expansion.camera.perspective==="first"}">Ego · mit Hand</button><button id="view-third" aria-pressed="${expansion.camera.perspective==="third"}">Von hinten · Figur sichtbar</button></div><label class="camera-distance-label">Abstand hinter der Figur <output id="quick-distance-value">${expansion.camera.distance} m</output><input id="quick-camera-distance" type="range" min="2" max="9" step=".5" value="${expansion.camera.distance}"></label><p class="hint">Weiter rechts = mehr Überblick. In engen Stellen nutzt die Kamera kurz den Ego-Blick und kehrt im Freien zurück.</p><div class="camera-choices"><button id="quick-camera-reset">Kamera befreien</button><button id="quick-camera-done" class="primary">Weiterspielen</button></div><button id="camera-more">Weitere Steuerungseinstellungen</button>`,true);
+ const update=()=>{updateFov();updateCamera(0,true);save();viewportDirty=true;$("view-first").setAttribute("aria-pressed",String(expansion.camera.perspective==="first"));$("view-third").setAttribute("aria-pressed",String(expansion.camera.perspective==="third"));};
+ $("view-first").onclick=()=>{expansion.camera.perspective="first";update();};
+ $("view-third").onclick=()=>{expansion.camera.perspective="third";update();};
+ $("quick-camera-distance").oninput=()=>{expansion.camera.distance=Number($<HTMLInputElement>("quick-camera-distance").value);expansion.camera.perspective="third";$("quick-distance-value").textContent=`${expansion.camera.distance} m`;update();};
+ $("quick-camera-reset").onclick=resetCamera;$("quick-camera-done").onclick=resumeGame;$("camera-more").onclick=controlSettings;
 }
 function controlSettings(){
  const c=expansion.camera,s=expansion.controls;
@@ -1256,6 +1270,7 @@ bindTap($("break"), () => {
 bindTap($("jump"), () => {
   if (canPlay()) jump = true;
 });
+bindTap($("camera-shortcut"),()=>{if(started&&!webglLost)quickCamera();});
 bindTap($("zoom"), () => {
   if (!started||webglLost) return;
   cyclePerspective();if(paused)resumeGame();

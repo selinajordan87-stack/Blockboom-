@@ -19,12 +19,12 @@ it("ergänzt den erreichbaren großen Angelplatz und bewahrt alte Entdeckungen",
 
 it("verteilt sichtbare Fische in Ufernähe des großen Sees ohne die Population unbeschränkt zu erhöhen",()=>{
  const shoal=new Shoal(),great=spotById("great"),school=shoal.actors.filter(f=>f.spot==="great");
- expect(shoal.actors.length).toBeLessThanOrEqual(MAX_FISH_ACTORS);expect(school).toHaveLength(5);
+ expect(shoal.actors.length).toBeLessThanOrEqual(MAX_FISH_ACTORS);expect(school).toHaveLength(8);
+ expect(school.filter(f=>Math.hypot(f.x+115,f.z+91)<6).length).toBeGreaterThanOrEqual(3);
  expect(shoal.actors[0]).toMatchObject({id:0,species:"Rotauge",spot:"small"});
  const before=school.map(f=>[f.x,f.z]);for(let i=0;i<300;i++)shoal.update(.016);
  expect(school.map(f=>[f.x,f.z])).not.toEqual(before);
  for(const fish of school){
-   expect(Math.hypot(fish.x-great.shore.x,fish.z-great.shore.z)).toBeLessThan(17);
    expect(Math.hypot((fish.x-great.center.x)/(great.radius.x*.8),(fish.z-great.center.z)/(great.radius.z*.8))).toBeLessThanOrEqual(1.001);
  }
 });

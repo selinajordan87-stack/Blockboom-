@@ -5,7 +5,8 @@ export const FISH_PER_SPECIES = 3;
 export const MAX_FISH_ACTORS=32;
 // Large lakes need visible fish near a reachable shore, rather than a small
 // school hidden at the distant centre (which also contains an island).
-const swimCenter=(spot:AnglingSpot)=>spot.id==="great"?{x:spot.shore.x,z:spot.shore.z-11.5}:spot.center;
+const LAKE_SCHOOLS=[{x:-117,z:-91},{x:-82,z:-110},{x:-138,z:-110}];
+const swimCenter=(spot:AnglingSpot,index=0)=>spot.id==="great"?LAKE_SCHOOLS[index<4?0:index<6?1:2]:spot.center;
 
 export interface FishActor {
   id: number;
@@ -52,11 +53,11 @@ export class Shoal {
   time = 0;
 
   constructor(){
-    const spot=spotById("great"),center=swimCenter(spot);
-    const species:FishName[]=["Rotauge","Flussbarsch","Hecht","Karpfen","Brasse"];
+    const spot=spotById("great");
+    const species:FishName[]=["Rotauge","Flussbarsch","Hecht","Karpfen","Brasse","Schleie","Rotauge","Flussbarsch"];
     const capacity=Math.min(species.length,MAX_FISH_ACTORS-this.actors.length);
     for(let i=0;i<capacity;i++){
-      const fish=fishInfo(species[i]),length=Math.round(fish.min+(fish.max-fish.min)*(.24+i*.035));
+      const center=swimCenter(spot,i),fish=fishInfo(species[i]),length=Math.round(fish.min+(fish.max-fish.min)*(.32+(i%4)*.045));
       this.actors.push({id:this.actors.length,species:fish.name,spot:spot.id,length,weight:estimateWeight(fish.name,length),x:center.x+Math.cos(i*1.9)*1.8,y:spot.waterY-Math.min(spot.depth-.2,fish.depth),z:center.z+Math.sin(i*1.9)*1.4,heading:0,alive:true,respawn:0,phase:i*.73});
     }
   }
@@ -70,7 +71,7 @@ export class Shoal {
       }
       const info = fishInfo(fish.species);
       const spot = spotById(fish.spot);
-      const center=swimCenter(spot);
+      const center=swimCenter(spot,fish.id-FISH.length*FISH_PER_SPECIES);
       let tx: number;
       let ty: number;
       let tz: number;
@@ -160,7 +161,7 @@ export class Shoal {
     const fish = this.actors.find((candidate) => candidate.id === caught.id);
     if (!fish) return;
     const spot = spotById(fish.spot);
-    const center=swimCenter(spot);
+    const center=swimCenter(spot,fish.id-FISH.length*FISH_PER_SPECIES);
     fish.alive = true;
     fish.respawn = 0;
     fish.x = center.x;

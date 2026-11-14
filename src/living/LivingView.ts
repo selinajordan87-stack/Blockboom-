@@ -1,6 +1,7 @@
 import * as T from "three";
 import { MAX_ANIMALS, type LivingState, type Animal } from "./State";
 import { stage } from "./Systems";
+import {targetAnimal} from "./AnimalTarget";
 export class LivingView {
  group=new T.Group();animals:T.InstancedMesh;crops:T.InstancedMesh;
  private dummy=new T.Object3D();private color=new T.Color();
@@ -18,7 +19,7 @@ export class LivingView {
  }
  update(s:LivingState,origin:T.Vector3){
   let i=0;const ids:string[]=[];
-  for(const a of s.animals.slice(0,MAX_ANIMALS)){if(Math.hypot(a.pos[0]-origin.x,a.pos[2]-origin.z)>48)continue;
+  for(const a of s.animals.slice(0,MAX_ANIMALS)){if(a.health===0||Math.hypot(a.pos[0]-origin.x,a.pos[2]-origin.z)>48)continue;
    const bird=a.kind==="Huhn",cow=a.kind==="Kuh",sheep=a.kind==="Schaf",pig=a.kind==="Schwein";
    const small=a.kind==="Katze"?.62:bird?.48:cow?1.15:1,body=cow?0xc2bca6:sheep?0xe8dfc6:pig?0xc99787:a.kind==="Wolf"?0x8f9b9c:bird?0xe6d8b5:0xa98665;
    const parts=[
@@ -37,6 +38,7 @@ export class LivingView {
    }
   }
   this.animals.count=i;this.animals.userData.ids=ids;this.animals.instanceMatrix.needsUpdate=true;if(this.animals.instanceColor)this.animals.instanceColor.needsUpdate=true;
+  this.animals.computeBoundingSphere();
   i=0;const cells:number[][]=[];
   for(const crop of s.crops){if(Math.hypot(crop.cell[0]-origin.x,crop.cell[2]-origin.z)>36)continue;
    const growth=stage(s,crop),height=.15+growth*.21;
@@ -48,5 +50,5 @@ export class LivingView {
   }
   this.crops.count=i;this.crops.userData.cells=cells;this.crops.instanceMatrix.needsUpdate=true;if(this.crops.instanceColor)this.crops.instanceColor.needsUpdate=true;
  }
- hit(ray:T.Raycaster,s:LivingState):Animal|null{const hit=ray.intersectObject(this.animals)[0];if(!hit||hit.distance>=4||hit.instanceId===undefined)return null;const id=this.animals.userData.ids[hit.instanceId];return s.animals.find(a=>a.id===id)||null;}
+ hit(ray:T.Raycaster,s:LivingState,range=4.5):Animal|null{return targetAnimal(ray.ray,s,range)?.animal||null;}
 }

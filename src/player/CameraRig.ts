@@ -19,7 +19,7 @@ export function readControls(raw:unknown):ControlSettings{
 /** Desired distance is persistent; collision compression is temporary and never saved. */
 export class CameraRig {
  actualDistance=0;blocked=false;temporaryFirst=false;recoveries=0;
- private mode="first";private pivot=new T.Vector3();private direction=new T.Vector3();private offset=new T.Vector3();private sample=new T.Vector3();
+ private mode="first";private compressed=false;private pivot=new T.Vector3();private direction=new T.Vector3();private offset=new T.Vector3();private sample=new T.Vector3();
  constructor(private world:World){}
  update(camera:T.PerspectiveCamera,actor:{pos:Cell;yaw:number;pitch:number},settings:CameraSettings,fov:number,dt:number,force=false){
   if(!Number.isFinite(actor.yaw)||!Number.isFinite(actor.pitch)){actor.yaw=0;actor.pitch=-.12;this.recoveries++;force=true;}
@@ -28,6 +28,7 @@ export class CameraRig {
   camera.fov=finite(fov,55,90,70);camera.rotation.order="YXZ";
   this.direction.set(-Math.sin(actor.yaw)*Math.cos(actor.pitch),Math.sin(actor.pitch),-Math.cos(actor.yaw)*Math.cos(actor.pitch));
   this.pivot.set(actor.pos[0],actor.pos[1]+1.35,actor.pos[2]);
+  if(this.mode!==settings.perspective)this.compressed=false;
   force ||= this.mode!==settings.perspective;this.mode=settings.perspective;
   this.blocked=false;this.temporaryFirst=false;
   if(settings.perspective==="third"){
@@ -42,14 +43,19 @@ export class CameraRig {
    }
    const elapsed=Number.isFinite(dt)?Math.min(.1,Math.max(0,dt)):0;
    this.actualDistance=force||allowed<this.actualDistance?allowed:this.actualDistance+(allowed-this.actualDistance)*(1-Math.exp(-8*elapsed));
-   if(this.actualDistance>=.32){
+   // A shoulder camera inside the avatar is neither a usable third-person
+   // view nor an eye view. Keep the chosen distance, but use the eyes until
+   // there is room again. Hysteresis prevents flicker at a wall or tree.
+   this.compressed=allowed<(this.compressed?1.9:1.45);
+   this.temporaryFirst=this.compressed||this.actualDistance<1.45;
+   if(!this.temporaryFirst){
     camera.position.copy(this.pivot).addScaledVector(this.offset,this.actualDistance);
     this.sample.copy(this.pivot).addScaledVector(this.direction,5);camera.lookAt(this.sample);
-   }else this.temporaryFirst=true;
-  }else this.actualDistance=0;
+   }
+  }else {this.actualDistance=0;this.compressed=false;}
   if(settings.perspective==="first"||this.temporaryFirst){camera.position.set(actor.pos[0],actor.pos[1]+1.6,actor.pos[2]);camera.rotation.set(actor.pitch,actor.yaw,0);}
   camera.updateProjectionMatrix();camera.updateMatrixWorld(true);
  }
- reset(settings:CameraSettings){settings.perspective="first";settings.distance=4;this.actualDistance=0;this.mode="first";this.blocked=false;this.temporaryFirst=false;this.recoveries++;}
+ reset(settings:CameraSettings){settings.perspective="first";settings.distance=4;this.actualDistance=0;this.mode="first";this.compressed=false;this.blocked=false;this.temporaryFirst=false;this.recoveries++;}
  get thirdVisible(){return this.mode==="third"&&this.actualDistance>1.05&&!this.temporaryFirst;}
 }
