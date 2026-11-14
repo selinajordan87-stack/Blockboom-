@@ -40,6 +40,17 @@ it("lässt am großen See tatsächlich auswerfen, einen Fisch heranschwimmen, be
  expect(shoal.actors.find(f=>f.id===caught!.id)?.alive).toBe(true);
 });
 
+it("lockt am großen See nur Fische in Ködernähe statt einer zufälligen fernen Ufergruppe",()=>{
+ const shoal=new Shoal(),engine=new AnglingEngine(shoal,()=>.999),spot=spotById("great");
+ engine.beginCharge(0);engine.releaseCast(900,spot,defaultAngling().loadout,{x:-115,y:2.6,z:-85},{x:0,y:-.1,z:-1},"Rotauge");
+ expect(engine.tick(2200,.016)).toBe("cast-landed");
+ const fish=shoal.actors.find(f=>f.id===engine.target)!;
+ expect(Math.hypot(fish.x-engine.bobber.x,fish.z-engine.bobber.z)).toBeLessThanOrEqual(12);
+ let now=2200,event:AnglingEvent|null=null;
+ for(let i=0;i<600&&event!=="bite";i++){now+=16;shoal.update(.016);event=engine.tick(now,.016);}
+ expect(event).toBe("bite");
+});
+
 it("zeigt entfernte Fischinstanzen im Frustum und trifft sie durch echte Mesh-Raycasts",()=>{
  const scene=new T.Scene(),shoal=new Shoal(),view=new FishView(shoal,scene),fish=shoal.actors.find(f=>f.spot==="great")!;
  const camera=new T.PerspectiveCamera(70,1.7,.08,80);camera.position.set(fish.x,fish.y+1,fish.z+4);camera.lookAt(fish.x,fish.y,fish.z);camera.updateMatrixWorld();scene.updateMatrixWorld(true);

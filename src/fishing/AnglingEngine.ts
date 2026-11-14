@@ -277,20 +277,19 @@ export class AnglingEngine {
 
   private chooseTarget() {
     if (!this.spot || !this.loadout) return null;
-    let candidates = this.shoal.actors.filter(
+    const nearby = this.shoal.actors.filter(
       (fish) =>
         fish.alive &&
         fish.spot === this.spot!.id &&
-        (!this.preferred || fish.species === this.preferred),
+        Math.hypot(fish.x-this.bobber.x,fish.z-this.bobber.z)<=12,
     );
+    let candidates=nearby.filter(fish=>!this.preferred||fish.species===this.preferred);
     if (!candidates.length && this.preferred)
-      candidates = this.shoal.actors.filter(
-        (fish) => fish.alive && fish.spot === this.spot!.id,
-      );
+      candidates = nearby;
     if (!candidates.length) return null;
     const weighted = candidates.map((fish) => ({
       fish,
-      weight: Math.max(0.05, this.compatibility(fish)),
+      weight: Math.max(0.05, this.compatibility(fish))/(1+Math.hypot(fish.x-this.bobber.x,fish.z-this.bobber.z)/4),
     }));
     const total = weighted.reduce((sum, entry) => sum + entry.weight, 0);
     let roll = this.rng() * total;

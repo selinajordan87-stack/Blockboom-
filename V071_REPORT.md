@@ -28,6 +28,20 @@ Die Vorher-/Nachheraufnahme des großen Sees zeigt einen weiteren echten Renderf
 
 [Vorher](artifacts/v071/before-dark-fish.png) · [Nachher](artifacts/v071/lake-visible-fish.png) · [Tierziel](artifacts/v071/animal-target.png) · [Platzierter Grill](artifacts/v071/placed-grill.png) · [Grillen](artifacts/v071/grilling.png) · [Browserprotokoll](artifacts/v071/phase2-browser.log)
 
+## Geänderte Architektur
+
+| Bereich | Dateien / Wirkung |
+| --- | --- |
+| Kamera | `player/CameraRig.ts`, `main.ts`, `ui/mobile-rescue.css`: sichere Nahansicht, direktes Kamerafenster, lokales Diagnoseereignis |
+| Tierziele | `living/AnimalTarget.ts`, `LivingView.ts`: körperbezogene Ziele, leichtes Zielhilfepolster, erneuerte Instanzbegrenzung und Third-Person-Parallaxe |
+| Jagd | `living/Hunting.ts`, `State.ts`, `Systems.ts`: Schaden, Reichweite, Haustierschutz, einmalige Beute und begrenzte Wiederbesetzung |
+| Nahrung | `living/Items.ts`, `LivingUI.ts`, `ui/MobileHUD.ts`: Rezepte, Verzehr und passende Touchaktionen |
+| Grill in der Welt | `world/World.ts`, `Renderer.ts`, `nightfall/Views.ts`: eigener platzierbarer und gespeicherter Gegenstand, gemeinsame Geometrie/Materialien |
+| See | `fishing/Shoal.ts`, `FishView.ts`, `FishingWorld.ts`: verteilte Gruppen, tatsächliche Farben, klareres Wasser und Distanzdarstellung |
+| Regressionen | neue Logik-/Browserfälle; vorhandener Transferfall enthält zusätzlich Grill, Fleisch und gejagtes Tier; Materialanzahl und Versionsanzeige sachlich aktualisiert |
+
+Keine neue Abhängigkeit und kein Rewrite. Die bestehende Pointer-/Touch-Ownership und die Spieleingaben bleiben erhalten.
+
 ## Spielstände
 
 Rootformat v1 und alle bisherigen Welt-, Lern- und Inventardaten bleiben erhalten. Tiergesundheit und Wiederbesetzungszeit sind additive Felder. Alte Tiere ohne Gesundheitswert bleiben voll funktionsfähig. Vor dem ersten Upgrade wird, soweit Speicher vorhanden ist, `blockboom.save.pre-v071` angelegt. Neue Gegenstände ergänzen den Katalog; der Grill wird am Ende der Materialliste angehängt, damit alte Slotnummern erhalten bleiben. Export/Import wird in der abschließenden Regression erneut geprüft.
@@ -57,4 +71,11 @@ Ein erster Start des abschließenden gezielten Tests traf auf den noch laufenden
 
 ## Grenzen
 
-Die Fische und Landschaft bleiben stilisierte Voxelmodelle. Es wird kein grafischer Komplettumbau behauptet. Die Tests prüfen reproduzierbare Teilursachen und die Wiederherstellung; sie ersetzen weder einen echten iPhone-Test noch den Nachweis, dass jede gemeldete Unterbrechung dieselbe Ursache hatte. Smartphone-Frameraten werden hier nicht erfunden. Grillen ist ein kurzer spielerischer Vorgang ohne detaillierte Simulation.
+Die Fische und Landschaft bleiben stilisierte Voxelmodelle. Es wird kein grafischer Komplettumbau behauptet. Die Tests prüfen reproduzierbare Teilursachen und die Wiederherstellung; sie ersetzen weder einen echten iPhone-Test noch den Nachweis, dass jede gemeldete Unterbrechung dieselbe Ursache hatte. Smartphone-Frameraten werden hier nicht erfunden. Grillen ist ein kurzer spielerischer Vorgang ohne detaillierte Simulation. Wie das bisherige Hauptmenü beendet das Kamerafenster einen laufenden Auswurf; Perspektive und Wasserblick deshalb vor dem Auswerfen wählen.
+
+
+## Im Gesamtlauf gefundene Köder-Auswahl
+
+Der erste vollständige 88-Fälle-Lauf wurde nach 18 bestandenen Fällen, einem großen-See-Fehler und einem unterbrochenen Fall angehalten; 68 waren noch nicht ausgeführt. Das ist kein erfolgreicher Gesamtlauf. Der Fangfall blieb bei „Köder im Wasser“. Die bisherige Zufallsauswahl berücksichtigte Art und Ausrüstung, aber nicht die Entfernung der nun verteilten Gruppen. Ein neuer deterministischer Test wählte einen Fisch **29,48 Meter** vom Schwimmer entfernt und reproduzierte den Fehler.
+
+Die Auswahl berücksichtigt jetzt nur tatsächliche Fische innerhalb von zwölf Spielmetern um den Köder und gewichtet näher schwimmende Tiere stärker. Wunscharten werden innerhalb dieser lokalen Gruppe bevorzugt; fehlt die gewünschte Art, bleibt ein anderer naher Fisch fangbar. Keine Teleportation von Fischen, keine simulierte Textfangmeldung und keine Verlängerung des Test-Zeitlimits. [Roter Logiktest](artifacts/v071/lake-selection-red.log), [angehaltener Gesamtlauf](artifacts/v071/interrupted-full-before-lake-fix.log).

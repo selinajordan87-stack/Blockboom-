@@ -1,0 +1,87 @@
+
+Running 88 tests using 1 worker
+
+(node:7760) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/blueprint-v07.spec.ts:6:1 › Bauplan aus einem vorhandenen Spielstand: Vorschau, echte Kosten, Aufstieg und Reload (31.2s)
+  ✓   2 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (15.5s)
+  ✓   3 e2e/discovery-v07.spec.ts:20:1 › v0.7 neue Entdeckerkarte verbirgt unbekannte Orte und normale Bewegung erschließt den Wald (1.1m)
+  ✓   4 e2e/discovery-v07.spec.ts:26:1 › v0.7 Feld ist vom Start aus zu Fuß nutzbar: echte Ernte, Aussaat, aktive Wachstumszeit und Reload (2.6m)
+  ✓   5 e2e/discovery-v07.spec.ts:37:1 › v0.7 Langdruck-Inventar und zwei Daumen bleiben unabhängig vom neuen HUD (5.8s)
+  ✓   6 e2e/entry-loop-v07.spec.ts:4:1 › Neuer Survivalstart: Holz und Stein sammeln, Gartenblatt anwenden, Grundrezepte und eigenes Beet (57.1s)
+  ✓   7 e2e/fishing-v04.spec.ts:31:1 › v0.1-Spielstand erhält Welt, Fänge und Lernfortschritt mit pre-v04-Sicherung (4.5s)
+  ✓   8 e2e/fishing-v04.spec.ts:56:1 › Angelset speichert Regelhilfe und Jahreszeit ohne Lernpflicht (5.7s)
+  ✓   9 e2e/fishing-v04.spec.ts:73:1 › mobile Angelaktion beendet touchcancel ohne Wurf, Hänger oder Pausenmenü (4.5s)
+  ✓  10 e2e/fishing-v04.spec.ts:104:1 › alle vier Angelplätze werden durch Erkundung dauerhaft entdeckt (15.1s)
+  ✓  11 e2e/game.spec.ts:40:1 › Desktop: Start, Bewegung, Kamera, Bauen und dauerhafter Spielstand (21.9s)
+  ✓  12 e2e/game.spec.ts:79:1 › Angeln, freiwillige Mission, Sammlung und Neuladen (41.5s)
+  ✓  13 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (6.7s)
+  ✓  14 e2e/game.spec.ts:116:3 › Touch 360px: Start, Joystick, Kamera, Inventar und Menü (4.4s)
+  ✓  15 e2e/game.spec.ts:116:3 › Touch 390px: Start, Joystick, Kamera, Inventar und Menü (4.7s)
+  ✓  16 e2e/game.spec.ts:116:3 › Touch 430px: Start, Joystick, Kamera, Inventar und Menü (5.2s)
+  ✓  17 e2e/game.spec.ts:176:1 › Touch: Blöcke setzen/entfernen, Barsch fangen und BOOM zurücksetzen (50.2s)
+  ✘  18 e2e/great-lake-v07.spec.ts:6:1 › großer See: erspielten Stand importieren, Steg betreten und einen echten Fisch mit Touch angeln (46.7s)
+(node:8987) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 e2e/living-v06.spec.ts:14:1 › Regionen und Höhle sind erreichbar, äußere Bauwerke und alte Welt bleiben nach Reload (1.0m)
+  ✘  20 e2e/living-v06.spec.ts:23:1 › sichtbares Erz wird zeitgesteuert abgebaut; Ofen und Kupferwerkzeug verbrauchen echte Vorräte (4.5s)
+
+
+  1) e2e/great-lake-v07.spec.ts:6:1 › großer See: erspielten Stand importieren, Steg betreten und einen echten Fisch mit Touch angeln
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "BISS"
+    Received string:    "Köder im Wasser"
+
+    Call Log:
+    - Timeout 20000ms exceeded while waiting on the predicate
+
+      18 |  for(let attempt=0;attempt<3&&!landed;attempt++){
+      19 |   await pulse(850);await expect.poll(async()=>(await j.metrics()).angling.spot).toBe('great');
+    > 20 |   await expect.poll(()=>page.locator('#angling-state').textContent(),{timeout:20000}).toContain('BISS');
+         |                                                                                       ^
+      21 |   const m=await j.metrics(),fish=m.fish.find((f:any)=>f.id===m.angling.target);expect(fish.x).toBeLessThan(-80);expect(fish.z).toBeLessThan(-70);
+      22 |   await pulse(180);await expect.poll(()=>page.locator('#angling-state').textContent()).toContain('Drill');
+      23 |   const until=Date.now()+60000;
+        at /workspace/blockboom/e2e/great-lake-v07.spec.ts:20:87
+
+    Error Context: test-results/great-lake-v07-großer-See--26c90-hten-Fisch-mit-Touch-angeln/error-context.md
+
+  2) e2e/living-v06.spec.ts:23:1 › sichtbares Erz wird zeitgesteuert abgebaut; Ofen und Kupferwerkzeug verbrauchen echte Vorräte
+
+    Test was interrupted.
+
+    Error: expect(locator).toBeHidden() failed
+
+    Locator:  locator('#mining-progress')
+    Expected: hidden
+    Received: visible
+
+    Call log:
+      - Expect "toBeHidden" locator('#mining-progress') with timeout 10000ms
+      - waiting for locator('#mining-progress')
+        4 × locator resolved to <div id="mining-progress">Kohleerz · 4%</div>
+          - unexpected value "visible"
+        - locator resolved to <div id="mining-progress">Kohleerz · 12%</div>
+        - unexpected value "visible"
+      - Test ended.
+
+
+      23 | test("sichtbares Erz wird zeitgesteuert abgebaut; Ofen und Kupferwerkzeug verbrauchen echte Vorräte",async({page})=>{
+      24 |  const s=blank([39.5,-4.99,-30.5],Math.PI,.2);s.extension.tool="Spitzhacke";s.extension.nightfall.mode="Survival";s.extension.materials.Kupfererz=3;s.extension.materials.Holz=2;s.extension.nightfall.supplies.Kohle=3;
+    > 25 |  await seed(page,s);await expect(page.locator("#target-label")).toContainText("Kohleerz");await page.keyboard.press("Minus");await expect(page.locator("#mining-progress")).toBeVisible();await expect(page.locator("#mining-progress")).toBeHidden({timeout:10000});
+         |                                                                                                                                                                                                                                          ^
+      26 |  let state=await save(page);expect(state.changes["39,-3,-28"]).toBeNull();expect(state.extension.materials.Kohleerz).toBe(1);
+      27 |  await travel(page,[43.5,1.01,26.5],-Math.PI*.75,-.66);
+      28 |  await expect(page.locator("#target-label")).toContainText("Ofen");await page.keyboard.press("KeyE");await expect(page.locator("#panel-tag")).toHaveText("OFEN");
+        at /workspace/blockboom/e2e/living-v06.spec.ts:25:234
+
+    Error Context: test-results/living-v06-sichtbares-Erz--7842c-g-verbrauchen-echte-Vorräte/error-context.md
+
+  1 failed
+    e2e/great-lake-v07.spec.ts:6:1 › großer See: erspielten Stand importieren, Steg betreten und einen echten Fisch mit Touch angeln
+  1 interrupted
+    e2e/living-v06.spec.ts:23:1 › sichtbares Erz wird zeitgesteuert abgebaut; Ofen und Kupferwerkzeug verbrauchen echte Vorräte
+  68 did not run
+  18 passed (10.2m)

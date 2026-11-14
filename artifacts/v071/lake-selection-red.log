@@ -1,0 +1,32 @@
+
+ RUN  v3.2.7 /workspace/blockboom
+
+ ❯ src/tests/discovery-fishing.test.ts (7 tests | 1 failed) 121ms
+   ✓ ergänzt den erreichbaren großen Angelplatz und bewahrt alte Entdeckungen 2ms
+   ✓ verteilt sichtbare Fische in Ufernähe des großen Sees ohne die Population unbeschränkt zu erhöhen 11ms
+   ✓ lässt am großen See tatsächlich auswerfen, einen Fisch heranschwimmen, beißen und anlanden 19ms
+   × lockt am großen See nur Fische in Ködernähe statt einer zufälligen fernen Ufergruppe 4ms
+     → expected 29.477301485026153 to be less than or equal to 12
+   ✓ zeigt entfernte Fischinstanzen im Frustum und trifft sie durch echte Mesh-Raycasts 9ms
+   ✓ zeichnet die neue Wasserfläche richtig und reserviert genug Instanzen ohne Fernterrain vorzuladen 10ms
+   ✓ erkennt den tatsächlich begehbaren großen Holzsteg als Angelplatz 62ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/tests/discovery-fishing.test.ts > lockt am großen See nur Fische in Ködernähe statt einer zufälligen fernen Ufergruppe
+AssertionError: expected 29.477301485026153 to be less than or equal to 12
+ ❯ src/tests/discovery-fishing.test.ts:48:68
+     46|  expect(engine.tick(2200,.016)).toBe("cast-landed");
+     47|  const fish=shoal.actors.find(f=>f.id===engine.target)!;
+     48|  expect(Math.hypot(fish.x-engine.bobber.x,fish.z-engine.bobber.z)).toB…
+       |                                                                    ^
+     49|  let now=2200,event:AnglingEvent|null=null;
+     50|  for(let i=0;i<600&&event!=="bite";i++){now+=16;shoal.update(.016);eve…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  20:49:31
+   Duration  740ms (transform 165ms, setup 0ms, collect 251ms, tests 121ms, environment 0ms, prepare 236ms)
