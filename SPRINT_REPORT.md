@@ -65,7 +65,7 @@ Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlic
 | Prüfung | Ergebnis / Bezug |
 | --- | --- |
 | TypeScript strict, letzter Stand | bestanden |
-| Logik-/Integrationssuite | **157/157**, 23 Dateien, einschließlich Save-Altversionen, Quota, Rückweg aus tiefer Mine, Wegverbindung und Gartenschutz |
+| Logik-/Integrationssuite | **158/158**, 24 Dateien, einschließlich Save-Altversionen, Quota, Rückweg aus tiefer Mine, Wegverbindung und Gartenschutz |
 | Vollständige Browserregression | **82/82**, 20,9 min, Bundle `index-BdAeCH9T.js` vor dem letzten Weg-/Gartenschutzfix; [Log](artifacts/v07/final-browser.log) |
 | Nachprüfung Wegverbindung | **8/8** auf `index-CjN2T-SP.js` |
 | Endgültige gezielte Nachprüfung | **10/10 bestanden** auf `index-unVfjpAn.js`; frischer Survivalstart, alte Saves, Regionen, Touch, Export/Import, Quota und Pages |
@@ -75,6 +75,7 @@ Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlic
 | Farmingwachstum ohne vorgestellte Uhr | bestanden, etwa zwei Minuten echte aktive Spielzeit einschließlich Reload |
 | Letzte Kartenkorrektur | 157 Logiktests, TypeScript, Build und **4/4** Browserfälle auf `index-DR5BWunQ.js`; [Log](artifacts/v07/release-browser.log) |
 | Abschließende Text-UX | **2/2** Lese-/Touch- und Pagesfälle auf `index-C5EsXfER.js`; [Log](artifacts/v07/copy-browser.log) |
+| Wald-Generierungsfix | **158 Logiktests**, vier Browser-Nachtests, Build `index-CKfwcTAk.js`; [Log](artifacts/v07/forest-browser.log) |
 | Echter iPhone-/Android-Test | nicht ausgeführt |
 
 Kein alter Test wurde gelöscht. Frühere erfolglose Läufe und ihre Ursachen bleiben dokumentiert. Vorbereitete Save-Fixtures sichern gezielt Funktionen; sie gelten nicht als Beweis für normale Auffindbarkeit.
@@ -143,3 +144,9 @@ Der Journalpfad kennt technische Wegpunkte; er ist keine menschliche Bewertung v
 ## Visuelle Nachweise
 
 [Galerie mit Prüfmethode und Grenzen](artifacts/v07/README.md). Die separate [Bergübersicht](artifacts/v07/mountain-overview/03-mountain-overview.png) wurde zu Fuß aus einem regulär exportierten Stand erreicht. Für die Sichtaufnahme wurde ausschließlich das vorhandene Kreativ-/Tageszeitmenü auf Mittag gestellt. Sie gilt nicht als frischer Survivalablauf.
+
+## Erst durch die Spieleraufnahme entdeckter Waldfehler
+
+Der erste Weg erreichte den äußeren Wald und großen See tatsächlich, aber die Waldaufnahme zeigte lediglich Büsche und Stümpfe. Der unveröffentlichte Außenweltgenerator verwendete ein Vierer-Raster mit `x,z ≡ 2 mod 4`; sein Hash `31*x+73*z` war damit immer durch vier teilbar. Die Baum-Bedingung war dort nie erfüllt. Ein neuer Test reproduzierte **null höhere Stammblöcke**. Die vorherigen grünen Browserfälle hatten dieses sichtbare Problem nicht erfasst.
+
+Der Fix mischt ganzzahlige Rasterkoordinaten, verwendet einen günstigeren Sechser-Abstand und lässt Wege und kleine Tierlichtungen frei. Der Test prüft tatsächliche höhere Stämme beider Holzarten, einen vollständigen begehbaren Weg und die resultierende Geometrie. Ergebnis: 43.488 Dreiecke in 37 Chunk-Meshes, 69.466 geladene Blöcke, 43 Buildslices, maximal beobachtet 5,25 ms. Alte Landschaft innerhalb der bisherigen Grenze und gespeicherte Blockänderungen bleiben erhalten. Der echte Eingabeweg wird nach diesem Fix nochmals fotografiert. [Fehlaufnahme](artifacts/v07/failures/empty-forest.png), [roter Test](artifacts/v07/failures/empty-forest-red.log).

@@ -112,11 +112,13 @@ function building(w:World,x:number,z:number,width:number,depth:number,height:num
 /** Decorations write only the requested chunk, so order never changes the map. */
 export function decorateDiscoveryChunk(world:World,cx:number,cz:number){
  const w=scopedWorld(world,cx,cz);
- for(let x=cx*12+2;x<cx*12+12;x+=4)for(let z=cz*12+2;z<cz*12+12;z+=4){
-  if(legacyArea(x,z))continue;const p=terrainProfile(x,z),hash=Math.abs(x*31+z*73);
+ for(let x=cx*12+2;x<cx*12+12;x+=6)for(let z=cz*12+2;z<cz*12+12;z+=6){
+  // Mix grid coordinates: the former 4-cell grid made (31*x+73*z)%4 always zero.
+  if(legacyArea(x,z))continue;const p=terrainProfile(x,z),hash=(Math.imul(Math.floor(x/2),73856093)^Math.imul(Math.floor(z/2),19349663))>>>0;
   if(p.lake<1.1||p.river<5||p.trail<3.5||p.village||caveRange(x,z)||p.top>9)continue;
   const dense=Math.hypot(x+100,z-30)<62;
-  if(dense&&hash%4!==0||!dense&&hash%11===0)tree(w,x,z,4+hash%4,hash%3!==0);
+  if(dense&&(Math.hypot(x+100,z-30)<6||Math.hypot(x+108,z-39)<5))continue;
+  if(dense&&hash%4!==0||!dense&&hash%11===0)tree(w,x,z,4+Math.floor(hash/8)%4,hash%3!==0);
   else if(hash%5===0){w.set(x,p.top+1,z,"Laub",false);w.set(x+1,p.top+1,z,"Laub",false);}
   else if(hash%13===0){w.set(x,p.top+1,z,"Moosstein",false);w.set(x+1,p.top+1,z,"Dunkelholz",false);}
  }
