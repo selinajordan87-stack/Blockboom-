@@ -1,0 +1,56 @@
+
+Running 82 tests using 1 worker
+
+(node:62210) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/blueprint-v07.spec.ts:6:1 › Bauplan aus einem vorhandenen Spielstand: Vorschau, echte Kosten, Aufstieg und Reload (31.1s)
+  ✓   2 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (16.4s)
+  ✓   3 e2e/discovery-v07.spec.ts:19:1 › v0.7 neue Entdeckerkarte verbirgt unbekannte Orte und normale Bewegung erschließt den Wald (1.1m)
+  ✓   4 e2e/discovery-v07.spec.ts:25:1 › v0.7 Feld ist vom Start aus zu Fuß nutzbar: echte Ernte, Aussaat, aktive Wachstumszeit und Reload (2.7m)
+  ✓   5 e2e/discovery-v07.spec.ts:36:1 › v0.7 Langdruck-Inventar und zwei Daumen bleiben unabhängig vom neuen HUD (5.4s)
+  ✓   6 e2e/entry-loop-v07.spec.ts:4:1 › Neuer Survivalstart: Holz und Stein sammeln, Gartenblatt anwenden, Grundrezepte und eigenes Beet (58.9s)
+  ✓   7 e2e/fishing-v04.spec.ts:31:1 › v0.1-Spielstand erhält Welt, Fänge und Lernfortschritt mit pre-v04-Sicherung (3.8s)
+  ✓   8 e2e/fishing-v04.spec.ts:56:1 › Angelset speichert Regelhilfe und Jahreszeit ohne Lernpflicht (5.5s)
+  ✓   9 e2e/fishing-v04.spec.ts:73:1 › mobile Angelaktion beendet touchcancel ohne Wurf, Hänger oder Pausenmenü (5.2s)
+  ✓  10 e2e/fishing-v04.spec.ts:104:1 › alle vier Angelplätze werden durch Erkundung dauerhaft entdeckt (15.9s)
+  ✓  11 e2e/game.spec.ts:40:1 › Desktop: Start, Bewegung, Kamera, Bauen und dauerhafter Spielstand (22.2s)
+  ✓  12 e2e/game.spec.ts:79:1 › Angeln, freiwillige Mission, Sammlung und Neuladen (44.6s)
+  ✓  13 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (6.3s)
+  ✓  14 e2e/game.spec.ts:116:3 › Touch 360px: Start, Joystick, Kamera, Inventar und Menü (4.5s)
+  ✓  15 e2e/game.spec.ts:116:3 › Touch 390px: Start, Joystick, Kamera, Inventar und Menü (5.1s)
+  ✓  16 e2e/game.spec.ts:116:3 › Touch 430px: Start, Joystick, Kamera, Inventar und Menü (5.3s)
+  ✓  17 e2e/game.spec.ts:176:1 › Touch: Blöcke setzen/entfernen, Barsch fangen und BOOM zurücksetzen (35.9s)
+  ✓  18 e2e/living-v06.spec.ts:14:1 › Regionen und Höhle sind erreichbar, äußere Bauwerke und alte Welt bleiben nach Reload (58.9s)
+  ✓  19 e2e/living-v06.spec.ts:23:1 › sichtbares Erz wird zeitgesteuert abgebaut; Ofen und Kupferwerkzeug verbrauchen echte Vorräte (21.3s)
+  ✓  20 e2e/living-v06.spec.ts:33:1 › Tier wird durch Füttern gezähmt, benannt und folgt nach Reload (12.1s)
+  ✓  21 e2e/living-v06.spec.ts:39:1 › Hacke, Aussaat, gespeichertes Wachstum und Ernte funktionieren auf Touch (8.4s)
+  ✓  22 e2e/living-v06.spec.ts:45:1 › Möbelplatzierung und getrennte Truhe behalten Inhalt und Bauwerk (25.1s)
+  ✓  23 e2e/living-v06.spec.ts:51:1 › alte Welt wird vor v0.6 gesichert; echte Speicherquote schützt den letzten Stand (14.3s)
+  ✘  24 e2e/living-v06.spec.ts:63:1 › alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte Schatztruhen (22.9s)
+
+
+  1) e2e/living-v06.spec.ts:63:1 › alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte Schatztruhen 
+
+    Test was interrupted.
+
+    Error: page.goto: Test ended.
+    Call log:
+      - navigating to "http://127.0.0.1:4208/Blockboom-/?diagnostics=1", waiting until "load"
+
+
+       7 | }
+       8 | async function save(page:Page){await page.locator("#menu").click();await page.locator("#save").click();const s=await page.evaluate(()=>JSON.parse(localStorage.getItem("blockboom.save")!));await page.locator("#resume").click();return s;}
+    >  9 | async function travel(page:Page,pos:number[],yaw=0,pitch=-.5,prepare?:(s:any)=>void){await save(page);await page.goto("./?diagnostics=1");const s=await page.evaluate(()=>JSON.parse(localStorage.getItem("blockboom.save")!));Object.assign(s,{position:pos,yaw,pitch});prepare?.(s);await page.evaluate(v=>localStorage.setItem("blockboom.save",JSON.stringify(v)),s);await page.reload();await page.locator("#play").click();await expect.poll(async()=>{const raw=await page.locator("#world").getAttribute("data-performance");return raw?JSON.parse(raw).living.clock:0;}).toBeGreaterThan((s.extension.living.clock||0)+.4);}
+         |                                                                                                                  ^
+      10 | async function metrics(page:Page){return page.locator("#world").evaluate(c=>JSON.parse((c as HTMLCanvasElement).dataset.performance!));}
+      11 | async function tool(page:Page,name:string){await shortcut(page,"tool-toggle");await page.locator(`[data-tool="${name}"]`).click();}
+      12 | async function material(page:Page,name:string){for(let i=0;i<8;i++){const b=page.getByRole("button",{name:`${name} auswählen`,exact:true});if(await b.count()){await b.click();return;}await page.locator("#material-next").click();}throw Error(`Material fehlt: ${name}`);}
+        at travel (/workspace/blockboom/e2e/living-v06.spec.ts:9:114)
+        at /workspace/blockboom/e2e/living-v06.spec.ts:70:2
+
+    Error Context: test-results/living-v06-alle-fünf-Entde-89f54-gbau-und-echte-Schatztruhen/error-context.md
+
+  1 interrupted
+    e2e/living-v06.spec.ts:63:1 › alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte Schatztruhen 
+  58 did not run
+  23 passed (10.9m)

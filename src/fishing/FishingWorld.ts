@@ -166,6 +166,10 @@ export class FishingWaters {
   }
 }
 
+/** The long physical jetty belongs to this fishing spot, beyond its shore circle. */
+function onGreatJetty(spot:AnglingSpot,x:number,z:number){
+  return spot.id==="great"&&Math.abs(x-(spot.center.x-5))<2.2&&z>=spot.center.z-1.5&&z<=spot.shore.z+2;
+}
 export function nearAnglingSpot(
   x: number,
   y: number,
@@ -174,7 +178,7 @@ export function nearAnglingSpot(
   return (
     SPOTS.find(
       (spot) =>
-        Math.hypot(x - spot.shore.x, z - spot.shore.z) < 4.4 &&
+        (Math.hypot(x - spot.shore.x, z - spot.shore.z) < 4.4 || onGreatJetty(spot,x,z)) &&
         Math.abs(y - 1) < 4,
     ) || null
   );
@@ -183,7 +187,7 @@ export function nearAnglingSpot(
 export function discoverySpot(x: number, z: number) {
   return (
     SPOTS.find(
-      (spot) => Math.hypot(x - spot.shore.x, z - spot.shore.z) < 5.5,
+      (spot) => Math.hypot(x - spot.shore.x, z - spot.shore.z) < 5.5 || onGreatJetty(spot,x,z),
     ) || null
   );
 }

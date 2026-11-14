@@ -1,0 +1,57 @@
+
+> blockboom@0.7.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/blockboom
+
+ ✓ src/tests/discovery-fishing.test.ts (6 tests) 115ms
+stdout | src/tests/discovery-world.test.ts > begrenzt Runtime-Generierung pro Schritt und misst tatsächliche Laufzeit
+{"streamSteps":378,"lastMs":0.21271999999999025,"maxRuntimeMs":2.7606849999999667,"maxColumnMs":4.05715599999985,"generatedChunks":31,"unloadedChunks":10,"pendingChunks":0,"generatedColumns":4464,"blocks":67859}
+
+ ✓ src/tests/discovery-world.test.ts (9 tests) 1652ms
+   ✓ erzeugt echte offene Eingänge und durchgehende Mine bis zur tiefen Fundkammer  435ms
+   ✓ verbindet Siedlung und Mine mit einem wirklich begehbaren Weg und erhält eigene Baublöcke  530ms
+stdout | src/tests/rendering.test.ts > behält eine begrenzte Geometriezahl und baut nur betroffene Chunks neu
+{"worldMeshes":16,"buildMs":49.32,"meanPickMs":0.388,"oldPickBudgetPer60Frames":60,"newMaxPicksPerSecond":20,"rebuiltMeshes":4}
+
+stdout | src/tests/rendering.test.ts > gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam
+{"streamingPasses":8,"peakMeshes":38,"peakBlocks":59675,"remainingGeometry":27,"disposedGeometry":152,"maxRebuildMs":180.38}
+
+ ✓ src/tests/rendering.test.ts (3 tests) 1171ms
+   ✓ gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam  1054ms
+ ✓ src/tests/living.test.ts (15 tests) 905ms
+   ✓ entlädt äußere Chunks und restauriert Bauwerke und entfernte Erze deterministisch  611ms
+stdout | src/tests/forest-population.test.ts > erzeugt einen tatsächlichen Wald mit hohen Stämmen, freien Wegen und begrenzter Geometrie
+{"forest":{"logs":82,"triangles":43488,"chunkMeshes":37,"slices":46,"maxSliceMs":4.21,"blocks":69466}}
+
+ ✓ src/tests/forest-population.test.ts (1 test) 541ms
+   ✓ erzeugt einen tatsächlichen Wald mit hohen Stämmen, freien Wegen und begrenzter Geometrie  540ms
+ ✓ src/tests/props-performance.test.ts (3 tests) 306ms
+stdout | src/tests/stream-budget.test.ts > misst reale Buildslices und hält Geometrien bei wiederholten kleinen Bauaktionen begrenzt
+{"rendererBudgetMs":4,"slices":20,"maxObservedSliceMs":4.12,"meanSliceMs":2.19,"maxChunkCpuMs":2.38,"activeMeshes":16}
+
+ ✓ src/tests/stream-budget.test.ts (6 tests) 224ms
+ ✓ src/tests/nightfall.test.ts (15 tests) 166ms
+ ✓ src/tests/target.test.ts (4 tests) 59ms
+ ✓ src/tests/fishing-v04.test.ts (6 tests) 73ms
+ ✓ src/tests/logic.test.ts (12 tests) 50ms
+ ✓ src/tests/discovery.test.ts (10 tests) 50ms
+ ✓ src/tests/camera.test.ts (8 tests) 45ms
+ ✓ src/tests/v03.test.ts (5 tests) 32ms
+ ✓ src/tests/living-discovery.test.ts (7 tests) 35ms
+ ✓ src/tests/blueprint.test.ts (5 tests) 32ms
+ ✓ src/tests/expansion.test.ts (4 tests) 28ms
+ ✓ src/tests/fish-v2.test.ts (2 tests) 18ms
+ ✓ src/tests/mobile-discovery.test.ts (13 tests) 14ms
+ ✓ src/tests/transfer.test.ts (4 tests) 8ms
+ ✓ src/tests/learning-v2.test.ts (5 tests) 8ms
+ ✓ src/tests/input.test.ts (11 tests) 8ms
+ ✓ src/tests/save-edge-cells.test.ts (2 tests) 4ms
+ ✓ src/tests/entry-recipes.test.ts (3 tests) 4ms
+
+ Test Files  24 passed (24)
+      Tests  159 passed (159)
+   Start at  07:09:51
+   Duration  10.78s (transform 489ms, setup 0ms, collect 1.64s, tests 5.55s, environment 3ms, prepare 1.06s)
+

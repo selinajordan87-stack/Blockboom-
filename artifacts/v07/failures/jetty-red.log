@@ -1,0 +1,39 @@
+
+ RUN  v3.2.7 /workspace/blockboom
+
+ ❯ src/tests/discovery-fishing.test.ts (6 tests | 1 failed) 141ms
+   ✓ ergänzt den erreichbaren großen Angelplatz und bewahrt alte Entdeckungen 2ms
+   ✓ verteilt sichtbare Fische in Ufernähe des großen Sees ohne die Population unbeschränkt zu erhöhen 13ms
+   ✓ lässt am großen See tatsächlich auswerfen, einen Fisch heranschwimmen, beißen und anlanden 21ms
+   ✓ zeigt entfernte Fischinstanzen im Frustum und trifft sie durch echte Mesh-Raycasts 11ms
+   ✓ zeichnet die neue Wasserfläche richtig und reserviert genug Instanzen ohne Fernterrain vorzuladen 12ms
+   × erkennt den tatsächlich begehbaren großen Holzsteg als Angelplatz 81ms
+     → expected undefined to be 'great' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/tests/discovery-fishing.test.ts > erkennt den tatsächlich begehbaren großen Holzsteg als Angelplatz
+AssertionError: expected undefined to be 'great' // Object.is equality
+
+- Expected: 
+"great"
+
++ Received: 
+undefined
+
+ ❯ src/tests/discovery-fishing.test.ts:64:116
+     62| it("erkennt den tatsächlich begehbaren großen Holzsteg als Angelplatz"…
+     63|  const w=new World(),stream=new RegionStream(w,true);stream.ensure(-11…
+     64|  for(const z of [-79,-87,-108]){expect(w.get(-115,0,z)).toBe("Bretter"…
+       |                                                                                                                    ^
+     65|  expect(nearAnglingSpot(-122,1,-90)).toBeNull();expect(nearAnglingSpot…
+     66| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  07:09:28
+   Duration  568ms (transform 161ms, setup 0ms, collect 237ms, tests 141ms, environment 0ms, prepare 66ms)
+

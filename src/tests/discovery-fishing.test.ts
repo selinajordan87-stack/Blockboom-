@@ -6,6 +6,7 @@ import {AnglingEngine,type AnglingEvent} from "../fishing/AnglingEngine";
 import {FishingWaters,enrichFishingWorld,nearAnglingSpot,discoverySpot} from "../fishing/FishingWorld";
 import {FishView} from "../fishing/FishView";
 import {World} from "../world/World";
+import {RegionStream} from "../living/Regions";
 
 it("ergänzt den erreichbaren großen Angelplatz und bewahrt alte Entdeckungen",()=>{
  const great=spotById("great");expect(great.center).toEqual({x:-110,z:-110});
@@ -56,4 +57,10 @@ it("zeichnet die neue Wasserfläche richtig und reserviert genug Instanzen ohne 
  const reeds=waters.group.getObjectByName("Schilf") as T.InstancedMesh,logs=waters.group.getObjectByName("Totholz") as T.InstancedMesh;
  expect(reeds.count).toBe(SPOTS.reduce((n,spot)=>n+(spot.id==="river"?8:11),0));expect(reeds.instanceMatrix.count).toBeGreaterThanOrEqual(reeds.count);expect(logs.count).toBe(SPOTS.length);
  const world=new World();enrichFishingWorld(world);expect(world.get(-110,-2,-110)).toBeUndefined();expect([...world.blocks.keys()].some(key=>Math.abs(Number(key.split(",")[0]))>=60)).toBe(false);
+});
+
+it("erkennt den tatsächlich begehbaren großen Holzsteg als Angelplatz",()=>{
+ const w=new World(),stream=new RegionStream(w,true);stream.ensure(-115,-90);
+ for(const z of [-79,-87,-108]){expect(w.get(-115,0,z)).toBe("Bretter");expect(nearAnglingSpot(-114.5,1,z+.5)?.id).toBe("great");expect(discoverySpot(-114.5,z+.5)?.id).toBe("great");}
+ expect(nearAnglingSpot(-122,1,-90)).toBeNull();expect(nearAnglingSpot(-114.5,12,-86.5)).toBeNull();
 });

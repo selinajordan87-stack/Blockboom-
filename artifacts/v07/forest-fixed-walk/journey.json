@@ -1,0 +1,409 @@
+{
+  "kind": "input-only known-route technical gameplay proof, not independent human exploration",
+  "events": [
+    {
+      "event": "start",
+      "version": "WORLD DISCOVERY · v0.7.0",
+      "method": "fresh isolated context, UI and input only; technical known route, no save/position injection; no human finding-time claim"
+    },
+    {
+      "event": "continue",
+      "method": "actual previously exported played save imported through normal UI"
+    },
+    {
+      "event": "capture",
+      "name": "00-continued-played-position",
+      "seconds": 11.043,
+      "position": [
+        8.297247088437295,
+        1.0000090744173802,
+        22.733924264919715
+      ],
+      "region": "meadow",
+      "frames": 31,
+      "performance": {
+        "calls": 64,
+        "geometries": 59,
+        "textures": 4,
+        "frame": {
+          "fps": 10.073580939032936,
+          "frameMs": 233.30000000000018,
+          "p95Ms": 216.5999999999999,
+          "samples": 23
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 186.5,
+          "totalBuildMs": 186.5,
+          "lastChunkMs": 3.0999999940395355,
+          "maxChunkMs": 42.1000000089407,
+          "queue": 0,
+          "rebuilt": 26,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 28,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0.10000000894069672,
+          "maxColumnMs": 2.2000000029802322,
+          "generatedChunks": 10,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 1440
+        },
+        "activeMeshes": 92,
+        "activeAnimals": 10,
+        "activeZombies": 0,
+        "heap": 24840917
+      }
+    },
+    {
+      "event": "capture",
+      "name": "16-mobile-hud",
+      "seconds": 11.982,
+      "position": [
+        8.297247088437295,
+        1.0000090840473617,
+        22.733924264919715
+      ],
+      "region": "meadow",
+      "frames": 45,
+      "performance": {
+        "calls": 64,
+        "geometries": 59,
+        "textures": 4,
+        "frame": {
+          "fps": 11.212800775804594,
+          "frameMs": 16.700000000000728,
+          "p95Ms": 216.5999999999999,
+          "samples": 37
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 186.5,
+          "totalBuildMs": 186.5,
+          "lastChunkMs": 3.0999999940395355,
+          "maxChunkMs": 42.1000000089407,
+          "queue": 0,
+          "rebuilt": 26,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 28,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0.10000000894069672,
+          "maxColumnMs": 2.2000000029802322,
+          "generatedChunks": 10,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 1440
+        },
+        "activeMeshes": 92,
+        "activeAnimals": 10,
+        "activeZombies": 0,
+        "heap": 29487955
+      }
+    },
+    {
+      "event": "read-text",
+      "id": "start-plan",
+      "text": "Bauwissen\n\nEin Platz für die Nacht\n\nSammle Holz am Baum und Stein am Felsen; wähle danach einen Block und setze ihn am durchsichtigen Umriss.\n\nEigene Wände, Tür, Dach und Licht bilden deinen Unterschlupf – ergänze Werkbank, Bett und Truhe.\n\n▷ Vorlesen\nHinweis\n\nGelesen · weiter\nIm Buch blättern"
+    },
+    {
+      "event": "setting",
+      "difficulty": "Friedlich",
+      "method": "normal settings UI; exploration control run, combat tested separately"
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:12,24",
+      "position": [
+        11.845554369870278,
+        1.000009034812221,
+        23.947190697542787
+      ],
+      "seconds": 7.266
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:12,28.5",
+      "position": [
+        11.99303686351989,
+        1.0000090665504149,
+        28.294689853847053
+      ],
+      "seconds": 6.098
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:-64,28.5",
+      "position": [
+        -63.98168603644784,
+        1.00000901989169,
+        28.499885548850372
+      ],
+      "seconds": 51.296
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:-64,23",
+      "position": [
+        -63.99717229016868,
+        1.0000090337262373,
+        23.849911336454454
+      ],
+      "seconds": 6.101
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:-108,30",
+      "position": [
+        -107.44981741003637,
+        1.0000090481029509,
+        29.923070076965168
+      ],
+      "seconds": 31.698
+    },
+    {
+      "event": "capture",
+      "name": "02b-outer-forest",
+      "seconds": 121.117,
+      "position": [
+        -107.44981741003637,
+        1.0000090270796715,
+        29.923070076965168
+      ],
+      "region": "forest",
+      "frames": 2709,
+      "performance": {
+        "calls": 33,
+        "geometries": 61,
+        "textures": 4,
+        "frame": {
+          "fps": 29.210228448328312,
+          "frameMs": 66.70000000001164,
+          "p95Ms": 66.69999999999709,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 186.5,
+          "totalBuildMs": 10354.699998795986,
+          "lastChunkMs": 13.599999994039536,
+          "maxChunkMs": 96.6000000089407,
+          "queue": 0,
+          "rebuilt": 320,
+          "columns": 0,
+          "restarts": 408,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 42.20000000298023,
+          "maxColumnMs": 41.79999999701977,
+          "generatedChunks": 69,
+          "unloadedChunks": 48,
+          "pendingChunks": 0,
+          "generatedColumns": 9936
+        },
+        "activeMeshes": 84,
+        "activeAnimals": 3,
+        "activeZombies": 0,
+        "heap": 35820439
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "great-lake:-145,-25",
+      "position": [
+        -144.7418414012273,
+        1.0000090500011334,
+        -24.62242076911599
+      ],
+      "seconds": 43.477
+    },
+    {
+      "event": "arrived",
+      "name": "great-lake:-145,-77",
+      "position": [
+        -144.99986955720084,
+        1.0000090182623391,
+        -76.97178486717009
+      ],
+      "seconds": 35.593
+    },
+    {
+      "event": "arrived",
+      "name": "great-lake:-110,-78",
+      "position": [
+        -110.88958566821157,
+        1.0000090765844694,
+        -77.97386171700397
+      ],
+      "seconds": 24.496
+    },
+    {
+      "event": "capture",
+      "name": "04b-great-lake",
+      "seconds": 231.189,
+      "position": [
+        -110.88958566821157,
+        1.0000090605796057,
+        -77.97386171700397
+      ],
+      "region": "river",
+      "frames": 6002,
+      "performance": {
+        "calls": 34,
+        "geometries": 63,
+        "textures": 4,
+        "frame": {
+          "fps": 20.93090186023387,
+          "frameMs": 50,
+          "p95Ms": 83.30000000001746,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 186.5,
+          "totalBuildMs": 22664.69999730587,
+          "lastChunkMs": 55.49999998509884,
+          "maxChunkMs": 129.29999999701977,
+          "queue": 0,
+          "rebuilt": 692,
+          "columns": 0,
+          "restarts": 916,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 42.20000000298023,
+          "maxColumnMs": 41.79999999701977,
+          "generatedChunks": 145,
+          "unloadedChunks": 122,
+          "pendingChunks": 0,
+          "generatedColumns": 20880
+        },
+        "activeMeshes": 84,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 39392659
+      }
+    },
+    {
+      "event": "capture",
+      "name": "05-connected-river",
+      "seconds": 237.222,
+      "position": [
+        -110.88958566821157,
+        1.000009074414153,
+        -77.97386171700397
+      ],
+      "region": "river",
+      "frames": 6146,
+      "performance": {
+        "calls": 67,
+        "geometries": 65,
+        "textures": 4,
+        "frame": {
+          "fps": 22.785747514929426,
+          "frameMs": 33.30000000001746,
+          "p95Ms": 83.30000000001746,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 186.5,
+          "totalBuildMs": 22664.69999730587,
+          "lastChunkMs": 55.49999998509884,
+          "maxChunkMs": 129.29999999701977,
+          "queue": 0,
+          "rebuilt": 692,
+          "columns": 0,
+          "restarts": 916,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 42.20000000298023,
+          "maxColumnMs": 41.79999999701977,
+          "generatedChunks": 145,
+          "unloadedChunks": 122,
+          "pendingChunks": 0,
+          "generatedColumns": 20880
+        },
+        "activeMeshes": 84,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 27056202
+      }
+    },
+    {
+      "event": "capture",
+      "name": "17-save-reload",
+      "seconds": 240.748,
+      "position": [
+        -110.88958566821157,
+        1.0000090303331948,
+        -77.97386171700397
+      ],
+      "region": "river",
+      "frames": 14,
+      "performance": {
+        "calls": 67,
+        "geometries": 60,
+        "textures": 4,
+        "frame": {
+          "fps": 13.041210224308813,
+          "frameMs": 83.40000000000009,
+          "p95Ms": 100,
+          "samples": 5
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 301.20000000298023,
+          "totalBuildMs": 301.20000000298023,
+          "lastChunkMs": 5,
+          "maxChunkMs": 45.400000005960464,
+          "queue": 0,
+          "rebuilt": 37,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0,
+          "maxColumnMs": 23.599999994039536,
+          "generatedChunks": 21,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 3024
+        },
+        "activeMeshes": 84,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 22692506
+      }
+    },
+    {
+      "event": "export",
+      "method": "normal save export UI, actual played state",
+      "storage": {
+        "characters": 8450,
+        "estimatedUTF16Bytes": 16900,
+        "worldChanges": 6,
+        "mapTiles": 158
+      }
+    }
+  ],
+  "errors": []
+}

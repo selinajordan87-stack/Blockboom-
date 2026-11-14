@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:64135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/great-lake-v07.spec.ts:6:1 › großer See: erspielten Stand importieren, Steg betreten und einen echten Fisch mit Touch angeln (54.0s)
+
+  1 passed (55.2s)

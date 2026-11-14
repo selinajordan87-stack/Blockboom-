@@ -65,7 +65,7 @@ Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlic
 | Prüfung | Ergebnis / Bezug |
 | --- | --- |
 | TypeScript strict, letzter Stand | bestanden |
-| Logik-/Integrationssuite | **158/158**, 24 Dateien, einschließlich Save-Altversionen, Quota, Rückweg aus tiefer Mine, Wegverbindung und Gartenschutz |
+| Logik-/Integrationssuite | **159/159**, 24 Dateien, einschließlich Save-Altversionen, Quota, Rückweg aus tiefer Mine, Wegverbindung und Gartenschutz |
 | Vollständige Browserregression | **82/82**, 20,9 min, Bundle `index-BdAeCH9T.js` vor dem letzten Weg-/Gartenschutzfix; [Log](artifacts/v07/final-browser.log) |
 | Nachprüfung Wegverbindung | **8/8** auf `index-CjN2T-SP.js` |
 | Endgültige gezielte Nachprüfung | **10/10 bestanden** auf `index-unVfjpAn.js`; frischer Survivalstart, alte Saves, Regionen, Touch, Export/Import, Quota und Pages |
@@ -150,3 +150,11 @@ Der Journalpfad kennt technische Wegpunkte; er ist keine menschliche Bewertung v
 Der erste Weg erreichte den äußeren Wald und großen See tatsächlich, aber die Waldaufnahme zeigte lediglich Büsche und Stümpfe. Der unveröffentlichte Außenweltgenerator verwendete ein Vierer-Raster mit `x,z ≡ 2 mod 4`; sein Hash `31*x+73*z` war damit immer durch vier teilbar. Die Baum-Bedingung war dort nie erfüllt. Ein neuer Test reproduzierte **null höhere Stammblöcke**. Die vorherigen grünen Browserfälle hatten dieses sichtbare Problem nicht erfasst.
 
 Der Fix mischt ganzzahlige Rasterkoordinaten, verwendet einen günstigeren Sechser-Abstand und lässt Wege und kleine Tierlichtungen frei. Der Test prüft tatsächliche höhere Stämme beider Holzarten, einen vollständigen begehbaren Weg und die resultierende Geometrie. Ergebnis: 43.488 Dreiecke in 37 Chunk-Meshes, 69.466 geladene Blöcke, 43 Buildslices, maximal beobachtet 5,25 ms. Alte Landschaft innerhalb der bisherigen Grenze und gespeicherte Blockänderungen bleiben erhalten. Der echte Eingabeweg wird nach diesem Fix nochmals fotografiert. [Fehlaufnahme](artifacts/v07/failures/empty-forest.png), [roter Test](artifacts/v07/failures/empty-forest-red.log).
+
+## Angelsteg im echten Spielerablauf
+
+Der große See wurde nach dem Waldfix erneut über normale Eingaben erreicht. Eine anschließende Quellen-/Regressionprüfung fand den begehbaren Holzsteg größtenteils außerhalb des bisherigen 4,4-Meter-Uferkreises. Die Angel- und Entdeckungszone folgt nun zusätzlich dem tatsächlich erzeugten Steg. Der rote Test prüft zugleich, dass dort echte Bretter vorhanden sind; der Fix bestand alle **159 Logiktests**.
+
+Der neue Browserfall importiert eine unveränderte Exportdatei des wirklich gelaufenen Entdeckerstands über das normale Menü, geht auf den Holzsteg, rüstet die sichtbare Angel aus und verwendet echte CDP-Touchkontakte für Kraftwurf, Anschlag und Drill. Ein tatsächlich vorhandener Fisch aus dem großen See wird angelandet und zurückgesetzt; Fangbuchdaten bleiben nach Reload erhalten. **1/1 bestanden in 54,0 s**, [Log](artifacts/v07/great-lake-browser.log), [Angel am Steg](artifacts/v07/great-lake-play/12-rod-on-great-lake-jetty.png), [Fang](artifacts/v07/great-lake-play/12-great-lake-catch.png).
+
+Der vor diesem Fix laufende Gesamttest wurde bewusst unterbrochen: 23 bestanden, ein laufender Fall unterbrochen, 58 nicht ausgeführt. Das ist kein erfolgreicher Gesamtlauf. Die abschließende vollständige Suite umfasst jetzt **83 Fälle** und läuft auf `index-aiUri2qf.js`.
