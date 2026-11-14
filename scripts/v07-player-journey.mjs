@@ -51,7 +51,7 @@ async function run(){
  try{
   await j.start();
   if(process.env.BLOCKBOOM_CONTINUE_SAVE){await j.menu('menu-settings');await page.locator('#save-transfer').tap();await page.locator('#import-file').setInputFiles(process.env.BLOCKBOOM_CONTINUE_SAVE);await page.locator('#apply-import').tap();await page.locator('#play').tap();await j.fresh();j.events.push({event:'continue',method:'actual previously exported played save imported through normal UI'});}
-  await j.capture('01-start-region');await j.capture('16-mobile-hud');
+  await j.capture(process.env.BLOCKBOOM_CONTINUE_SAVE?'00-continued-played-position':'01-start-region');await j.capture('16-mobile-hud');
   await j.menu('menu-map');await page.screenshot({path:`${j.out}/15-discovery-map.png`});await j.close();
   await j.readEntry('start-plan','14-reading-adventure');
   await j.menu('night-menu');await page.locator('#difficulty').selectOption('Friedlich');await page.locator('#apply-night').tap();j.events.push({event:'setting',difficulty:'Friedlich',method:'normal settings UI; exploration control run, combat tested separately'});
@@ -66,7 +66,7 @@ async function run(){
    {name:'outer-forest',points:[[149,-90],[143,-90],[137,-90],[131,-90],[129,-90],[122,-84],[100,-70],[64,-45],[27,-30],[20,-34],[-25,-34],[-26,-20],[-26,7],[-24,23],[-64,23],[-108,30]],photo:'02b-outer-forest',look:[-115,4,25]},
    {name:'great-lake',points:[[-145,-25],[-145,-77],[-110,-78]],photo:'04b-great-lake',look:[-110,.4,-100]},
   ];
-  const active=process.env.BLOCKBOOM_JOURNEY_ROUTE==='outer'?route.slice(5):process.env.BLOCKBOOM_JOURNEY_ROUTE==='west'?route.slice(7):route;
+  const active=process.env.BLOCKBOOM_JOURNEY_ROUTE==='continue-mine'?route.slice(6).map((leg,i)=>i===0?{...leg,points:leg.points.slice(2)}:leg):process.env.BLOCKBOOM_JOURNEY_ROUTE==='outer'?route.slice(5):process.env.BLOCKBOOM_JOURNEY_ROUTE==='west'?route.slice(7):route;
   for(const leg of active){
    for(const [x,z]of leg.points)await j.walk(x,z,{name:`${leg.name}:${x},${z}`});
    if(leg.look)await j.aim(...leg.look);await j.capture(leg.photo);
@@ -92,6 +92,7 @@ async function run(){
     if(!state.extension.living.looted.includes('159,-12,-90'))throw Error('Deep chamber loot was not actually awarded');
     await j.capture('09b-chamber-find');
    }
+   if(leg.name==='great-lake'){await j.look(Math.PI,-.14);await j.capture('05-connected-river');}
   }
   await j.save();await page.reload();await page.locator('#play').tap();await j.capture('17-save-reload');
  }catch(error){j.events.push({event:'failure',message:String(error)});await page.screenshot({path:`j.out/failure.png`.replace('j.out',j.out)}).catch(()=>{});throw error;}finally{await j.finish();await browser.close();}

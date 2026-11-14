@@ -31,6 +31,12 @@ it("behält alte Tier-IDs und eigene Haustiere vor neuen Wildtierdefaults",()=>{
  const loaded=readLiving(old);expect(loaded.animals).toHaveLength(MAX_ANIMALS);expect(loaded.animals[0]).toMatchObject({id:"mein-alter-wolf",name:"Fiete",tame:true,mode:"Folgen"});expect(loaded.explored).toEqual(["0,1"]);expect(loaded.entrances).toEqual(["legacyMine"]);
 });
 
+it("schützt auch hohe gespeicherte Dächer und tiefe Kellereingriffe vor dem Starterbeet",()=>{
+ const w=new World(),s=freshLiving();w.set(8,5,18,"Bretter");w.set(9,-10,18,null);
+ expect(initializeDiscoveryGarden(w,s)).toBe(2);expect(w.get(8,0,18)).toBe("Gras");expect(w.get(9,0,18)).toBe("Gras");
+ expect(w.get(8,5,18)).toBe("Bretter");expect(w.changes["9,-10,18"]).toBeNull();expect(s.crops.every(c=>c.cell[2]===19)).toBe(true);
+});
+
 it("rendert nahe Tiere auch weit außerhalb der alten 100-Meter-Bounds",()=>{
  const s=freshLiving(),view=new LivingView(new T.Scene());s.animals[0].pos=[145,8,-105];
  view.update(s,new T.Vector3(145,9,-105));expect(view.animals.count).toBeGreaterThanOrEqual(12);expect(view.animals.count).toBeLessThanOrEqual(MAX_ANIMALS*12);expect(view.animals.frustumCulled).toBe(false);

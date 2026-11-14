@@ -1,0 +1,52 @@
+
+> blockboom@0.7.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/blockboom
+
+ ✓ src/tests/living-discovery.test.ts (7 tests) 37ms
+stdout | src/tests/discovery-world.test.ts > begrenzt Runtime-Generierung pro Schritt und misst tatsächliche Laufzeit
+{"streamSteps":380,"lastMs":0.06602900000007139,"maxRuntimeMs":7.884448999999904,"maxColumnMs":7.712850000000117,"generatedChunks":31,"unloadedChunks":10,"pendingChunks":0,"generatedColumns":4464,"blocks":68106}
+
+ ✓ src/tests/discovery-world.test.ts (9 tests) 1710ms
+   ✓ erzeugt echte offene Eingänge und durchgehende Mine bis zur tiefen Fundkammer  415ms
+   ✓ verbindet Siedlung und Mine mit einem wirklich begehbaren Weg und erhält eigene Baublöcke  544ms
+stdout | src/tests/rendering.test.ts > behält eine begrenzte Geometriezahl und baut nur betroffene Chunks neu
+{"worldMeshes":16,"buildMs":38.06,"meanPickMs":0.33,"oldPickBudgetPer60Frames":60,"newMaxPicksPerSecond":20,"rebuiltMeshes":4}
+
+stdout | src/tests/rendering.test.ts > gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam
+{"streamingPasses":8,"peakMeshes":38,"peakBlocks":59675,"remainingGeometry":27,"disposedGeometry":152,"maxRebuildMs":120.73}
+
+ ✓ src/tests/rendering.test.ts (3 tests) 985ms
+   ✓ gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam  888ms
+ ✓ src/tests/living.test.ts (15 tests) 1026ms
+   ✓ entlädt äußere Chunks und restauriert Bauwerke und entfernte Erze deterministisch  633ms
+ ✓ src/tests/props-performance.test.ts (3 tests) 277ms
+stdout | src/tests/stream-budget.test.ts > misst reale Buildslices und hält Geometrien bei wiederholten kleinen Bauaktionen begrenzt
+{"rendererBudgetMs":4,"slices":18,"maxObservedSliceMs":4.27,"meanSliceMs":2.25,"maxChunkCpuMs":2.48,"activeMeshes":16}
+
+ ✓ src/tests/stream-budget.test.ts (6 tests) 286ms
+ ✓ src/tests/nightfall.test.ts (15 tests) 167ms
+ ✓ src/tests/fishing-v04.test.ts (6 tests) 84ms
+ ✓ src/tests/target.test.ts (4 tests) 73ms
+ ✓ src/tests/discovery-fishing.test.ts (5 tests) 55ms
+ ✓ src/tests/logic.test.ts (12 tests) 46ms
+ ✓ src/tests/discovery.test.ts (10 tests) 55ms
+ ✓ src/tests/v03.test.ts (5 tests) 35ms
+ ✓ src/tests/camera.test.ts (8 tests) 40ms
+ ✓ src/tests/blueprint.test.ts (5 tests) 34ms
+ ✓ src/tests/expansion.test.ts (4 tests) 24ms
+ ✓ src/tests/fish-v2.test.ts (2 tests) 16ms
+ ✓ src/tests/mobile-discovery.test.ts (13 tests) 11ms
+ ✓ src/tests/input.test.ts (11 tests) 8ms
+ ✓ src/tests/transfer.test.ts (4 tests) 8ms
+ ✓ src/tests/learning-v2.test.ts (5 tests) 7ms
+ ✓ src/tests/save-edge-cells.test.ts (2 tests) 4ms
+ ✓ src/tests/entry-recipes.test.ts (3 tests) 4ms
+
+ Test Files  23 passed (23)
+      Tests  157 passed (157)
+   Start at  01:17:34
+   Duration  10.01s (transform 463ms, setup 0ms, collect 1.54s, tests 4.99s, environment 3ms, prepare 1.08s)
+

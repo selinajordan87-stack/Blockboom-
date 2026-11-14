@@ -28,6 +28,14 @@ it("erhält gespeicherte Häuser und abgebaute Zellen beim Verlassen und Wiederl
  stream.ensure(-100,30);stream.ensure(102,88);expect(w.get(104,2,87)).toBe("Glas");expect(w.get(104,0,87)).toBeUndefined();
  expect(w.changesByChunk.get("8,7")?.get("104,2,87")).toBe("Glas");
 });
+it("ermöglicht den Rückweg aus der tiefen Bergmine mit normalen Sprüngen",()=>{
+ const w=new World(),stream=new RegionStream(w,true),p=new Player(w);stream.ensure(130,-90);p.pos=[130.5,1.001,-90];p.yaw=-Math.PI/2;
+ expect(p.blocked(p.pos)).toBe(false);
+ for(let i=0;i<2400&&p.pos[0]<154.5;i++){stream.ensure(p.pos[0],p.pos[2]);p.step(1/120,0,1,false);}
+ expect(p.pos[0]).toBeGreaterThan(154.5);expect(p.pos[1]).toBeLessThan(-10);p.yaw=Math.PI/2;
+ for(let i=0;i<4200&&p.pos[0]>129;i++){stream.ensure(p.pos[0],p.pos[2]);p.step(1/120,0,1,i%70===0);}
+ expect(p.pos[0]).toBeLessThan(130);expect(p.pos[1]).toBeGreaterThan(.9);
+});
 it("lässt die Figur vom alten Seeboden mit normalen Sprüngen ans Ostufer zurückkehren",()=>{
  const w=new World(),stream=new RegionStream(w,true),p=new Player(w);stream.ensure(-36,-34);p.pos=[-36,-.999,-34.5];p.yaw=-Math.PI/2;
  for(let i=0;i<1800&&p.pos[0]<-25;i++){stream.ensure(p.pos[0],p.pos[2]);p.step(1/120,0,1,i%70===0);}
@@ -38,6 +46,12 @@ it("begrenzt Runtime-Generierung pro Schritt und misst tatsächliche Laufzeit",(
  do{stream.ensure(100,85,1);expect(stream.metrics.generatedColumns-columns).toBeLessThanOrEqual(8);columns=stream.metrics.generatedColumns;steps++;}while(stream.metrics.pendingChunks>0&&steps<700);
  expect(stream.metrics.pendingChunks).toBe(0);expect(stream.metrics.generatedChunks).toBeGreaterThan(15);expect(w.activeChunks.size).toBeLessThan(45);
  console.info(JSON.stringify({streamSteps:steps,...stream.metrics,blocks:w.blocks.size}));
+});
+it("verbindet Siedlung und Mine mit einem wirklich begehbaren Weg und erhält eigene Baublöcke",()=>{
+ const w=new World(),stream=new RegionStream(w,true),p=new Player(w);stream.ensure(64,27);p.pos=[64.5,1.001,27];p.yaw=0;
+ for(let i=0;i<2400&&p.pos[2]>-44.5;i++){stream.ensure(p.pos[0],p.pos[2]);p.step(1/120,0,1,false);}
+ expect(p.pos[2]).toBeLessThan(-44.5);expect(p.pos[1]).toBeGreaterThan(.9);expect(p.pos[1]).toBeLessThan(1.1);
+ w.set(64,1,16,"Bretter");stream.ensure(-100,30);stream.ensure(64,16);expect(w.get(64,1,16)).toBe("Bretter");
 });
 it("erzeugt markante Berge und begrenzte, freigegebene Ferngeometrie",()=>{
  expect(terrainProfile(145,-105).top).toBeGreaterThan(20);const scene=new T.Scene(),view=new LandmarkView(scene,new World());view.update([0,1,17],1000);

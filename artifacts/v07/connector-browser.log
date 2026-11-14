@@ -1,0 +1,16 @@
+
+Running 8 tests using 1 worker
+
+(node:56309) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (18.0s)
+  ✓  2 e2e/entry-loop-v07.spec.ts:4:1 › Neuer Survivalstart: Holz und Stein sammeln, Gartenblatt anwenden, Grundrezepte und eigenes Beet (58.2s)
+  ✓  3 e2e/living-v06.spec.ts:14:1 › Regionen und Höhle sind erreichbar, äußere Bauwerke und alte Welt bleiben nach Reload (58.6s)
+  ✓  4 e2e/mobile-rescue.spec.ts:21:1 › P0: sichtbarer Fokusverlust während Bewegung öffnet keine manuelle Pause (2.6s)
+  ✓  5 e2e/mobile-rescue.spec.ts:65:1 › Bewegung, Kamera, beide Finger gleichzeitig und unabhängiges Loslassen (5.5s)
+  ✓  6 e2e/mobile-ux.spec.ts:66:1 › Export ist eine echte Datei; geprüfter Import überlebt Reload und legt eine Sicherung an (12.5s)
+  ✓  7 e2e/pages.spec.ts:7:1 › Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang (3.2s)
+{"v03NewWorld":{"calls":93,"triangles":39114,"geometries":52,"textures":4,"chunks":28,"ratio":1}}
+  ✓  8 e2e/v03.spec.ts:42:1 › neue Welt migriert auf Edition 4 mit begrenztem Renderbudget (5.9s)
+
+  8 passed (2.8m)
