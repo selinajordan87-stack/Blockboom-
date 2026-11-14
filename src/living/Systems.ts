@@ -1,6 +1,6 @@
 import { World, MIN_Y, MAX_Y, LIMIT, type Cell, type Block } from "../world/World";
 import { collides, solid } from "../nightfall/Defense";
-import { type LivingState, type Animal, type CropKind, CROPS } from "./State";
+import { type LivingState, type Animal, type CropKind, CROPS, ANIMAL_HEALTH } from "./State";
 import { ItemStore } from "./Items";
 import { regionAt, CAVE_ENTRANCES } from "./Regions";
 export const GROWTH:Record<CropKind,number>={Weizen:120,Karotte:150,Kartoffel:180,Kürbis:210};
@@ -37,6 +37,13 @@ function safeAnimalSpot(w:World,origin:Cell):Cell|null{
 }
 export function updateAnimals(s:LivingState,w:World,player:Cell,dt:number){
  for(const a of s.animals){
+  if(a.health===0){
+   if(s.clock<(a.respawnAt??Infinity))continue;
+   // Keep the bounded regional slot; never create extra animals or spawn in a wall.
+   if(Math.hypot(a.home[0]-player[0],a.home[2]-player[2])<5)continue;
+   const p=safeAnimalSpot(w,a.home);if(!p)continue;
+   a.pos=p;a.health=ANIMAL_HEALTH[a.kind];delete a.respawnAt;a.action="Ruhen";
+  }
   let distance=Math.hypot(a.pos[0]-player[0],a.pos[2]-player[2]);
   if(a.tame&&a.mode==="Folgen"&&distance>22){const p=safeAnimalSpot(w,[player[0]+1,player[1],player[2]+1]);if(p){a.pos=p;distance=Math.hypot(p[0]-player[0],p[2]-player[2]);}}
   if(distance>30)continue;

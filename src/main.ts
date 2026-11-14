@@ -73,7 +73,8 @@ import { DefenseView, ZombieView, NightAudio } from "./nightfall/Views";
 import { buildRefuge, toggleDoor, restoreNightDamage } from "./nightfall/Defense";
 import { NightUI } from "./nightfall/NightUI";
 import { RegionStream, regionAt } from "./living/Regions";
-import { ItemStore } from "./living/Items";
+import { ItemStore,EDIBLE,eatHarvest } from "./living/Items";
+import {huntAnimal,animalHealth} from "./living/Hunting";
 import { LivingUI } from "./living/LivingUI";
 import { LivingView } from "./living/LivingView";
 import {initializeDiscoveryGarden} from "./living/StarterGarden";
@@ -86,7 +87,7 @@ const $ = <E extends HTMLElement = HTMLElement>(id: string) =>
 $("app").innerHTML = `
 <canvas id="world" aria-label="BLOCKBOOM 3D-Spielwelt"></canvas>
 <div id="hud" hidden>
- <header><a class="brand" id="brand">BLOCK<span>BOOM</span><small>DEINE KLEINE GROSSE WELT</small></a><div class="top-right"><span class="save-state" id="save-state">Lokal gespeichert</span><button id="living-menu" aria-label="Entdecken und Karte">◇</button><button id="bag" aria-label="Inventar öffnen">▦ <span>Inventar</span></button><button id="camera-shortcut" aria-label="Kamera ändern"><span>▣</span><small>Ansicht</small></button><button id="menu" aria-label="Menü öffnen">☰</button></div></header>
+ <header><a class="brand" id="brand">BLOCK<span>BOOM</span><small>DEINE KLEINE GROSSE WELT</small></a><div class="top-right"><span class="save-state" id="save-state">Lokal gespeichert</span><button id="living-menu" aria-label="Entdecken und Karte">◇</button><button id="bag" aria-label="Inventar öffnen">▦ <span>Inventar</span></button><button id="camera-shortcut" aria-label="Kamera ändern"><svg viewBox="0 0 24 20" width="22" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 5h4l2-3h6l2 3h4v13H3Z"/><circle cx="12" cy="11" r="4"/></svg><small>Kamera</small></button><button id="menu" aria-label="Menü öffnen">☰</button></div></header>
  <div class="location"><i></i><span id="location">Wiesenland</span><small>ENTDECKEN · BAUEN · AUSPROBIEREN</small></div>
  <div id="mission-pin" hidden><span>FREIWILLIGER AUFTRAG</span><b>Fange einen Barsch.</b></div>
  <div id="rotate-tip">↻ Im Querformat hast du mehr Platz.</div>
@@ -146,6 +147,7 @@ let reading = new ReadingEngine(),
 let pendingCatch: { fish: FishActor; method: "Angel" | "Holzknüppel" } | null =
   null;
 let preferredFish: import("./fishing/Fishing").FishName | undefined;
+try{const raw=localStorage.getItem(SAVE_KEY);if(raw&&!JSON.parse(raw).extension?.living?.wildlifeVersion&&!localStorage.getItem(SAVE_KEY+".pre-v071"))localStorage.setItem(SAVE_KEY+".pre-v071",raw);}catch{}
 const needsDiscoveryUpgrade=(()=>{try{return !JSON.parse(localStorage.getItem(SAVE_KEY)||"null")?.extension?.discovery;}catch{return true;}})();
 const expansion = saved?.extension
   ? readExpansion(saved.extension)
@@ -436,7 +438,7 @@ function aim() {
     });
     if(z)$("target-label").textContent=`${ZOMBIES[z.kind].name} · ${Math.ceil(z.hp)} LP`;
   }
-  if(animalTarget)$("target-label").textContent=animalTarget.name||animalTarget.kind;
+  if(animalTarget)$("target-label").textContent=(animalTarget.name||animalTarget.kind)+(animalTarget.tame?" · Begleiter":` · ${animalHealth(animalTarget)} LP`);
   if(planningTower){preview.visible=false;outline.visible=false;towerPreview.update(adjacent,!towerValidity(world,adjacent,player.pos));}else towerPreview.mesh.visible=false;
 }
 let animalTarget:Animal|null=null;
@@ -640,11 +642,17 @@ function resetCamera(){
  clearInput();cameraRig.reset(expansion.camera);expansion.view.fov=70;player.yaw=0;player.pitch=-.12;updateFov();updateCamera(0,true);recordDiagnostic("camera-reset");save();resumeGame();
 }
 function quickCamera(){
- openPanel("ANSICHT",`<h2>Wie möchtest du die Welt sehen?</h2><div class="camera-choices"><button id="view-first" aria-pressed="${expansion.camera.perspective==="first"}">Ego · mit Hand</button><button id="view-third" aria-pressed="${expansion.camera.perspective==="third"}">Von hinten · Figur sichtbar</button></div><label class="camera-distance-label">Abstand hinter der Figur <output id="quick-distance-value">${expansion.camera.distance} m</output><input id="quick-camera-distance" type="range" min="2" max="9" step=".5" value="${expansion.camera.distance}"></label><p class="hint">Weiter rechts = mehr Überblick. In engen Stellen nutzt die Kamera kurz den Ego-Blick und kehrt im Freien zurück.</p><div class="camera-choices"><button id="quick-camera-reset">Kamera befreien</button><button id="quick-camera-done" class="primary">Weiterspielen</button></div><button id="camera-more">Weitere Steuerungseinstellungen</button>`,true);
+ const waterSpot=nearAnglingSpot(...player.pos);
+ openPanel("ANSICHT",`<h2>Wie möchtest du die Welt sehen?</h2><div class="camera-choices"><button id="view-first" aria-pressed="${expansion.camera.perspective==="first"}">Ego · mit Hand</button><button id="view-third" aria-pressed="${expansion.camera.perspective==="third"}">Von hinten · Figur sichtbar</button></div><label class="camera-distance-label">Abstand hinter der Figur <output id="quick-distance-value">${expansion.camera.distance} m</output><input id="quick-camera-distance" type="range" min="2" max="9" step=".5" value="${expansion.camera.distance}"></label><p class="hint">Weiter rechts = mehr Überblick. In engen Stellen nutzt die Kamera kurz den Ego-Blick und kehrt im Freien zurück.</p><div class="camera-choices"><button id="quick-camera-reset">Kamera befreien</button><button id="quick-camera-done" class="primary">Weiterspielen</button></div>${waterSpot?'<button id="camera-water">Blick aufs Wasser</button>':""}<button id="camera-more">Weitere Steuerungseinstellungen</button>`);
  const update=()=>{updateFov();updateCamera(0,true);save();viewportDirty=true;$("view-first").setAttribute("aria-pressed",String(expansion.camera.perspective==="first"));$("view-third").setAttribute("aria-pressed",String(expansion.camera.perspective==="third"));};
  $("view-first").onclick=()=>{expansion.camera.perspective="first";update();};
  $("view-third").onclick=()=>{expansion.camera.perspective="third";update();};
  $("quick-camera-distance").oninput=()=>{expansion.camera.distance=Number($<HTMLInputElement>("quick-camera-distance").value);expansion.camera.perspective="third";$("quick-distance-value").textContent=`${expansion.camera.distance} m`;update();};
+ if(waterSpot)$("camera-water").onclick=()=>{
+  const fish=shoal.actors.filter(f=>f.alive&&f.spot===waterSpot.id).sort((a,b)=>Math.hypot(a.x-player.pos[0],a.z-player.pos[2])-Math.hypot(b.x-player.pos[0],b.z-player.pos[2]))[0];
+  const x=fish?.x??waterSpot.center.x,z=fish?.z??waterSpot.center.z,dx=x-player.pos[0],dz=z-player.pos[2];
+  player.yaw=Math.atan2(-dx,-dz);player.pitch=Math.atan2(waterSpot.waterY-.35-player.pos[1]-1.6,Math.hypot(dx,dz));updateCamera(0,true);save();resumeGame();
+ };
  $("quick-camera-reset").onclick=resetCamera;$("quick-camera-done").onclick=resumeGame;$("camera-more").onclick=controlSettings;
 }
 function controlSettings(){
@@ -707,10 +715,11 @@ function transferPanel(){
  $("back-menu").onclick=menu;
 }
 function eatQuickFood(){
+ const harvest=EDIBLE.find(id=>itemStore.count(id)>0);
+ if(harvest&&eatHarvest(itemStore,harvest)){toast(`${harvest} gegessen.`);save();return;}
  const food=night.supplies.Fischgericht>0?"Fischgericht":night.supplies.Beeren>0?"Beeren":null;
  if(food){vitals.eat(food);toast(`${food} gegessen.`);save();return;}
- const harvest=["Ofenkartoffel","Brot","Gemüsesuppe","Karotte","Kartoffel","Kürbis"].find(id=>itemStore.count(id)>0);
- if(harvest&&itemStore.add(harvest,-1)){night.hunger=Math.min(100,night.hunger+30);night.health=Math.min(100,night.health+12);toast(`${harvest} gegessen.`);save();}else nightUI.food();
+ nightUI.food();
 }
 function equipQuickTool(tool:typeof expansion.tool){
  planningTower=false;
@@ -1135,6 +1144,7 @@ function interact() {
     const block=world.get(...target);
     if(block==="Truhe"){livingUI.chest(target);return;}
     if(block==="Ofen"){livingUI.recipes(true);return;}
+    if(block==="Grill"){livingUI.recipes("grill");return;}
     if(block==="Werkbank"){livingUI.recipes(false);return;}
     if(block==="Bett"){livingUI.sleep(target);return;}
     if(block==="Schatztruhe"){toast(loot(expansion.living,itemStore,target));save();return;}
@@ -1289,6 +1299,14 @@ bindTap($("gather"),()=>{
 function attack(){
   if(!WEAPONS[expansion.tool]){toast("Wähle den Holzknüppel, ein Schwert, eine Axt oder den Bogen.");return;}
   syncAim();heldTools.play("strike");castDirection.copy(ray.ray.direction);
+  if(animalTarget){
+    if(zombies.attackCooldown>0)return;
+    const result=huntAnimal(itemStore,world,animalTarget,player.pos,expansion.tool);
+    if(result.status==="hit"||result.status==="harvested"){
+      zombies.attackCooldown=WEAPONS[expansion.tool].cooldown;combatEffect(animalTarget.pos);if(settings.sound)nightAudio.cue("hit");
+    }
+    toast(result.message);save();return;
+  }
   const target=zombies.attack(player.pos,[castDirection.x,castDirection.y,castDirection.z],expansion.tool);
   if(target){combatEffect(target.pos);if(settings.sound)nightAudio.cue("hit");save();}
   else if(expansion.tool==="Holzknüppel")strike();
@@ -1757,7 +1775,7 @@ function tickFrame(now:number){
       $("context").hidden=false;$("interact").textContent=world.get(...target)==="Lagerkiste"?"E · Lagerkiste":"E · Öffnen / Schließen";
     }
     if(animalTarget){$("context").hidden=false;$("interact").textContent=`E · ${animalTarget.name||animalTarget.kind}`;}
-    if(target&&["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker"].includes(world.get(...target)||"")){$("context").hidden=false;$("interact").textContent=`E · ${world.get(...target)} benutzen`;}
+    if(target&&["Bett","Truhe","Werkbank","Ofen","Grill","Schatztruhe","Acker"].includes(world.get(...target)||"")){$("context").hidden=false;$("interact").textContent=`E · ${world.get(...target)} benutzen`;}
     if(expansion.tool==="Hacke"){$("context").hidden=false;$("interact").textContent="E · Boden / Pflanzen";}
     const showAngling =
       (expansion.tool === "Angel" && !!spot) || fishing.state !== "idle";
@@ -1803,7 +1821,7 @@ function tickFrame(now:number){
     $("reset-boom").hidden = !arena;
     $("mission-pin").hidden = !reading.active;
     const b=target?world.get(...target):undefined;
-    mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:night.mode==="Kreativ"?"∞":expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
+    mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Grill","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:night.mode==="Kreativ"?"∞":expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
     $("place").dataset.label=planningTower?"Turm":"Bauen";$("place").setAttribute("aria-label",planningTower?"Aussichtsturm am Vorschauplatz bauen":"Block platzieren");
   } else if (!started) {
     camera.position.set(23, 18, 29);
@@ -1865,7 +1883,7 @@ function tickFrame(now:number){
       calls: renderer.info.render.calls,
       frame:frameStats.snapshot(),chunk:view.metrics,streaming:regionStream.metrics,
       heap:(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory?.usedJSHeapSize??null,
-      activeMeshes:(()=>{let count=0;scene.traverseVisible(o=>{if((o as T.Mesh).isMesh)count++;});return count;})(),activeAnimals:expansion.living.animals.filter(a=>Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<32).length,activeZombies:zombies.actors.filter(z=>z.hp>0).length,
+      activeMeshes:(()=>{let count=0;scene.traverseVisible(o=>{if((o as T.Mesh).isMesh)count++;});return count;})(),activeAnimals:expansion.living.animals.filter(a=>a.health!==0&&Math.hypot(a.pos[0]-player.pos[0],a.pos[2]-player.pos[2])<32).length,activeZombies:zombies.actors.filter(z=>z.hp>0).length,
       discovery:{enabled:expansion.discovery.enabled,notes:expansion.discovery.read,chapters:expansion.discovery.completed,goals:discovery.activeGoals().map(g=>g.id)},
       blueprint:{planning:planningTower,origin:adjacent,valid:planningTower&&!towerValidity(world,adjacent,player.pos),cells:towerPreview.mesh.visible?towerPreview.mesh.count:0},
       triangles: renderer.info.render.triangles,
@@ -1889,7 +1907,7 @@ function tickFrame(now:number){
         spot: fishing.spot?.id || null,
       },
       nightfall:{time:night.time,phase:dayPhase(night.time),health:night.health,hunger:night.hunger,mode:night.mode,cap:zombies.cap,night:night.night,player:{pos:player.pos,yaw:player.yaw,pitch:player.pitch},zombies:zombies.actors.map(z=>({id:z.id,kind:z.kind,hp:z.hp,state:z.state,pos:z.pos}))},
-      living:{region:regionAt(...player.pos).id,clock:expansion.living.clock,animals:expansion.living.animals.map(a=>({id:a.id,kind:a.kind,pos:a.pos,tame:a.tame,name:a.name})),crops:expansion.living.crops.length,blocks:world.blocks.size,loadedChunks:world.activeChunks.size},
+      living:{region:regionAt(...player.pos).id,clock:expansion.living.clock,animals:expansion.living.animals.map(a=>({id:a.id,kind:a.kind,pos:a.pos,tame:a.tame,name:a.name,health:animalHealth(a),respawnAt:a.respawnAt})),crops:expansion.living.crops.length,blocks:world.blocks.size,loadedChunks:world.activeChunks.size},
       fish: shoal.actors.map((f) => ({
         id: f.id,
         species: f.species,

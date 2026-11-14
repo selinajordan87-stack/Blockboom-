@@ -14,7 +14,7 @@ Running 7 tests using 1 worker
   ✓  7 e2e/rescue-v071.spec.ts:27:1 › enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körper zu bleiben (6.7s)
 
 
-  1) e2e/rescue-v071.spec.ts:14:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen 
+  1) e2e/rescue-v071.spec.ts:14:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -33,5 +33,5 @@ Running 7 tests using 1 worker
     Error Context: test-results/rescue-v071-Kamerawahl-ist-95a52-eien-und-unabhängige-Daumen/error-context.md
 
   1 failed
-    e2e/rescue-v071.spec.ts:14:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen 
+    e2e/rescue-v071.spec.ts:14:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen
   6 passed (58.0s)

@@ -1,0 +1,34 @@
+
+Running 4 tests using 1 worker
+
+(node:4415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/rescue-v071.spec.ts:15:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen (8.4s)
+  ✓  2 e2e/rescue-v071.spec.ts:28:1 › enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körper zu bleiben (6.0s)
+  ✘  3 e2e/rescue-v071.spec.ts:37:1 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden (16.8s)
+(node:4671) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 e2e/rescue-v071.spec.ts:58:1 › Angelblick zeigt lebende Fischmodelle beim großen Steg ohne Kamera-Vergrößerung (7.8s)
+
+
+  1) e2e/rescue-v071.spec.ts:37:1 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      52 |  await page.locator("#interact").tap();await expect(page.locator("#panel-tag")).toHaveText("GRILL");await page.locator('[data-living-recipe="Grillfleisch"]').tap();await page.screenshot({path:"artifacts/v071/grilling.png"});await page.locator("#close").tap();
+      53 |  const cooked=await j.save();expect(cooked.extension.living.bag.Rohfleisch).toBe(2);expect(cooked.extension.living.bag.Grillfleisch).toBe(1);
+    > 54 |  await page.locator("#quick-food").tap();const eaten=await j.save();expect(eaten.extension.living.bag.Grillfleisch).toBe(0);expect(eaten.extension.nightfall.hunger).toBeGreaterThan(cooked.extension.nightfall.hunger+30);
+         |                                                                                                                     ^
+      55 |  await page.reload();await page.locator("#play").tap();const loaded=await j.save();expect(loaded.changes[entry![0]]).toBe("Grill");expect(loaded.extension.living.animals.find((a:any)=>a.id===cow.id).health).toBe(0);expect(loaded.extension.living.bag.Rohfleisch).toBe(2);expect(j.errors).toEqual([]);
+      56 | });
+      57 |
+        at /workspace/blockboom/e2e/rescue-v071.spec.ts:54:117
+
+    Error Context: test-results/rescue-v071-Wildtier-anvis-65076-eisch-garen-essen-und-laden/error-context.md
+
+  1 failed
+    e2e/rescue-v071.spec.ts:37:1 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden
+  3 passed (40.7s)

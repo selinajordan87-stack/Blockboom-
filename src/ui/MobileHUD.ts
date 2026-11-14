@@ -22,13 +22,14 @@ export const QUICK_TOOLS=[
  {id:"quick-rod",tool:"Angel",icon:"⌁"},
 ] as const;
 export function mobileActions(s:MobileContext){
- const build=s.tool==="Bauwerkzeug",weapon=/schwert|Schwert|Bogen|Holzknüppel/.test(s.tool)||s.zombie&&["Axt","Steinaxt","Spitzhacke"].includes(s.tool);
+ const build=s.tool==="Bauwerkzeug",weapon=/schwert|Schwert|Bogen|Holzknüppel/.test(s.tool)||(s.zombie||s.animal)&&["Axt","Steinaxt","Spitzhacke"].includes(s.tool);
  const mine=build||["Axt","Steinaxt","Spitzhacke","Kupferspitzhacke","Eisenspitzhacke","Schaufel","Hacke"].includes(s.tool);
  const fish=s.tool==="Angel"&&s.spot||!["idle","escaped","landed"].includes(s.fishing),target=s.hasTarget!==false;
  const none={place:false,break:false,attack:false,interact:false,fish:false};
  if(fish)return {...none,fish:true,interact:s.fishing==="idle"&&s.tool==="Angel"&&s.spot};
  if(s.zombie&&weapon)return {...none,attack:true};
- if(s.functional||s.animal||s.cropAction||s.noteAction)return {...none,interact:true,break:build&&target&&!s.animal&&!s.noteAction};
+ if(s.animal)return {...none,interact:true,attack:weapon};
+ if(s.functional||s.cropAction||s.noteAction)return {...none,interact:true,break:build&&target&&!s.animal&&!s.noteAction};
  if(weapon)return {...none,attack:true};
  return {...none,place:build&&target,break:mine&&target&&!(build&&s.nearby),interact:s.nearby&&build};
 }
@@ -36,6 +37,7 @@ export function interactionLabel(s:MobileContext){
  if(s.noteAction)return "Lesen";
  if(s.animal)return "Tier";
  if(s.cropAction)return s.cropAction==="Wächst"?"Prüfen":s.cropAction;
+ if(s.targetBlock==="Grill")return "Grillen";
  if(s.targetBlock==="Bett")return "Schlafen";
  if(["Truhe","Schatztruhe","Lagerkiste","Tür","Tor"].includes(s.targetBlock||""))return "Öffnen";
  if(["Tür offen","Tor offen"].includes(s.targetBlock||""))return "Schließen";
@@ -100,6 +102,7 @@ export class MobileHUD {
   if(!this.active)return;this.currentTool=s.tool;const a=mobileActions(s);
   for(const id of ["place","break","attack","interact"] as const)$(id).hidden=!a[id];$("fish-action").hidden=!a.fish;
   $("mobile-actions").classList.toggle("fishing-actions",a.fish);
+  $("attack").dataset.label=s.animal?"Jagen":"Angriff";
   const label=interactionLabel(s);$("interact").dataset.label=label;
   $("interact").setAttribute("aria-label",`${label}${s.targetLabel||s.targetBlock?` · ${s.targetLabel||s.targetBlock}`:""}`);
   $("interact").textContent="◉";

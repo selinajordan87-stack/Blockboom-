@@ -8,7 +8,8 @@ import { enrich, revolutionize } from "../world/Enrich";
 import { TYPES, World, place } from "../world/World";
 
 it("bietet 15 Baustoffe und macht mehrere Aktionen in umgekehrter Reihenfolge rückgängig", () => {
-  expect(TYPES).toHaveLength(39);
+  expect(TYPES).toHaveLength(40);
+  expect(TYPES[39]).toBe("Grill");
   expect(TYPES).toEqual(
     expect.arrayContaining(["Kopfstein", "Ton", "Moosstein", "Dunkelholz", "Kalkstein", "Schiefer"]),
   );

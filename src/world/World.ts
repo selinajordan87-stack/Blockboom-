@@ -15,10 +15,10 @@ export const TYPES = [
   "Kalkstein",
   "Schiefer",
   "Tür", "Tor", "Zaun", "Leiter", "Treppe", "Fackel", "Falle", "Lagerkiste", "Barriere", "Mauer",
-  "Kohleerz", "Kupfererz", "Eisenerz", "Golderz", "Acker", "Bett", "Tisch", "Stuhl", "Regal", "Truhe", "Werkbank", "Ofen", "Laterne", "Teppich",
+  "Kohleerz", "Kupfererz", "Eisenerz", "Golderz", "Acker", "Bett", "Tisch", "Stuhl", "Regal", "Truhe", "Werkbank", "Ofen", "Laterne", "Teppich", "Grill",
 ] as const;
 export type Block = (typeof TYPES)[number] | "Boom" | "Tür offen" | "Tor offen" | "Schatztruhe";
-export const SPECIAL_TYPES = ["Tür","Tür offen","Tor","Tor offen","Zaun","Leiter","Treppe","Fackel","Falle","Lagerkiste","Barriere","Bett","Tisch","Stuhl","Regal","Truhe","Werkbank","Ofen","Laterne","Teppich","Schatztruhe"] as const;
+export const SPECIAL_TYPES = ["Tür","Tür offen","Tor","Tor offen","Zaun","Leiter","Treppe","Fackel","Falle","Lagerkiste","Barriere","Bett","Tisch","Stuhl","Regal","Truhe","Werkbank","Ofen","Laterne","Teppich","Schatztruhe","Grill"] as const;
 const specialTypes=new Set<string>(SPECIAL_TYPES);
 export type Cell = [number, number, number];
 export const key = (x: number, y: number, z: number) => `${x},${y},${z}`;

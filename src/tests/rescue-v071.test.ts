@@ -4,6 +4,7 @@ import {CameraRig,defaultCamera} from "../player/CameraRig";
 import {World,type Cell} from "../world/World";
 import {LivingView} from "../living/LivingView";
 import {freshLiving} from "../living/State";
+import {FishView} from "../fishing/FishView";
 import {Shoal,MAX_FISH_ACTORS} from "../fishing/Shoal";
 
 it("wechselt bei stark zusammengedrückter Kamera in einen bedienbaren Ego-Blick und kommt wieder heraus",()=>{
@@ -34,4 +35,15 @@ it("verteilt sichtbare Fische im großen See auf mehrere Ufergruppen innerhalb d
  expect(Math.max(...fish.map(a=>a.x))-Math.min(...fish.map(a=>a.x))).toBeGreaterThan(40);
  for(let i=0;i<600;i++)shoal.update(1/30);
  expect(fish.filter(a=>Math.hypot(a.x+115,a.z+91)<7).length).toBeGreaterThanOrEqual(3);
+});
+
+
+it("zeichnet Fischfarben ohne ungebundene schwarze Vertexfarbattribute",()=>{
+ const view=new FishView(new Shoal(),new T.Scene());
+ for(const mesh of view.group.children as T.InstancedMesh[]){
+  const material=mesh.material as T.MeshLambertMaterial;
+  expect(material.vertexColors&&!mesh.geometry.getAttribute("color")).toBe(false);
+ }
+ const body=view.group.children[0] as T.InstancedMesh;
+ expect(body.instanceColor).toBeTruthy();const color=new T.Color();body.getColorAt(0,color);expect(color.r+color.g+color.b).toBeGreaterThan(.5);
 });

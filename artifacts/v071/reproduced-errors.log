@@ -33,10 +33,10 @@ AssertionError: expected false to be true // Object.is equality
  FAIL  src/tests/rescue-v071.test.ts > erkennt dasselbe Tier nach Bewegung über seine frühere Trefferbegrenzung hinaus
 AssertionError: expected undefined to be 'animal-3' // Object.is equality
 
-- Expected: 
+- Expected:
 "animal-3"
 
-+ Received: 
++ Received:
 undefined
 
  ❯ src/tests/rescue-v071.test.ts:27:34
@@ -45,7 +45,7 @@ undefined
      27|  expect(view.hit(ray,state)?.id).toBe(a.id);
        |                                  ^
      28| });
-     29| 
+     29|
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
 
@@ -66,4 +66,3 @@ AssertionError: expected 5 to be greater than or equal to 8
       Tests  3 failed (3)
    Start at  20:23:01
    Duration  522ms (transform 165ms, setup 0ms, collect 250ms, tests 30ms, environment 0ms, prepare 84ms)
-

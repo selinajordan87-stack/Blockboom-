@@ -5,7 +5,7 @@ export type Category="Material"|"Nahrung"|"Werkzeug"|"Waffe"|"Ausrüstung"|"Beso
 export interface Item {id:string;name:string;symbol:string;category:Category;}
 export const EXTRAS:Item[]=[
  ...["Kupfer","Eisen","Gold"].map(name=>({id:name,name,symbol:"◆",category:"Material" as const})),
- ...["Weizen","Karotte","Kartoffel","Kürbis","Brot","Ofenkartoffel","Gemüsesuppe"].map(name=>({id:name,name,symbol:"◉",category:"Nahrung" as const})),
+ ...["Weizen","Karotte","Kartoffel","Kürbis","Brot","Ofenkartoffel","Gemüsesuppe","Rohfleisch","Grillfleisch"].map(name=>({id:name,name,symbol:"◉",category:"Nahrung" as const})),
  ...["Weizen","Karotte","Kartoffel","Kürbis"].map(n=>({id:`Samen:${n}`,name:`${n}-Samen`,symbol:"❧",category:"Material" as const})),
  ...["Bauplan","Bergkristall","Altes Buch"].map(name=>({id:name,name,symbol:"✦",category:"Besonderes" as const})),
 ];
@@ -48,6 +48,7 @@ export const RECIPES_LIVING:LivingRecipe[]=[
  {id:"Kohle",cost:{"block:Holz":3},out:"supply:Kohle",count:2},
  {id:"Bett",cost:{"block:Holz":3,"block:Bretter":3},out:"block:Bett",count:1},
  ...["Tisch","Stuhl","Regal","Truhe","Werkbank"].map(id=>({id,cost:{"block:Bretter":3},out:`block:${id}`,count:1})),
+ {id:"Grill",cost:{"block:Stein":4,"supply:Kohle":1},out:"block:Grill",count:1},
  {id:"Ofen",cost:{"block:Stein":6},out:"block:Ofen",count:1},
  {id:"Laterne",cost:{"block:Stein":1,"supply:Kohle":1},out:"block:Laterne",count:1},
  {id:"Teppich",cost:{"block:Laub":3},out:"block:Teppich",count:2},
@@ -55,13 +56,24 @@ export const RECIPES_LIVING:LivingRecipe[]=[
  {id:"Kupferspitzhacke",cost:{Kupfer:3,"block:Holz":2},out:"tool:Kupferspitzhacke",count:1},
  {id:"Eisenspitzhacke",cost:{Eisen:3,"block:Holz":2},out:"tool:Eisenspitzhacke",count:1},
 ];
+export const GRILL:LivingRecipe[]=[
+ {id:"Grillfleisch",cost:{Rohfleisch:1,"supply:Kohle":1},out:"Grillfleisch",count:1},
+ ...FISH.map(f=>({id:`${f.name} grillen`,cost:{[`fish:${f.name}`]:1,"supply:Kohle":1},out:"supply:Fischgericht",count:1})),
+];
+export const EDIBLE=["Grillfleisch","Ofenkartoffel","Brot","Gemüsesuppe","Karotte","Kartoffel","Kürbis"];
+export function eatHarvest(store:ItemStore,id:string){
+ if(!EDIBLE.includes(id)||!store.add(id,-1))return false;
+ const n=store.expansion.nightfall;n.health=Math.min(100,n.health+12);n.hunger=Math.min(100,n.hunger+(id==="Grillfleisch"?40:30));return true;
+}
 export const FURNACE:LivingRecipe[]=[
+
  {id:"Kupfer",cost:{"block:Kupfererz":1,"supply:Kohle":1},out:"Kupfer",count:1},
  {id:"Eisen",cost:{"block:Eisenerz":1,"supply:Kohle":1},out:"Eisen",count:1},
  {id:"Gold",cost:{"block:Golderz":1,"supply:Kohle":1},out:"Gold",count:1},
  {id:"Brot",cost:{Weizen:3},out:"Brot",count:1},
  {id:"Ofenkartoffel",cost:{Kartoffel:1},out:"Ofenkartoffel",count:1},
  {id:"Gemüsesuppe",cost:{Karotte:1,Kartoffel:1,Kürbis:1},out:"Gemüsesuppe",count:2},
+ ...GRILL,
 ];
 export function produce(store:ItemStore,recipe:{id:string;cost:Record<string,number>;out:string;count:number},creative=false){
  const inputs=Object.entries(recipe.cost);if(!creative&&inputs.some(([id,n])=>store.count(id)<n))return false;

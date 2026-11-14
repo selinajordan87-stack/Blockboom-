@@ -20,7 +20,7 @@ export const colors: Record<Block, number> = {
   Kalkstein: 0xc8c4aa,
   Schiefer: 0x53616e,
   Tür:0x976b3d,"Tür offen":0x976b3d,Tor:0x87613b,"Tor offen":0x87613b,Zaun:0x997445,Leiter:0xb89764,Treppe:0x8e9a99,Fackel:0xf5bd5d,Falle:0x788a72,Lagerkiste:0xa37b45,Barriere:0x6d7157,Mauer:0x727d83,
-  Kohleerz:0x4e5357,Kupfererz:0xba8260,Eisenerz:0xa0a3a1,Golderz:0xd1ac4d,Acker:0x68503b,Bett:0x9f7772,Tisch:0xad8256,Stuhl:0x9a734d,Regal:0x8a6847,Truhe:0xba8d51,Werkbank:0xa78a61,Ofen:0x626f78,Laterne:0xf2d18a,Teppich:0x6f96a2,Schatztruhe:0xd1ad55,
+  Kohleerz:0x4e5357,Kupfererz:0xba8260,Eisenerz:0xa0a3a1,Golderz:0xd1ac4d,Acker:0x68503b,Bett:0x9f7772,Tisch:0xad8256,Stuhl:0x9a734d,Regal:0x8a6847,Truhe:0xba8d51,Werkbank:0xa78a61,Ofen:0x626f78,Laterne:0xf2d18a,Teppich:0x6f96a2,Schatztruhe:0xd1ad55,Grill:0x696f6b,
 };
 
 const CHUNK = 12;
@@ -45,7 +45,7 @@ const tile: Record<Block, number> = {
   Schiefer: 15,
   Boom: 17,
   Tür:5,"Tür offen":5,Tor:5,"Tor offen":5,Zaun:4,Leiter:4,Treppe:3,Fackel:4,Falle:4,Lagerkiste:5,Barriere:4,Mauer:10,
-  Kohleerz:3,Kupfererz:3,Eisenerz:3,Golderz:3,Acker:2,Bett:5,Tisch:5,Stuhl:5,Regal:5,Truhe:5,Werkbank:5,Ofen:10,Laterne:5,Teppich:5,Schatztruhe:5,
+  Kohleerz:3,Kupfererz:3,Eisenerz:3,Golderz:3,Acker:2,Bett:5,Tisch:5,Stuhl:5,Regal:5,Truhe:5,Werkbank:5,Ofen:10,Laterne:5,Teppich:5,Schatztruhe:5,Grill:10,
 };
 
 function tileFor(block: Block, normal: readonly number[]) {

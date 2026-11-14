@@ -1,5 +1,5 @@
 import { LIMIT, TYPES, type Cell, type World } from "../world/World";
-import { ItemStore, CATALOG, RECIPES_LIVING, FURNACE, produce, type Category } from "./Items";
+import { ItemStore, CATALOG, RECIPES_LIVING, FURNACE, GRILL, EDIBLE, eatHarvest, produce, type Category } from "./Items";
 import { CROPS, type Animal } from "./State";
 import { EXPLORER, feed, sheltered } from "./Systems";
 import { REGIONS, DISCOVERY_REGIONS, CAVE_ENTRANCES, regionAt } from "./Regions";
@@ -24,9 +24,9 @@ export class LivingUI{
  }
  bag(){
   this.hooks.open("RUCKSACK",`<h2>Alles dabei</h2><div class="inventory-tabs">${["Alle","Material","Nahrung","Werkzeug","Waffe","Ausrüstung","Besonderes"].map(c=>`<button data-category="${c}">${c}</button>`).join("")}</div><div id="item-list" class="recipe-list"></div><p class="hint">Die Baustoff-Schnellleiste bleibt unten im Spiel. Fische und Angelrekorde findest du weiterhin im Fangbuch.</p>`);
-  const list=(cat:string)=>{$("item-list").innerHTML=CATALOG.filter(i=>(cat==="Alle"||i.category===cat)&&this.store.count(i.id)>0).map(i=>`<div class="storage-row"><span>${i.symbol} ${i.name}</span><b>${this.store.count(i.id)}</b>${i.id.startsWith("tool:")?`<button data-equip="${i.name}">Ausrüsten</button>`:["Karotte","Kartoffel","Kürbis","Brot","Ofenkartoffel","Gemüsesuppe"].includes(i.id)?`<button data-eat="${i.id}">Essen</button>`:""}</div>`).join("")||"<p>In dieser Kategorie ist noch nichts gesammelt.</p>";
+  const list=(cat:string)=>{$("item-list").innerHTML=CATALOG.filter(i=>(cat==="Alle"||i.category===cat)&&this.store.count(i.id)>0).map(i=>`<div class="storage-row"><span>${i.symbol} ${i.name}</span><b>${this.store.count(i.id)}</b>${i.id.startsWith("tool:")?`<button data-equip="${i.name}">Ausrüsten</button>`:EDIBLE.includes(i.id)?`<button data-eat="${i.id}">Essen</button>`:""}</div>`).join("")||"<p>In dieser Kategorie ist noch nichts gesammelt.</p>";
    document.querySelectorAll<HTMLButtonElement>("[data-equip]").forEach(b=>b.onclick=()=>{this.hooks.equip(b.dataset.equip!);this.hooks.close();this.hooks.save();});
-   document.querySelectorAll<HTMLButtonElement>("[data-eat]").forEach(b=>b.onclick=()=>{if(this.store.add(b.dataset.eat!,-1)){const n=this.store.expansion.nightfall;n.health=Math.min(100,n.health+12);n.hunger=Math.min(100,n.hunger+30);this.hooks.save();list(cat);}});
+   document.querySelectorAll<HTMLButtonElement>("[data-eat]").forEach(b=>b.onclick=()=>{if(eatHarvest(this.store,b.dataset.eat!)){this.hooks.save();list(cat);}});
   };
   document.querySelectorAll<HTMLButtonElement>("[data-category]").forEach(b=>b.onclick=()=>list(b.dataset.category!));list("Alle");
  }
@@ -35,9 +35,9 @@ export class LivingUI{
   this.hooks.open("TRUHE",`<h2>Truhe · ${id}</h2><p>Diese Truhe hat einen eigenen gespeicherten Inhalt.</p><div class="recipe-list">${CATALOG.filter(i=>!i.id.startsWith("tool:")&&(this.store.count(i.id)>0||(chest[i.id]||0)>0)).map(i=>`<div class="storage-row"><span>${i.symbol} ${i.name}</span><button data-store="${i.id}" ${this.store.count(i.id)<1?"disabled":""}>Rein · ${this.store.count(i.id)}</button><button data-take="${i.id}" ${(chest[i.id]||0)<1?"disabled":""}>Raus · ${chest[i.id]||0}</button></div>`).join("")||"<p>Noch leer. Sammle zuerst Material oder Ernte.</p>"}</div>`);
   for(const action of ["store","take"])document.querySelectorAll<HTMLButtonElement>(`[data-${action}]`).forEach(b=>b.onclick=()=>{this.store.move(b.dataset[action]!,chest,action==="store");this.hooks.save();this.chest(cell);});
  }
- recipes(furnace:boolean){
-  const recipes=furnace?FURNACE:RECIPES_LIVING,creative=this.store.expansion.nightfall.mode==="Kreativ";
-  this.hooks.open(furnace?"OFEN":"WOHNWELT-WERKBANK",`<h2>${furnace?"Aus Rohstoffen wird mehr":"Dein Zuhause wächst"}</h2><div class="recipe-list">${recipes.map(r=>`<button data-living-recipe="${r.id}" ${!creative&&Object.entries(r.cost).some(([id,n])=>this.store.count(id)<n)?"disabled":""}><b>${r.count} × ${r.id}</b><small>${Object.entries(r.cost).map(([id,n])=>`${CATALOG.find(i=>i.id===id)?.name||id}: ${this.store.count(id)}/${n}`).join(" + ")}</small></button>`).join("")}</div><p class="hint">${furnace?"Fischgerichte bereitest du weiterhin im NIGHTFALL-Proviant zu. Metalle brauchen Kohle als Brennstoff.":"Für Metalle und Gerichte benutze einen platzierten Ofen. Hacke und Spitzhacken erscheinen in der Werkzeugauswahl."}</p>`);
+ recipes(furnace:boolean|"grill"){
+  const recipes=furnace==="grill"?GRILL:furnace?FURNACE:RECIPES_LIVING,creative=this.store.expansion.nightfall.mode==="Kreativ";
+  this.hooks.open(furnace==="grill"?"GRILL":furnace?"OFEN":"WOHNWELT-WERKBANK",`<h2>${furnace==="grill"?"Am Grill":furnace?"Aus Rohstoffen wird mehr":"Dein Zuhause wächst"}</h2><div class="recipe-list">${recipes.map(r=>`<button data-living-recipe="${r.id}" ${!creative&&Object.entries(r.cost).some(([id,n])=>this.store.count(id)<n)?"disabled":""}><b>${r.count} × ${r.id}</b><small>${Object.entries(r.cost).map(([id,n])=>`${CATALOG.find(i=>i.id===id)?.name||id}: ${this.store.count(id)}/${n}`).join(" + ")}</small></button>`).join("")}</div><p class="hint">${furnace?"Rohfleisch und versorgte Fische werden mit Kohle gegart. Gegrillte Nahrung findest du im Rucksack und im Nahrungsslot.":"Für Metalle und Gerichte benutze einen platzierten Ofen oder Grill. Hacke und Spitzhacken erscheinen in der Werkzeugauswahl."}</p>`);
   document.querySelectorAll<HTMLButtonElement>("[data-living-recipe]").forEach(b=>b.onclick=()=>{const r=recipes.find(r=>r.id===b.dataset.livingRecipe)!;if(produce(this.store,r,creative)){if(r.out.startsWith("tool:"))this.hooks.equip(r.id);this.hooks.event?.("craft",r.id);this.hooks.save();this.recipes(furnace);}});
  }
  garden(){

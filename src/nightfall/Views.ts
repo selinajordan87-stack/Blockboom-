@@ -52,7 +52,7 @@ export class DefenseView {
       const boxes:{cell:Cell;size:number[];position:number[];color:number}[]=[];
       for(const [id,block] of this.world.specialBlocks){
         if(!special(block))continue;const cell=id.split(",").map(Number) as Cell;
-        if(block==="Fackel"||block==="Laterne")this.torches.push(cell);
+        if(block==="Fackel"||block==="Laterne"||block==="Grill")this.torches.push(cell);
         const add=(size:number[],position:number[],color=0x9b754a)=>boxes.push({cell,size,position,color});
         if(block==="Tür"||block==="Tor") {add([.9,1,.14],[.5,.5,.5]);add([.07,.07,.12],[.83,.5,.61],0xf4d184);}
         else if(block.endsWith("offen"))add([.14,1,.9],[.08,.5,.5]);
@@ -68,6 +68,11 @@ export class DefenseView {
         else if(block==="Stuhl"){add([.65,.14,.65],[.5,.45,.5]);add([.65,.6,.12],[.5,.76,.8]);for(const x of [.25,.75])for(const z of [.25,.75])add([.09,.4,.09],[x,.2,z]);}
         else if(block==="Regal"){add([.1,1,.5],[.12,.5,.65]);add([.1,1,.5],[.88,.5,.65]);for(const y of [.1,.5,.9])add([.85,.08,.5],[.5,y,.65]);add([.4,.27,.35],[.4,.68,.65],0x71978e);}
         else if(block==="Ofen"){add([.95,.95,.9],[.5,.475,.5],0x737f83);add([.65,.4,.07],[.5,.4,.98],0x253238);add([.32,.15,.08],[.5,.3,.99],0xe4a55f);}
+        else if(block==="Grill"){
+          add([.95,.28,.9],[.5,.22,.5],0x737b76);add([.65,.08,.6],[.5,.4,.5],0xe8a455);
+          for(const x of [.16,.38,.6,.82])add([.06,.055,.86],[x,.5,.5],0x354440);
+          for(const x of [.16,.84])add([.12,.3,.12],[x,.1,.5],0x4d5b55);
+        }
         else if(block==="Laterne"){add([.15,.16,.15],[.5,.1,.5],0x705c3c);add([.3,.4,.3],[.5,.4,.5],0xffdfa0);add([.38,.1,.38],[.5,.65,.5],0x6e634b);}
         else if(block==="Teppich")add([.98,.035,.98],[.5,.025,.5],0x668e9e);
       }

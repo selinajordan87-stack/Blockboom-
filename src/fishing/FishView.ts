@@ -36,7 +36,7 @@ export class FishView {
     ] as const) {
       const mesh = new T.InstancedMesh(
         this.geometries[part],
-        new T.MeshLambertMaterial({ color: 0xffffff, vertexColors: true }),
+        new T.MeshLambertMaterial({ color: 0xffffff }),
         count,
       );
       mesh.name = `Fischteil ${part}`;
