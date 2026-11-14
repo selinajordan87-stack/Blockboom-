@@ -79,7 +79,7 @@ test("v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await seed(page);
-  await expect(page.locator(".eyebrow")).toContainText("v0.7.0");
+  await expect(page.locator(".eyebrow")).toContainText("v0.7.1");
   await shortcut(page,"tool-toggle");
   await expect(page.locator("[data-tool]")).toHaveCount(14);
   await page.locator('[data-tool="Spitzhacke"]').click();

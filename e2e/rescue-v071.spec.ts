@@ -15,7 +15,7 @@ test.use({viewport:{width:844,height:390},hasTouch:true,isMobile:true});
 test("Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen",async({page,context})=>{
  await seed(page);const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
  await expect(page.getByRole("button",{name:"Kamera ändern",exact:true})).toBeVisible();
- await page.locator("#camera-shortcut").tap();await page.locator("#view-third").tap();await page.locator("#quick-camera-distance").fill("8");await page.locator("#quick-camera-done").tap();
+ await page.locator("#camera-shortcut").tap();const resetBox=(await page.locator("#quick-camera-reset").boundingBox())!;expect(resetBox.y+resetBox.height).toBeLessThan(370);await page.screenshot({path:"artifacts/v071/camera-panel.png"});await page.locator("#view-third").tap();await page.locator("#quick-camera-distance").fill("8");await page.locator("#quick-camera-done").tap();
  await expect.poll(async()=>(await metrics(page)).camera.actualDistance).toBeGreaterThan(7.9);expect((await metrics(page)).camera.avatar).toBe(true);
  const cdp=await context.newCDPSession(page),j=(await page.locator("#joystick").boundingBox())!,a={id:1,x:j.x+j.width/2,y:j.y+8},b={id:2,x:560,y:180};
  const before=(await metrics(page)).nightfall.player;
@@ -34,16 +34,16 @@ test("enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körpe
 });
 
 
-test("Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden",async({page,context})=>{
+for(const perspective of ["first","third"] as const)test(`Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · ${perspective}`,async({page,context})=>{
  test.setTimeout(120000);
- const s=fixture();s.pitch=-.45;s.extension.nightfall.mode="Survival";s.extension.nightfall.hunger=35;s.extension.tool="Schwert";s.extension.materials.Stein=4;s.extension.nightfall.supplies.Kohle=3;
+ const s=fixture();s.extension.camera.perspective=perspective;s.pitch=-.45;s.extension.nightfall.mode="Survival";s.extension.nightfall.hunger=35;s.extension.tool="Schwert";s.extension.materials.Stein=4;s.extension.nightfall.supplies.Kohle=3;
  for(const a of s.extension.living.animals){a.pos=[40+a.phase,1,40];a.home=[...a.pos];}
  const cow=s.extension.living.animals[3];cow.pos=[0,1,7];cow.home=[...cow.pos];
  await seed(page,s);const j=new FreshJourney(page,context,"artifacts/v071");j.cdp=await context.newCDPSession(page);
  await expect(page.locator("#target-label")).toContainText("Kuh");await expect(page.locator("#attack")).toBeVisible();await expect(page.locator("#interact")).toBeVisible();
  await page.screenshot({path:"artifacts/v071/animal-target.png"});await page.locator("#attack").tap();
  await expect.poll(async()=>(await metrics(page)).living.animals.find((a:any)=>a.id===cow.id).health).toBe(20);
- await page.waitForTimeout(700);await page.locator("#attack").tap();await expect(page.locator("#toast")).toContainText("Rohfleisch");
+ const hitClock=(await metrics(page)).living.clock;await expect.poll(async()=>(await metrics(page)).living.clock).toBeGreaterThan(hitClock+.6);await page.locator("#attack").tap();await expect(page.locator("#toast")).toContainText("Rohfleisch");
  await page.locator("#menu").tap();await page.locator("#menu-workbench").tap();await page.locator('[data-living-recipe="Grill"]').tap();await page.locator("#close").tap();
  await page.locator("#selected-material").tap();await page.locator("#selected-material").tap();await page.getByRole("button",{name:"Grill auswählen",exact:true}).tap();
  await j.look(0,-.65);await expect(page.locator("#place")).toBeVisible();await page.locator("#place").tap();

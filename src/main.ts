@@ -103,7 +103,7 @@ $("app").innerHTML = `
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="zoom" aria-label="Zoom umschalten" aria-pressed="false">⌕</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
  <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="tackle">≈ Angelset</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E halten zum Angeln · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">WORLD DISCOVERY · v0.7.0</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Am Horizont wartet mehr.<br>Folge den Spuren deiner Welt.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>07 / WORLD DISCOVERY</span><b>Deine Welt.<br>Deine Perspektive.</b><p>Berge. Bücher. Dein eigener Weg.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">WORLD DISCOVERY · v0.7.1</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Am Horizont wartet mehr.<br>Folge den Spuren deiner Welt.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>07 / WORLD DISCOVERY</span><b>Deine Welt.<br>Deine Perspektive.</b><p>Berge. Bücher. Dein eigener Weg.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
@@ -194,7 +194,9 @@ function cyclePerspective(){
 }
 function updateCamera(dt:number,force=false){
  if(!player.pos.every(Number.isFinite)){player.pos=[0,16,17];player.vy=0;recordDiagnostic("invalid-player-position");}
+ const wasEye=cameraRig.temporaryFirst;
  cameraRig.update(camera,player,expansion.camera,expansion.view.fov,dt,force);
+ if(started&&wasEye!==cameraRig.temporaryFirst)recordDiagnostic("camera-clearance",cameraRig.temporaryFirst?"temporary eye view":"chosen distance available");
 }
 const diagnosticEvents:{time:number;event:string;detail?:string}[]=[];
 let lastNotice="",webglLost=false,importingSave=false;
@@ -643,7 +645,7 @@ function resetCamera(){
 }
 function quickCamera(){
  const waterSpot=nearAnglingSpot(...player.pos);
- openPanel("ANSICHT",`<h2>Wie möchtest du die Welt sehen?</h2><div class="camera-choices"><button id="view-first" aria-pressed="${expansion.camera.perspective==="first"}">Ego · mit Hand</button><button id="view-third" aria-pressed="${expansion.camera.perspective==="third"}">Von hinten · Figur sichtbar</button></div><label class="camera-distance-label">Abstand hinter der Figur <output id="quick-distance-value">${expansion.camera.distance} m</output><input id="quick-camera-distance" type="range" min="2" max="9" step=".5" value="${expansion.camera.distance}"></label><p class="hint">Weiter rechts = mehr Überblick. In engen Stellen nutzt die Kamera kurz den Ego-Blick und kehrt im Freien zurück.</p><div class="camera-choices"><button id="quick-camera-reset">Kamera befreien</button><button id="quick-camera-done" class="primary">Weiterspielen</button></div>${waterSpot?'<button id="camera-water">Blick aufs Wasser</button>':""}<button id="camera-more">Weitere Steuerungseinstellungen</button>`);
+ openPanel("ANSICHT",`<div class="camera-choices"><button id="quick-camera-reset">Kamera befreien</button><button id="quick-camera-done" class="primary">Weiterspielen</button></div><div class="camera-choices"><button id="view-first" aria-pressed="${expansion.camera.perspective==="first"}">Ego · mit Hand</button><button id="view-third" aria-pressed="${expansion.camera.perspective==="third"}">Von hinten · Figur sichtbar</button></div><label class="camera-distance-label">Abstand hinter der Figur <output id="quick-distance-value">${expansion.camera.distance} m</output><input id="quick-camera-distance" type="range" min="2" max="9" step=".5" value="${expansion.camera.distance}"></label><p class="hint">Weiter rechts = mehr Überblick. In engen Stellen nutzt die Kamera kurz den Ego-Blick und kehrt im Freien zurück.</p>${waterSpot?'<button id="camera-water">Blick aufs Wasser</button>':""}<button id="camera-more">Weitere Steuerungseinstellungen</button>`);
  const update=()=>{updateFov();updateCamera(0,true);save();viewportDirty=true;$("view-first").setAttribute("aria-pressed",String(expansion.camera.perspective==="first"));$("view-third").setAttribute("aria-pressed",String(expansion.camera.perspective==="third"));};
  $("view-first").onclick=()=>{expansion.camera.perspective="first";update();};
  $("view-third").onclick=()=>{expansion.camera.perspective="third";update();};
@@ -692,7 +694,7 @@ function generalSettings(){
     save();
     generalSettings();
   };
-  $("diagnostic-export").onclick=()=>downloadJSON("blockboom-diagnose.json",{version:"0.7.0",events:diagnosticEvents,camera:{requested:expansion.camera,actual:cameraRig.actualDistance,blocked:cameraRig.blocked,pos:camera.position.toArray(),fov:camera.fov},controls:touch?.state,viewport:[innerWidth,innerHeight],visualViewport:window.visualViewport?{width:visualViewport!.width,height:visualViewport!.height,scale:visualViewport!.scale,offsetLeft:visualViewport!.offsetLeft,offsetTop:visualViewport!.offsetTop}:null,paused,suspended,webglLost,renderedFrames,lastRenderedAt,world:{region:regionAt(...player.pos).id,loadedChunks:world.activeChunks.size,blocks:world.blocks.size,revision:world.revision}});
+  $("diagnostic-export").onclick=()=>downloadJSON("blockboom-diagnose.json",{version:"0.7.1",events:diagnosticEvents,camera:{requested:expansion.camera,actual:cameraRig.actualDistance,blocked:cameraRig.blocked,pos:camera.position.toArray(),fov:camera.fov},controls:touch?.state,viewport:[innerWidth,innerHeight],visualViewport:window.visualViewport?{width:visualViewport!.width,height:visualViewport!.height,scale:visualViewport!.scale,offsetLeft:visualViewport!.offsetLeft,offsetTop:visualViewport!.offsetTop}:null,paused,suspended,webglLost,renderedFrames,lastRenderedAt,world:{region:regionAt(...player.pos).id,loadedChunks:world.activeChunks.size,blocks:world.blocks.size,revision:world.revision}});
   $("save-transfer").onclick=transferPanel;$("safe-reload").onclick=()=>{if(save())location.reload();else toast("Speichern fehlgeschlagen. Exportiere deinen Stand vor dem Neuladen.");};
   $("back-menu").onclick=menu;
   $("home").onclick = () => {
@@ -1706,7 +1708,7 @@ function tickFrame(now:number){
     shoal.update(elapsed);
     const fishingEvent = fishing.tick(now, elapsed);
     handleAnglingEvent(fishingEvent);
-    fishView.update(shoal.time);
+    fishView.update(shoal.time,camera.position);
     chestLid.rotation.x = missions.state("treasure").completed ? -1.15 : 0;
     treasureGold.visible = missions.state("treasure").completed;
     const spot = currentSpot(),

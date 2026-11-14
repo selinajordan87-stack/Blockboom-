@@ -17,6 +17,7 @@ export class FishView {
   private showcaseUntil = 0;
   private geometries = makeGeometries();
   private colors = new Map<string, T.Color>();
+  private visibleIndices:number[]=[];
 
   constructor(
     public shoal: Shoal,
@@ -61,10 +62,15 @@ export class FishView {
     this.update(0);
   }
 
-  update(time = this.shoal.time) {
+  update(time = this.shoal.time,origin?:T.Vector3) {
+    this.visibleIndices=this.shoal.actors.map((_,i)=>i).filter(i=>{
+      const fish=this.shoal.actors[i];
+      return fish.alive&&(!origin||Math.hypot(fish.x-origin.x,fish.z-origin.z)<48);
+    });
     for (const [part, mesh] of this.meshes) {
-      for (let index = 0; index < this.shoal.actors.length; index++) {
-        const fish = this.shoal.actors[index];
+      mesh.count=this.visibleIndices.length;
+      for (let index = 0; index < this.visibleIndices.length; index++) {
+        const fish = this.shoal.actors[this.visibleIndices[index]];
         this.fishMatrix(this.dummy, fish, part, time);
         mesh.setMatrixAt(index, this.dummy.matrix);
         mesh.setColorAt(index, this.partColor(fish, part));
@@ -75,8 +81,9 @@ export class FishView {
       // the spawn point would cull their rendering and reject raycasts there.
       mesh.computeBoundingSphere();
     }
-    for (let index = 0; index < this.shoal.actors.length; index++) {
-      const fish = this.shoal.actors[index];
+    this.eyes.count=this.visibleIndices.length*2;
+    for (let index = 0; index < this.visibleIndices.length; index++) {
+      const fish = this.shoal.actors[this.visibleIndices[index]];
       for (let side = -1; side <= 1; side += 2) {
         this.eyeMatrix(this.dummy, fish, side);
         this.eyes.setMatrixAt(index * 2 + (side === -1 ? 0 : 1), this.dummy.matrix);
@@ -102,11 +109,11 @@ export class FishView {
         (entry) =>
           entry.distance <= range &&
           entry.instanceId !== undefined &&
-          this.shoal.actors[
+          this.shoal.actors[this.visibleIndices[
             entry.object === this.eyes
               ? Math.floor(entry.instanceId / 2)
               : entry.instanceId
-          ]?.alive,
+          ]]?.alive,
       );
     if (!hit || hit.instanceId === undefined) {
       let closest: { fish: FishActor; distance: number } | null = null;
@@ -127,7 +134,7 @@ export class FishView {
     }
     const index =
       hit.object === this.eyes ? Math.floor(hit.instanceId / 2) : hit.instanceId;
-    return { fish: this.shoal.actors[index], distance: hit.distance };
+    return { fish: this.shoal.actors[this.visibleIndices[index]], distance: hit.distance };
   }
 
   showShowcase(fish: Pick<FishActor, "species" | "length">, persistent = false) {

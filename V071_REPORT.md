@@ -14,7 +14,7 @@ Das beweist diese konkreten Fehler im Code. Es beweist nicht, dass jede gelegent
 
 ## Direkt bedienbare Kamera
 
-Neben dem Menü steht ein kompakter **Ansicht**-Knopf. Er öffnet unmittelbar Ego/Ansicht von hinten, einen Abstandsregler und **Kamera befreien**. Weitere Einstellungen bleiben erreichbar. Bewegung und aktive Kontakte werden beim Öffnen sauber beendet. Das vorhandene Menü und seine bisherigen Kameraaktionen bleiben erhalten.
+Neben dem Menü steht ein kompakter **Kamera**-Knopf. Er öffnet unmittelbar Ego/Ansicht von hinten, einen Abstandsregler und **Kamera befreien**. Weitere Einstellungen bleiben erreichbar. Bewegung und aktive Kontakte werden beim Öffnen sauber beendet. Das vorhandene Menü und seine bisherigen Kameraaktionen bleiben erhalten.
 
 ## Weitere Umsetzung und Prüfungen
 
@@ -22,9 +22,9 @@ Wildtiere lassen sich mit den vorhandenen Waffen jagen. Treffer besitzen Reichwe
 
 Ein eigener Grill lässt sich aus vier Stein und einer Kohle herstellen, über die normale Materialauswahl platzieren und benutzen. Rohfleisch oder versorgte Fische werden mit Kohle gegart. Grillfleisch wird im Rucksack oder über den Nahrungsslot gegessen; der Slot nimmt vorhandene zubereitete Nahrung vor Beeren. Rohfleisch ist nicht direkt essbar. Der vorhandene Ofen kann dieselben Gerichte zubereiten.
 
-Im ersten End-to-End-Test wurde bereits gegrillt, aber der Nahrungsslot aß noch vorrangig Beeren. Der Test deckte diese UX-Schwäche auf; nach der Korrektur bestehen alle fünf gezielten Browserfälle einschließlich Jagd/Herstellen/Platzieren/Garen/Essen/Reload und einem echten Touchfang am großen See. Die Aufzeichnung bleibt erhalten. 167 Logiktests, TypeScript und Produktionsbuild bestehen.
+Im ersten End-to-End-Test wurde bereits gegrillt, aber der Nahrungsslot aß noch vorrangig Beeren. Der Test deckte diese UX-Schwäche auf; nach der Korrektur bestehen alle fünf gezielten Browserfälle einschließlich Jagd/Herstellen/Platzieren/Garen/Essen/Reload und einem echten Touchfang am großen See. Die Aufzeichnung bleibt erhalten. Dieser Schritt bestand 167 Logiktests, TypeScript und Produktionsbuild. Der abschließende Stand besitzt zusätzlich die unten beschriebene Distanzdarstellung.
 
-Die Vorher-/Nachheraufnahme des großen Sees zeigt einen weiteren echten Renderfehler: Die Instanzmaterialien verlangten Vertexfarben, während die Geometrien keine Farbattribute enthielten. Die vorhandenen Instanzfarben werden nun korrekt ohne das zusätzliche ungebundene Farbattribut genutzt. Das neue Material-Regression schützt diesen Vertrag. Die Fische sind auf der laufenden Nachheraufnahme farbig statt nahezu schwarz. Der Kamera-Schnellzugriff bietet nahe dem Wasser zusätzlich **Blick aufs Wasser**, ohne Sichtfeldverengung oder ungefragten Perspektivwechsel.
+Die Vorher-/Nachheraufnahme des großen Sees zeigt einen weiteren echten Renderfehler: Die Instanzmaterialien verlangten Vertexfarben, während die Geometrien keine Farbattribute enthielten. Die vorhandenen Instanzfarben werden nun korrekt ohne das zusätzliche ungebundene Farbattribut genutzt. Die neue Material-Regression schützt diesen Vertrag. Die Fische sind auf der laufenden Nachheraufnahme farbig statt nahezu schwarz. Der Kamera-Schnellzugriff bietet nahe dem Wasser zusätzlich **Blick aufs Wasser**, ohne Sichtfeldverengung oder ungefragten Perspektivwechsel.
 
 [Vorher](artifacts/v071/before-dark-fish.png) · [Nachher](artifacts/v071/lake-visible-fish.png) · [Tierziel](artifacts/v071/animal-target.png) · [Platzierter Grill](artifacts/v071/placed-grill.png) · [Grillen](artifacts/v071/grilling.png) · [Browserprotokoll](artifacts/v071/phase2-browser.log)
 
@@ -37,3 +37,24 @@ Rootformat v1 und alle bisherigen Welt-, Lern- und Inventardaten bleiben erhalte
 Noch nicht veröffentlicht. Abschließende Regression und tatsächlicher Deployment-Status folgen nach ihren Ergebnissen.
 
 Erster Kameraschritt: TypeScript und Build bestanden, 17 passende Logiktests bestanden. Fünf vorhandene Kamera-/Bau-/WebGL-Browserfälle bestanden. Ein neuer Browserfall las die Diagnose zu früh; nach Warten auf den nächsten Diagnoseframe bestanden beide neuen Fälle (2/2). Der fehlerhafte erste Lauf wird erhalten. Die ursprüngliche 40.000-Dreiecke-Grenze und alle alten Tests bleiben bestehen.
+
+
+## Abschließender Qualitätsdurchlauf
+
+Die Darstellung packt nur nahe lebende Fischinstanzen in die vorhandenen sieben Batches. Die tatsächliche Fischidentität bleibt auch nach dieser Auswahl beim Raycast erhalten. Bei Kamera-Verengung und anschließender Freigabe entstehen bounded lokale Diagnoseereignisse; es erfolgt kein Upload. Der Reset steht im Kamera-Schnellfenster oben.
+
+Ein erster Start des abschließenden gezielten Tests traf auf den noch laufenden lokalen Build und erhielt HTTP 404. Das war ein Fehler der Testausführung, keine erfolgreiche Spielprüfung. Der Build wurde abgewartet; der vollständige Nachlauf verwendet ausschließlich das unveränderte fertige Produktionsverzeichnis. In diesem ersten gezielten Lauf bestanden bereits beide Jagd-/Grillpfade (Ego und Third Person), der enge Kamerablick und der Angelblick.
+
+## Konkreter iPhone-Test
+
+1. Vor dem Update den Spielstand im Menü exportieren. Safari auf derselben Pages-Adresse benutzen und die Website-Daten nicht löschen. Nach Reload muss **v0.7.1** sichtbar sein.
+2. Oben rechts **Kamera** antippen. Zwischen Ego und Ansicht von hinten wechseln; den Abstand auf etwa 6–8 m setzen. Der Regler verändert die Entfernung, nicht das Sichtfeld. Beide Daumen gleichzeitig benutzen.
+3. An einen Baum oder eine Wand herangehen, zurückweichen und prüfen, ob die gewählte Entfernung wiederhergestellt wird. Bei enger oder unerklärlich festhängender Ansicht **Kamera → Kamera befreien** nutzen. Falls das Problem erneut auftritt, im Menü unter Einstellungen die Kameradiagnose speichern; der genaue weitere Hänger ist ohne echten iPhone-Test nicht als endgültig behoben bestätigt.
+4. Ein wildes Tier mit Schwert oder Axt anvisieren. Der Zielpunkt wird golden, Name und Lebenspunkte erscheinen. Mit **Jagen** angreifen. Haustiere bleiben geschützt.
+5. In der Werkbank einen Grill herstellen, als Baumaterial auswählen und platzieren. Rohfleisch mit Kohle grillen. Über den Nahrungsslot essen; die Hungeranzeige und die Vorratsmenge müssen sich ändern. Speichern und neu laden: Grill, Nahrung und Tierzustand bleiben erhalten.
+6. Am großen Seesteg **Kamera → Blick aufs Wasser** ausprobieren. Die Gruppe direkt neben dem Steg ansehen, dann einen vollständigen Fang spielen. Weitere Fischgruppen liegen an den seitlichen Ufern; nicht die gesamte große Wasserfläche ist gleichmäßig mit Fischen besetzt.
+7. Safari kurz verlassen, zurückkehren, Gerät drehen und erneut laufen. Falls die Ansicht wieder hängt, iPhone-Modell, iOS-Version, Perspektive und zuletzt ausgeführte Aktion notieren.
+
+## Grenzen
+
+Die Fische und Landschaft bleiben stilisierte Voxelmodelle. Es wird kein grafischer Komplettumbau behauptet. Die Tests prüfen reproduzierbare Teilursachen und die Wiederherstellung; sie ersetzen weder einen echten iPhone-Test noch den Nachweis, dass jede gemeldete Unterbrechung dieselbe Ursache hatte. Smartphone-Frameraten werden hier nicht erfunden. Grillen ist ein kurzer spielerischer Vorgang ohne detaillierte Simulation.

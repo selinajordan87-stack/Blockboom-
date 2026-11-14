@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 /workspace/blockboom
+
+ ✓ src/tests/rescue-v071.test.ts (5 tests) 89ms
+ ✓ src/tests/transfer.test.ts (4 tests) 17ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  20:40:53
+   Duration  1.68s (transform 449ms, setup 0ms, collect 733ms, tests 106ms, environment 0ms, prepare 232ms)

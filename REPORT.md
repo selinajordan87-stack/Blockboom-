@@ -189,3 +189,8 @@ Der mobile HUD wird auf wenige kompakte Kontrollen reduziert. Echte Third Person
 Erhaltener Recovery-Stand, reale Spielerwege, auffindbare Außenwelt, funktionales Lesen, Bauplan, Farming, Regressionen und tatsächlicher Veröffentlichungsstatus stehen im [Sprintbericht](SPRINT_REPORT.md). Der [Reality Audit](REALITY_AUDIT.md) hält vorherige Fehlannahmen getrennt von tatsächlich geprüften Spielabläufen fest. Browseremulation und vorbereitete Speicherstände gelten nicht als echte iPhone-Abnahme oder unabhängiger Erstspielertest.
 
 Veröffentlicht am 14.11.2026: Softwarecommit `9281aae`, Pages-Workflow erfolgreich, öffentliche Website und identische Produktionsdateien geprüft. **159 Logiktests bestanden; 83 Browserfälle mit einem anschließend behobenen und nachgeprüften Feedbackfehler; danach 20/20 Live-Prüfungen bestanden.** Die vollständige neue Hausbau-/Abenteuerfolge und der reale iPhone-Test bleiben offen. Verbindliche Details und alle Messgrenzen stehen im Sprintbericht.
+
+
+## 22. Kamera, Tiere und See v0.7.1
+
+Der Folgefix macht Kameraauswahl und Wiederherstellung direkt erreichbar, ersetzt die unbrauchbare stark eingeengte Ansicht, stabilisiert Tierziele, ergänzt tatsächliche Jagd mit Grillen/Essen und korrigiert Fischfarben samt Uferverteilung. Belegte Ursachen, Save-Sicherung, genaue Teststände und tatsächlicher Veröffentlichungsstatus stehen im [v0.7.1-Bericht](V071_REPORT.md). Der weiterhin nötige reale iPhone-Test wird dort ausdrücklich getrennt.

@@ -1,0 +1,36 @@
+
+Running 5 tests using 1 worker
+
+(node:7245) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 e2e/rescue-v071.spec.ts:15:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen (896ms)
+(node:7403) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 e2e/rescue-v071.spec.ts:28:1 › enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körper zu bleiben (6.8s)
+  ✓  3 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · first (20.9s)
+  ✓  4 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · third (20.2s)
+  ✓  5 e2e/rescue-v071.spec.ts:58:1 › Angelblick zeigt lebende Fischmodelle beim großen Steg ohne Kamera-Vergrößerung (6.5s)
+
+
+  1) e2e/rescue-v071.spec.ts:15:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen
+
+    Error: page.goto: net::ERR_HTTP_RESPONSE_CODE_FAILURE at http://127.0.0.1:4208/Blockboom-/?diagnostics=1
+    Call log:
+      - navigating to "http://127.0.0.1:4208/Blockboom-/?diagnostics=1", waiting until "load"
+
+
+       8 | }
+       9 | async function seed(page:Page,s=fixture()){
+    > 10 |  await page.goto("./?diagnostics=1");await page.evaluate(v=>localStorage.setItem("blockboom.save",JSON.stringify(v)),s);await page.reload();await page.locator("#play").tap();
+         |             ^
+      11 |  await expect.poll(async()=>(await metrics(page)).living.clock).toBeGreaterThan(0);
+      12 | }
+      13 | test.use({viewport:{width:844,height:390},hasTouch:true,isMobile:true});
+        at seed (/workspace/blockboom/e2e/rescue-v071.spec.ts:10:13)
+        at /workspace/blockboom/e2e/rescue-v071.spec.ts:16:8
+
+    Error Context: test-results/rescue-v071-Kamerawahl-ist-95a52-eien-und-unabhängige-Daumen/error-context.md
+
+  1 failed
+    e2e/rescue-v071.spec.ts:15:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen
+  4 passed (58.2s)

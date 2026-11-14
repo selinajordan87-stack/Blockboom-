@@ -47,3 +47,13 @@ it("zeichnet Fischfarben ohne ungebundene schwarze Vertexfarbattribute",()=>{
  const body=view.group.children[0] as T.InstancedMesh;
  expect(body.instanceColor).toBeTruthy();const color=new T.Color();body.getColorAt(0,color);expect(color.r+color.g+color.b).toBeGreaterThan(.5);
 });
+
+
+it("rendert nur nahe Fischgruppen und behält ihre tatsächliche Identität beim Raycast",()=>{
+ const shoal=new Shoal(),scene=new T.Scene(),view=new FishView(shoal,scene);
+ view.update(0,new T.Vector3(-115,2,-85));scene.updateMatrixWorld(true);
+ expect((view.group.children[0] as T.InstancedMesh).count).toBe(8);
+ const fish=shoal.actors.find(a=>a.spot==="great")!,ray=new T.Raycaster(new T.Vector3(fish.x,fish.y,fish.z+2),new T.Vector3(0,0,-1));
+ expect(view.hit(ray,3)?.fish.spot).toBe("great");
+ view.update(0,new T.Vector3(0,2,9));expect((view.group.children[0] as T.InstancedMesh).count).toBe(24);expect(view.group.children).toHaveLength(7);
+});

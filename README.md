@@ -1,6 +1,6 @@
-# BLOCKBOOM · World Discovery v0.7
+# BLOCKBOOM · World Discovery v0.7.1
 
-3D-Voxel-Sandbox für Smartphone und Desktop: ein Zuhause bauen, Tiere zähmen, einen Garten anlegen, Höhlen erkunden, Erze verarbeiten und die verlassene Schmiede entdecken. Angeln, Zombie-Survival, Schreibkämpfe und BOOM bleiben erhalten. Keine Anmeldung, Cloud oder Werbung.
+3D-Voxel-Sandbox für Smartphone und Desktop: Wildtiere jagen, Nahrung grillen, ein Zuhause bauen, Tiere zähmen, einen Garten anlegen, Höhlen erkunden, Erze verarbeiten und die verlassene Schmiede entdecken. Angeln, Zombie-Survival, Schreibkämpfe und BOOM bleiben erhalten. Keine Anmeldung, Cloud oder Werbung.
 
 ```bash
 npm ci
@@ -22,13 +22,15 @@ Desktop: WASD, Maus, Leertaste, Linksklick entfernen, Rechtsklick bauen, E inter
 
 Touch: kleiner Joystick links, rechts wischen. Sechs kompakte Slots wechseln direkt Spitzhacke, Axt, Schwert, Angel, Baumaterial und Nahrung. Langer Druck öffnet das Inventar; erneutes Tippen auf den Bauslot die Materialauswahl. Rechts erscheinen höchstens zwei zum Ziel passende Aktionen sowie Springen. Kamera, Werkbank, Garten, Entdeckerbuch, Log und Karte bleiben über den einzelnen Menübutton erreichbar. Querformat wird empfohlen.
 
+Der kleine **Kamera**-Knopf neben dem Menü öffnet direkt Ego/Ansicht von hinten, Abstand und **Kamera befreien**. Nahe einem Angelplatz bietet er **Blick aufs Wasser**. Enge Stellen verwenden vorübergehend den Ego-Blick, anschließend kehrt der gewählte Abstand zurück.
+
 Menü → Kamera & Steuerung: Ego/Third Person, Abstand 2–9 m, Sichtfeld, Empfindlichkeit, Joystickgröße, Deckkraft und vertauschte Daumenbelegung. **Kamera zurücksetzen** steht direkt im Hauptmenü und stellt einen normalen Ego-Blick wieder her. Hindernisse verkürzen den Third-Person-Abstand vorübergehend; im Freien kehrt er zurück.
 
 Menü → Einstellungen → Spielstand exportieren/importieren: eigene JSON-Sicherung herunterladen oder eine geprüfte Datei übernehmen. Der vorherige Stand wird vor Import lokal gesichert. Die Kameradiagnose ist ebenfalls als lokale Datei verfügbar; es erfolgt kein Upload.
 
 Spielstände bleiben im lokalen Browserspeicher dieser Adresse. Automatisch alle 10 Sekunden, nach Änderungen und beim Verlassen; manuell im Menü. Inkonsistente oder unbekannte Versionen werden als `blockboom.save.backup` gesichert, bevor ein neues Spiel gespeichert wird. Browserdaten löschen entfernt den Spielstand. Ein privates Browserfenster bietet keine dauerhafte Speicherung.
 
-Aktueller Sprintstand, tatsächliche Spielerwege, Prüfungen, Grenzen und iPhone-Testplan: [SPRINT_REPORT.md](SPRINT_REPORT.md). Vorheriger Kamera-/Touchfix: [V061_REPORT.md](V061_REPORT.md). Living-World-Umfang: [V06_REPORT.md](V06_REPORT.md). Historie: [REPORT.md](REPORT.md). Assetlizenzen: [THIRD_PARTY.md](THIRD_PARTY.md).
+Aktueller Kamera-/Tier-/Grillfix: [V071_REPORT.md](V071_REPORT.md). Sprintstand, tatsächliche Spielerwege, Prüfungen, Grenzen und iPhone-Testplan: [SPRINT_REPORT.md](SPRINT_REPORT.md). Vorheriger Kamera-/Touchfix: [V061_REPORT.md](V061_REPORT.md). Living-World-Umfang: [V06_REPORT.md](V06_REPORT.md). Historie: [REPORT.md](REPORT.md). Assetlizenzen: [THIRD_PARTY.md](THIRD_PARTY.md).
 
 Die Veröffentlichung für `selinajordan87-stack/Blockboom-` ist freigegeben; der tatsächliche Status steht im [Abschlussbericht](REPORT.md). Einrichtung und Handytest: [Repository, Pages-Einstellungen und Handytest](docs/GITHUB_PAGES.md). Ein Push auf `main` löst nach der Einrichtung den automatischen Workflow aus.
 
@@ -63,3 +65,5 @@ Diese Messungen ersetzen keine Framerate-Prüfung auf einem echten Smartphone. D
 Ein gefundener Schmiedeplan ermöglicht einen Aussichtsturm: 24 Bretter, zwölf Stein, vier Fackeln und vier Leitern. Menü → Bauplan zeigt Materialliste und Vorschau. Freie ebene Fläche anvisieren und mit der Bauaktion bestätigen. Erst das tatsächliche Hochklettern enthüllt zusätzliche Umgebung auf der Karte.
 
 Die additive Außenwelt ersetzt keine gespeicherten Bauwerke. Vor der ersten v0.7-Speicherung wird, soweit Speicher verfügbar ist, zusätzlich `blockboom.save.pre-v07` angelegt. Eine eigene Exportdatei bleibt die beste übertragbare Sicherung.
+
+Wildtiere mit Schwert, Axt oder Knüppel anvisieren; der goldene Zielpunkt und der Tiername zeigen das Ziel. **Jagen** schlägt zu, **Tier** öffnet Füttern/Versorgen. Gezähmte Begleiter bleiben geschützt. Wildtiere liefern Rohfleisch ohne grafische Verletzungen. Werkbank → **Grill** kostet vier Stein und eine Kohle; bei Bedarf kann Holz in der Werkbank zu Kohle werden. Grill als Baumaterial wählen, platzieren und mit **Grillen** benutzen. Rohfleisch oder versorgter Fisch plus Kohle werden zu Nahrung. Gegrilltes Fleisch lässt sich im Rucksack oder über den Nahrungsslot essen. Der bestehende Ofen verarbeitet dieselben Grillrezepte.

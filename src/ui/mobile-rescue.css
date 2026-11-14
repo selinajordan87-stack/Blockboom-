@@ -66,7 +66,7 @@
 #camera-shortcut small{display:block;font-size:9px;margin-top:3px;}
 .mobile-game #camera-shortcut{width:44px;height:44px;font-size:20px;}
 .mobile-game #compass{max-width:calc(100% - var(--safe-left) - var(--safe-right) - 310px);}
-.camera-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.camera-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0;}
 .camera-choices button{min-height:48px;}
 .camera-choices button[aria-pressed="true"]{border-color:#ffe3a6;background:#45664c;}
 .camera-distance-label{display:grid;gap:9px;font-size:16px;margin:14px 0;}

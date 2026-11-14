@@ -6,7 +6,7 @@ import {defaultExpansion} from "../inventory/Equipment";
 const save=():Save=>({version:1,position:[0,1.01,9],yaw:0,pitch:-.12,changes:{"1,1,7":"Glas"},fish:{Rotauge:3,Flussbarsch:1,Hecht:0},progress:{completedMissions:["first-perch"],repetitions:1,successfulAnswers:1,voluntaryHints:2},missionActive:false,settings:{sound:false,quality:1},extension:defaultExpansion(4)});
 function storage(){const values=new Map([[SAVE_KEY,JSON.stringify(save())],[LEARNING_KEY,JSON.stringify(freshProfile())]]);return {values,getItem:(k:string)=>values.get(k)??null,setItem:(k:string,v:string)=>{values.set(k,v);},removeItem:(k:string)=>{values.delete(k);}};}
 it("exportiert Welt, Haustiere, Kamera und Lernfortschritt verlustfrei und liest alte einzelne Saves",()=>{
- const s=save(),p=freshProfile();s.extension!.living.animals[0].name="Fiete";s.extension!.camera.perspective="third";p.results["world-01"]={attempts:2,history:[false,true],due:8,hints:1};
+ const s=save(),p=freshProfile();s.extension!.living.animals[0].name="Fiete";s.changes["2,1,7"]="Grill";s.extension!.living.bag.Rohfleisch=2;s.extension!.living.bag.Grillfleisch=1;s.extension!.living.animals[3].health=0;s.extension!.living.animals[3].respawnAt=180;s.extension!.camera.perspective="third";p.results["world-01"]={attempts:2,history:[false,true],due:8,hints:1};
  const transfer=parseTransfer(JSON.stringify(exportTransfer(s,p)));expect(transfer.world).toEqual(s);expect(transfer.learning).toEqual(p);
  const legacy={...s};delete legacy.extension;const old=parseTransfer(JSON.stringify(legacy));expect(old.world.changes).toEqual(s.changes);expect(old.learning).toBeUndefined();
  expect(()=>parseTransfer("{kaputt")).toThrow();expect(()=>parseTransfer(JSON.stringify({...s,version:99}))).toThrow();
