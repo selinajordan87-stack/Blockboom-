@@ -20,3 +20,6 @@ Die Fern-Landmarken, physischen Notizbücher, Hotbar-SVGs und Bauplanvorschau au
 
 
 v0.7.1 ergänzt eigene Grillgeometrie und ein eigenes einfaches Kamera-SVG; keine zusätzlichen Drittanbieter-Assets und keine neuen Abhängigkeiten. Die Fischmodelle und Tiermodelle bleiben die vorhandenen Eigenentwicklungen.
+
+
+v0.7.2-Entwicklungsstand: zusätzliche Pflanzen, Berg-LOD und Figurenrucksack sind eigene Geometrie. Keine externen Texturen, Modelle oder Mockup-Bestandteile wurden übernommen.

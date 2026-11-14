@@ -44,7 +44,7 @@ export function enrichFishingWorld(world: World) {
 
 export class FishingWaters {
   group = new T.Group();
-  private surfaces: T.Mesh<T.CircleGeometry, T.MeshPhongMaterial>[] = [];
+  private surfaces: T.Mesh<T.CircleGeometry, T.MeshBasicMaterial>[] = [];
   private current: T.LineSegments;
   constructor(scene: T.Scene) {
     this.group.name = "Fishing Adventure waters";
@@ -53,13 +53,10 @@ export class FishingWaters {
     for (const spot of SPOTS.slice(1)) {
       const surface = new T.Mesh(
         geometry,
-        new T.MeshPhongMaterial({
-          color: spot.id === "river" ? 0x4c9dac : 0x3f93a4,
-          emissive: 0x082630,
-          specular: 0xb8eff5,
-          shininess: 75,
+        new T.MeshBasicMaterial({
+          color: spot.id === "river" ? 0x298ba0 : 0x157fa3,
           transparent: true,
-          opacity: spot.id === "great" ? 0.32 : 0.5,
+          opacity: spot.id === "great" ? 0.48 : 0.46,
           depthWrite: false,
           side: T.DoubleSide,
         }),

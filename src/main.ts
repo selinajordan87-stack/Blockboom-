@@ -64,6 +64,7 @@ import {DiscoveryUI} from "./discovery/UI";
 import {DiscoveryView} from "./discovery/View";
 import {BlueprintPreview,buildTower,towerPlan,towerValidity,observeFromTower} from "./discovery/Blueprint";
 import {BlueprintUI} from "./discovery/BlueprintUI";
+import {NatureDetails} from "./world/NatureDetails";
 import {LandmarkView} from "./world/LandmarkView";
 import {speak} from "./learning/Speech";
 import { DayView, advanceDay, dayPhase, isNight } from "./nightfall/DayCycle";
@@ -255,6 +256,7 @@ const avatar=new Avatar(scene);
 const discoveryView=new DiscoveryView(scene);
 const towerPreview=new BlueprintPreview(scene);
 const landmarks=new LandmarkView(scene,world);
+const natureDetails=new NatureDetails(world,scene);
 const itemStore = new ItemStore(expansion,inventory.fish);
 defenseView.update(camera.position,isNight(night.time)||player.pos[1]<-1);
 // A few distant block clouds and hand-built signs; all artwork is generated here.
@@ -1840,6 +1842,7 @@ function tickFrame(now:number){
   livingView.update(expansion.living,camera.position);
   discoveryView.update(player.pos,expansion.discovery.read);
   landmarks.update(player.pos,now,camera);
+  natureDetails.update(player.pos,now);
   zombieView.update(zombies);
   defenseView.update(camera.position,isNight(night.time)||player.pos[1]<-1);
   if(canPlay())nightAudio.tick(elapsed,isNight(night.time),zombies.actors.length,settings.sound);

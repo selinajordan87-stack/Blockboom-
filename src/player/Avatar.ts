@@ -20,6 +20,7 @@ export class Avatar {
    [-.39,1,0,.19,.5,.22,0x327365,-walk],[.39,1,0,.19,.5,.22,0x327365,swing],
    [-.39,.73,0,.19,.18,.22,0xd8a77d,-walk],[.39,.73,0,.19,.18,.22,0xd8a77d,swing],
   ];
+  boxes.push([0,1.05,.24,.38,.44,.18,0x9b754c,0],[0,1.26,.25,.4,.09,.2,0x6d5038,0]);
   let i=0;const add=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:number,angle=0,parent=this.root.matrix)=>{
    this.part.position.set(x,y,z);this.part.rotation.set(angle,0,0);this.part.scale.set(sx,sy,sz);this.part.updateMatrix();this.part.matrix.premultiply(parent);this.mesh.setMatrixAt(i,this.part.matrix);this.mesh.setColorAt(i++,this.color.set(color));
   };

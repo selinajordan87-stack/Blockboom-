@@ -3,14 +3,14 @@ import { World, MIN_Y, MAX_Y, type Block } from "./World";
 import { special } from "../nightfall/Defense";
 
 export const colors: Record<Block, number> = {
-  Gras: 0x78b957,
+  Gras: 0x6b9950,
   Erde: 0x956747,
-  Stein: 0x87979b,
+  Stein: 0x78858c,
   Holz: 0x765035,
   Bretter: 0xc99a68,
   Glas: 0x9cdde0,
-  Laub: 0x3d8955,
-  Sand: 0xddc386,
+  Laub: 0x356b43,
+  Sand: 0xcdb98b,
   Boom: 0xe59a3f,
   Ziegel: 0xb95f45,
   Kopfstein: 0x737f81,
@@ -341,7 +341,8 @@ export class WorldView {
       if (neighbor && !special(neighbor) && (neighbor !== "Glas" || block === "Glas")) continue;
       const offset = data.p.length / 3;
       const color=block==="Gras"&&face.n[1]===0?this.grassSide:this.faceColors[block];
-      const shade=face.shade*(0.97+((x*13+z*7+y*3)&7)*0.007);
+      const variation=block==="Laub"?.84+((Math.floor(x/4)*13+Math.floor(z/4)*7)&7)*.035:1;
+      const shade=face.shade*(0.97+((x*13+z*7+y*3)&7)*0.007)*variation;
       const atlasTile = tileFor(block, face.n);
       const column = atlasTile % ATLAS_COLUMNS;
       const row = Math.floor(atlasTile / ATLAS_COLUMNS);

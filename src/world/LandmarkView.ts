@@ -5,6 +5,7 @@ import {terrainProfile,legacyArea,RIVER_POINTS} from "./DiscoveryTerrain";
 /** Distant scenery is explicitly an LOD; real collision stays in streamed voxels. */
 export class LandmarkView {
  readonly group=new T.Group();
+ private peaks:T.InstancedMesh;private peakData:number[][]=[];
  private far:T.Mesh;private silhouettes:T.InstancedMesh;private smoke:T.InstancedMesh;
  private tileCenters:[number,number][]=[];private indices:Uint32Array;private key="";private dummy=new T.Object3D();private color=new T.Color();
  private forward=new T.Vector3(0,0,-1);
@@ -25,9 +26,10 @@ export class LandmarkView {
   const box=new T.BoxGeometry(1,1,1);
   this.silhouettes=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0xffffff,fog:false}),100);this.silhouettes.frustumCulled=false;this.silhouettes.name="distant landmark LOD";this.group.add(this.silhouettes);
   const add=(x:number,y:number,z:number,sx:number,sy:number,sz:number,c:number)=>this.landmarks.push([x,y,z,sx,sy,sz,c]);
-  for(const[cx,cz,h]of [[145,-105,24],[45,-40,11],[-108,-46,10]])for(let peak=0;peak<3;peak++)for(let tier=0;tier<5;tier++){
-   const height=h*(peak===1?1:.72),step=height/5,width=36-tier*7;
-   add(cx+(peak-1)*16,step*(tier+.5),cz-peak*7,width,step,width*.8,tier===4?0xc8c4aa:tier>1?0x929e9e:0x76867d);
+  const peakGeometry=new T.ConeGeometry(1,1,4,3);peakGeometry.rotateY(Math.PI/4);
+  this.peaks=new T.InstancedMesh(peakGeometry,new T.MeshLambertMaterial({color:0xffffff}),9);this.peaks.name="layered ridge silhouettes";this.peaks.frustumCulled=false;this.group.add(this.peaks);
+  for(const[cx,cz,h]of [[145,-105,24],[45,-40,11],[-108,-46,10]])for(let peak=0;peak<3;peak++){
+   const height=h*(peak===1?1:.72);this.peakData.push([cx+(peak-1)*13,height/2,cz-peak*5,15-peak*2,height,12,peak===1?0xb7c7c8:0x718995]);
   }
   for(const[cx,cz]of [[-100,30],[-125,17],[-87,41]])for(let i=0;i<5;i++)add(cx+Math.sin(i*2.4)*8,5+i%3,cz+Math.cos(i*2.4)*8,5,9+i%3,5,i%2?0x335e42:0x46764c);
   add(117,6.5,105,6,13,6,0x7f8578);add(102,2.5,87,9,5,9,0x966f56);add(116,3,92,9,6,9,0x89765a);add(92,2.5,83,8,5,8,0x9a8362);add(47.5,4,40.5,5,8,5,0x8c8270);
@@ -50,6 +52,7 @@ export class LandmarkView {
   const behind=(px:number,pz:number,d:number)=>d>72&&((px-x)*this.forward.x+(pz-z)*this.forward.z)/horizontal<-.2*d;
   if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z);if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;const v=i*4;for(const a of [v,v+2,v+1,v+1,v+2,v+3])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
   let i=0;for(const[px,py,pz,sx,sy,sz,c]of this.landmarks){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||behind(px,pz,distance)||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.silhouettes.setMatrixAt(i,this.dummy.matrix);this.silhouettes.setColorAt(i++,this.color.set(c));}this.silhouettes.count=i;this.silhouettes.instanceMatrix.needsUpdate=true;if(this.silhouettes.instanceColor)this.silhouettes.instanceColor.needsUpdate=true;
+  let peakCount=0;for(const[px,py,pz,sx,sy,sz,c]of this.peakData){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||behind(px,pz,distance)||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.peaks.setMatrixAt(peakCount,this.dummy.matrix);this.peaks.setColorAt(peakCount++,this.color.set(c));}this.peaks.count=peakCount;this.peaks.instanceMatrix.needsUpdate=true;if(this.peaks.instanceColor)this.peaks.instanceColor.needsUpdate=true;
   i=0;for(const[cx,cz,h]of [[104,90,10],[44,28,6]])for(let j=0;j<5;j++){const t=((time*.0006+j*.23)%1);this.dummy.position.set(cx+Math.sin(t*3)*1.3,h+t*9,cz+t*2);this.dummy.scale.setScalar(.6+t*2);this.dummy.updateMatrix();this.smoke.setMatrixAt(i++,this.dummy.matrix);}this.smoke.instanceMatrix.needsUpdate=true;
  }
  dispose(){const resources=new Set<T.BufferGeometry|T.Material>();this.group.traverse(o=>{const m=o as T.Mesh;if(m.geometry)resources.add(m.geometry);if(m.material)for(const a of Array.isArray(m.material)?m.material:[m.material])resources.add(a);});for(const resource of resources)resource.dispose();this.group.removeFromParent();}
