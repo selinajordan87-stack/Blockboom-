@@ -1,0 +1,30 @@
+
+Running 21 tests using 1 worker
+
+(node:16250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/living-v06.spec.ts:23:1 › sichtbares Erz wird zeitgesteuert abgebaut; Ofen und Kupferwerkzeug verbrauchen echte Vorräte (22.7s)
+  ✓   2 e2e/living-v06.spec.ts:33:1 › Tier wird durch Füttern gezähmt, benannt und folgt nach Reload (12.6s)
+  ✓   3 e2e/living-v06.spec.ts:39:1 › Hacke, Aussaat, gespeichertes Wachstum und Ernte funktionieren auf Touch (8.5s)
+  ✓   4 e2e/living-v06.spec.ts:45:1 › Möbelplatzierung und getrennte Truhe behalten Inhalt und Bauwerk (24.9s)
+  ✓   5 e2e/living-v06.spec.ts:51:1 › alte Welt wird vor v0.6 gesichert; echte Speicherquote schützt den letzten Stand (14.2s)
+  ✓   6 e2e/living-v06.spec.ts:63:1 › alle fünf Entdeckermissionen verbinden Zuhause, Tier, Bergbau und echte Schatztruhen (1.3m)
+  ✓   7 e2e/living-v06.spec.ts:76:94 › Wohnwelt mobil 667×375: Karte, Nahrung und Tiername mit Tastaturhöhe (6.0s)
+  ✓   8 e2e/living-v06.spec.ts:76:94 › Wohnwelt mobil 844×390: Karte, Nahrung und Tiername mit Tastaturhöhe (6.3s)
+  ✓   9 e2e/living-v06.spec.ts:76:94 › Wohnwelt mobil 932×430: Karte, Nahrung und Tiername mit Tastaturhöhe (7.0s)
+  ✓  10 e2e/rescue-v071.spec.ts:15:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen (6.7s)
+  ✓  11 e2e/rescue-v071.spec.ts:28:1 › enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körper zu bleiben (6.3s)
+  ✓  12 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · first (20.7s)
+  ✓  13 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · third (20.5s)
+  ✓  14 e2e/rescue-v071.spec.ts:58:1 › Angelblick zeigt lebende Fischmodelle beim großen Steg ohne Kamera-Vergrößerung (6.6s)
+{"v03NewWorld":{"calls":93,"triangles":39510,"geometries":52,"textures":4,"chunks":28,"ratio":1}}
+  ✓  15 e2e/v03.spec.ts:42:1 › neue Welt migriert auf Edition 4 mit begrenztem Renderbudget (5.4s)
+  ✓  16 e2e/v03.spec.ts:76:1 › v0.4 erhält sieben sichtbare Werkzeuge, Animation, FOV, Zoom und Inventar (8.2s)
+  ✓  17 e2e/v03.spec.ts:123:1 › 15 Materialien, mehrere Undo-Schritte und Reload (14.0s)
+  ✓  18 e2e/v03.spec.ts:157:3 › mobile Landschaft 667×375: Zoom und Werkzeuge ohne Pause (7.1s)
+  ✓  19 e2e/v03.spec.ts:157:3 › mobile Landschaft 844×390: Zoom und Werkzeuge ohne Pause (7.2s)
+  ✓  20 e2e/v03.spec.ts:157:3 › mobile Landschaft 932×430: Zoom und Werkzeuge ohne Pause (7.0s)
+{"v03BuildUndoPlateau":{"first":{"geometries":54,"textures":4},"second":{"geometries":54,"textures":4}}}
+  ✓  21 e2e/v03.spec.ts:185:1 › diagnostics: selektive Chunks und GPU-Zähler bleiben bei Bau/Undo begrenzt (9.5s)
+
+  21 passed (5.1m)

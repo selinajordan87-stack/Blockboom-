@@ -1,5 +1,7 @@
 # BLOCKBOOM v0.7.1 – Kamera, Tiere und See
 
+Stand: 14.11.2026. Getesteter Releasekandidat; Veröffentlichung und Live-Prüfung stehen noch aus. Wildtiere liefern nun grillbare Nahrung, die Kamera ist direkt erreichbar, und echte Fischgruppen sind im großen See sichtbar. Der gelegentliche iPhone-Hänger gilt ohne erneuten Gerätetest nicht pauschal als endgültig behoben.
+
 ## Ausgangspunkt und belegte Ursachen
 
 Ausgangspunkt: veröffentlichter `main` auf `60385e1`, sauberes Arbeitsverzeichnis. Entwicklungsbranch `fix/v071-camera-wildlife`. Baseline: TypeScript, 159 Logiktests und Produktionsbuild bestanden.
@@ -55,7 +57,7 @@ Erster Kameraschritt: TypeScript und Build bestanden, 17 passende Logiktests bes
 
 ## Abschließender Qualitätsdurchlauf
 
-Die Darstellung packt nur nahe lebende Fischinstanzen in die vorhandenen sieben Batches. Die tatsächliche Fischidentität bleibt auch nach dieser Auswahl beim Raycast erhalten. Bei Kamera-Verengung und anschließender Freigabe entstehen bounded lokale Diagnoseereignisse; es erfolgt kein Upload. Der Reset steht im Kamera-Schnellfenster oben.
+Die Darstellung packt nur nahe lebende Fischinstanzen in die vorhandenen sieben Batches. Die tatsächliche Fischidentität bleibt auch nach dieser Auswahl beim Raycast erhalten. Bei Kamera-Verengung und anschließender Freigabe entstehen begrenzt gespeicherte lokale Diagnoseereignisse; es erfolgt kein Upload. Der Reset steht im Kamera-Schnellfenster oben.
 
 Ein erster Start des abschließenden gezielten Tests traf auf den noch laufenden lokalen Build und erhielt HTTP 404. Das war ein Fehler der Testausführung, keine erfolgreiche Spielprüfung. Der Build wurde abgewartet; der vollständige Nachlauf verwendet ausschließlich das unveränderte fertige Produktionsverzeichnis. In diesem ersten gezielten Lauf bestanden bereits beide Jagd-/Grillpfade (Ego und Third Person), der enge Kamerablick und der Angelblick.
 
@@ -92,3 +94,43 @@ Der zweite Gesamtlauf fand im unveränderten alten Touch-Farmingfall eine Intera
 
 
 Der folgende unveränderte Truhenfall zeigte dasselbe Problem bei einer Möbelaktion. Die Zielauswahl nutzt deshalb zuerst das tatsächliche sichtbare Tiermesh; das zusätzliche Zielhilfepolster darf kein genauer anvisiertes Möbel oder eine verdeckende Weltfläche verdrängen. Das gilt auch für die Third-Person-Parallaxenkorrektur. [Truhen-Fehlerkontext](artifacts/v071/chest-animal-priority-context.md). Beide vorhandenen Fälle werden auf dem korrigierten Produktionsbuild nachgeprüft.
+
+
+Der abgeschlossene Diagnose-Gesamtlauf auf `index-BpZYmPJX.js` endete mit **86/88 bestanden in 24,5 Minuten**. Die einzigen Fehler waren die oben belegten Hacken-/Truhenziele. Alle übrigen Kamera-, Jagd-/Grill-, Fang-, Bau-, Save-, Touch-, Kampf- und Lernfälle bestanden. [Vollständiges Protokoll](artifacts/v071/full-browser-before-priority-fix.log). Die folgende Nachprüfung bezieht sich ausdrücklich auf den anschließend gebauten Stand mit korrigierter Zielpriorität und zwei versetzten seitlichen Fischgruppen.
+
+
+Beide unveränderten fehlerhaften Browserfälle bestehen auf dem korrigierten Produktionsbundle **`index-DBQix1VS.js`**: Hacke/Aussaat/Ernte sowie Möbel/Truhe mit Inhalt und Reload, **2/2 in 36,3 Sekunden**. TypeScript, **170/170 Logiktests in 27 Dateien** und Build bestehen ebenfalls. [Nachprüflog](artifacts/v071/priority-browser.log). Die breitere Nachprüfung der betroffenen Funktionen läuft auf demselben unveränderten Bundle.
+
+
+## Unterbrochene Testprozesse
+
+Beim abschließenden 26-Fälle-Lauf endeten Browser und lokaler Vorschauprozess ohne abschließendes Testergebnis. Das Protokoll belegt fünf erfolgreich abgeschlossene Fälle; es wird nicht als „26 bestanden“ ausgegeben. Im aktuellen Cgroup waren keine OOM-/OOM-Kill-Ereignisse registriert; die tatsächliche Beendigungsursache bleibt unbekannt. Die Vorschau wurde neu gestartet und der identische Bundlebezug `index-DBQix1VS.js` vor der Fortsetzung geprüft. Die übrigen 21 Fälle werden separat ausgeführt. [Fünf abgeschlossene Fälle](artifacts/v071/release-browser-interrupted.log).
+
+
+## Verbindlicher Prüfstand vor Veröffentlichung
+
+| Prüfung | Tatsächliches Ergebnis |
+| --- | --- |
+| Baseline | TypeScript, 159 Logiktests und Build bestanden |
+| Letzter Softwarestand | TypeScript strict, **170/170** Logiktests in 27 Dateien, Produktionsbuild bestanden |
+| Vollständiger Diagnose-Browserlauf | **86/88** auf `index-BpZYmPJX.js`, 24,5 min; zwei belegte Zielkonflikte gefunden |
+| Beide korrigierten alten Fälle | **2/2** unverändert bestanden, 36,3 s, auf `index-DBQix1VS.js` |
+| Breite abschließende Nachprüfung | **26 unterschiedliche Fälle bestanden** auf `index-DBQix1VS.js`: fünf vor Prozessunterbrechung, **21/21** anschließend in 5,1 min |
+| Echter iPhone-/Android-Test | nicht ausgeführt; Chromium mit mobiler Emulation und Software-WebGL |
+
+Damit wurden alle 90 jetzt vorhandenen unterschiedlichen Browserfälle im Verlauf ausgeführt; die beiden fehlerhaften Fälle sind korrigiert und erfolgreich nachgeprüft. **Es wird kein vollständig erneut ausgeführter grüner 90-Fälle-Lauf auf dem letzten Bundle behauptet.** Die abschließenden 26 Fälle prüfen alle geänderten Funktionsbereiche einschließlich beiden Zielkonflikten, Jagd/Grill/Essen in beiden Perspektiven, neuem Kamera-Schnellzugriff, allen Fischgruppen, tatsächlichem Stegfang, Spielständen und GPU-Ressourcen. [Abschließende Fortsetzung](artifacts/v071/release-browser-remaining.log), [170 Logiktests](artifacts/v071/release-logic.log), [Build](artifacts/v071/release-build.log).
+
+## Performance-Befund
+
+Die abschließende Startszene maß 93 Draw Calls, 39.510 Dreiecke, 52 Geometrien, vier Texturen und 28 Chunks bei Auflösungsfaktor 1. Das bestehende Budget unter 40.000 Dreiecken und höchstens 110 Draw Calls wurde nicht erhöht. Nach wiederholtem Bauen/Undo blieben die GPU-Zähler in beiden Vergleichsfenstern bei 54 Geometrien und vier Texturen. Fischpopulation höchstens 32, Tierpopulation höchstens 18; entfernte Fischgruppen werden nicht mitgezeichnet. Das sind Messungen auf diesem Cloud-Rechner, kein Nachweis von 30 FPS oder langfristiger Leckfreiheit auf einem Smartphone. Neue reale Geräte-FPS oder Heap-Messreihen wurden nicht erhoben.
+
+## Git-Schritte
+
+- `9b88629`: eingeengte Kamera, direktes Kamerafenster und stabile Tierziele.
+- `e1cf81c`: gespeicherte Jagd, platzierbarer Grill und richtige Fischfarben.
+- `cb60328`: nahe Fischinstanzen, Diagnose und v0.7.1-Kennzeichnung.
+- `a4d3d39`: Köder lockt tatsächlich nahe Fische.
+- `35d9ca8`: seitliche Gruppen über dem Seegrund.
+- `28283d5`: genaue Möbel-/Bodenziele vor zusätzlicher Tierzielhilfe.
+
+Entwicklung auf `fix/v071-camera-wildlife`; bisherige Commits und Speicherformate bleiben erhalten. Keine Force-Pushes.

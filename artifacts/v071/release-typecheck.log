@@ -1,0 +1,3 @@
+
+> blockboom@0.7.1 typecheck
+> tsc --noEmit
