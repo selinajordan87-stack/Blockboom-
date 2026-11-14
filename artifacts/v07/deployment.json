@@ -1,0 +1,31 @@
+{
+  "checkedAtUTC": "2026-11-14T07:44:46.985864+00:00",
+  "url": "https://selinajordan87-stack.github.io/Blockboom-/",
+  "htmlStatus": 200,
+  "commit": "9281aaeebd0926839f12afdc478a7a6225f8f9be",
+  "workflow": "https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43572243099",
+  "assets": [
+    {
+      "path": "/Blockboom-/assets/index-s5m-G2nK.js",
+      "status": 200,
+      "bytes": 318479,
+      "sha256": "42f03aa2b23593523d5ba89ab92f89051ea26f14e2be197367fd8eb767c2af5f",
+      "matchesLocal": true
+    },
+    {
+      "path": "/Blockboom-/assets/three-CxgTLceN.js",
+      "status": 200,
+      "bytes": 493016,
+      "sha256": "6423639fc4b2f4b43d2c6f209fd0b684338faeff244dc9ee29e62efd2f055c2b",
+      "matchesLocal": true
+    },
+    {
+      "path": "/Blockboom-/assets/index-CyU1qMwR.css",
+      "status": 200,
+      "bytes": 31449,
+      "sha256": "cfeec5a92528d36db52adccdf4e3800bde3a91fd2120f0c631f761e27995472d",
+      "matchesLocal": true
+    }
+  ],
+  "verified": true
+}

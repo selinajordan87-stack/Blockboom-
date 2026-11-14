@@ -1,6 +1,8 @@
 # BLOCKBOOM – Overnight Sprint / v0.7.0
 
-Stand: 14.11.2026. Dies ist ein getesteter Entwicklungsschritt auf der bestehenden v0.6.1, kein Rewrite und keine vollständige Abnahme sämtlicher früherer Konzeptaufträge. **Die Veröffentlichung steht noch aus; bisher ist v0.6.1 live.** Der anschließende echte iPhone-Test bleibt erforderlich.
+Stand: 14.11.2026. Dies ist ein getesteter Entwicklungsschritt auf der bestehenden v0.6.1, kein Rewrite und keine vollständige Abnahme sämtlicher früherer Konzeptaufträge. **v0.7.0 ist veröffentlicht und auf der tatsächlichen Pages-Adresse geprüft.** Der anschließende echte iPhone-Test bleibt erforderlich.
+
+Live: **https://selinajordan87-stack.github.io/Blockboom-/**. Der Softwarestand `9281aae` wurde durch den [erfolgreichen Pages-Workflow](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43572243099) gebaut und bereitgestellt. Die normale öffentliche Adresse und alle drei ausgelieferten JS-/CSS-Dateien antworteten mit HTTP 200; ihre SHA-256-Prüfsummen stimmen mit dem lokal getesteten Produktionsbuild überein. Auf dieser öffentlichen Version bestanden anschließend **20/20 Browserprüfungen in 4,0 Minuten**. [Bundle-Nachweis](artifacts/v07/deployment.json), [Live-Prüflog](artifacts/v07/live-browser.log).
 
 ## Ausgangslage und Recovery
 
@@ -37,7 +39,7 @@ Dabei wurden echte Hindernisse gefunden und nicht als Erfolg gezählt:
 
 Die erste Fortsetzung erreichte die tiefe Mine, las den Kammerhinweis und entnahm den tatsächlichen Schatz. Auf dem Rückweg blockierte eine irreführende Abkürzung an der erhaltenen alten Geländekante; diese Stichverbindung wurde aus dem Wegenetz entfernt. Der Rückweg verwendet den geprüften südlichen Knoten. [Fortsetzungsaufzeichnung](artifacts/v07/journey-continued/journey.json).
 
-Die Wanderung wird mit ihrer regulär exportierten, unveränderten Datei über das normale Importmenü fortgesetzt. Kein Teleport-Fallback. Die Fortsetzung und ihr endgültiges Ergebnis werden hier separat dokumentiert.
+Die Wanderung wurde mit ihrer regulär exportierten, unveränderten Datei über das normale Importmenü fortgesetzt. Kein Teleport-Fallback. Nach dem unten beschriebenen Waldfehler-Fix führte der vollständige Eingabeweg um das bestehende Starthaus, durch tatsächliche Baumgruppen zum großen See und verbindenden Fluss; anschließend blieben die Daten nach normalem Save/Reload erhalten. [Endgültige Aufzeichnung](artifacts/v07/forest-fixed-walk/journey.json).
 
 ## Lernen und erste 15–30 Minuten
 
@@ -76,6 +78,9 @@ Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlic
 | Letzte Kartenkorrektur | 157 Logiktests, TypeScript, Build und **4/4** Browserfälle auf `index-DR5BWunQ.js`; [Log](artifacts/v07/release-browser.log) |
 | Abschließende Text-UX | **2/2** Lese-/Touch- und Pagesfälle auf `index-C5EsXfER.js`; [Log](artifacts/v07/copy-browser.log) |
 | Wald-Generierungsfix | **158 Logiktests**, vier Browser-Nachtests, Build `index-CKfwcTAk.js`; [Log](artifacts/v07/forest-browser.log) |
+| Letzter vollständiger 83-Fälle-Lauf | **82 bestanden / ein Fehler** auf `index-aiUri2qf.js`: Regionsmeldung überschrieb BOOM-Feedback; unten dokumentiert |
+| Korrigiertes veröffentlichtes Bundle | TypeScript, **159 Logiktests**, Build und **6/6** Wiederholungen der beiden betroffenen Browserfälle; `index-s5m-G2nK.js` |
+| Öffentliche Pages-Version | **20/20**, 4,0 min, auf demselben korrigierten Bundle; tatsächlicher Touchfang, Bauen, Farming, Kamera, Mehrfinger, Kampf, Export/Import, Reload und Unterpfad |
 | Echter iPhone-/Android-Test | nicht ausgeführt |
 
 Kein alter Test wurde gelöscht. Frühere erfolglose Läufe und ihre Ursachen bleiben dokumentiert. Vorbereitete Save-Fixtures sichern gezielt Funktionen; sie gelten nicht als Beweis für normale Auffindbarkeit.
@@ -113,8 +118,9 @@ Neue passive Wissensboni auf Fangwahrscheinlichkeit, Farming als zusätzlicher K
 | `40eeeab` | Fundtexte ohne schulische Stufenetiketten, ehrliche Grafiknachweise |
 | `ef35cac` | tatsächliche Waldgenerierung und freier Weg statt leerer Regionsmarke |
 | `ded5323` | tatsächlicher Steg als Angelzone und erfolgreicher Touchfang |
+| `9281aae` | Aktionsfeedback und erster Lesehinweis bleiben vor Regionsmeldungen erhalten |
 
-Weg-/Gartenschutzfix ist mit 157 Logiktests und zehn gezielten Browserfällen gesichert. Abschließende Gehwegbelege und Live-Prüfung werden nach ihren tatsächlichen Ergebnissen ergänzt. Es wurde bisher nicht auf `main` gepusht.
+Der Entwicklungsbranch `feature/v07-world-discovery` wurde nach den Prüfungen ohne Umschreiben der Historie nach `main` übernommen und normal zu `origin/main` gepusht. Die bisherigen Commits bleiben Vorfahren; kein Force-Push. Der veröffentlichte Software-HEAD ist `9281aaeebd0926839f12afdc478a7a6225f8f9be`. Der abschließende Nachweiscommit ergänzt ausschließlich Dokumentation und Testartefakte.
 
 ## Lokaler Start und Wiederholung
 
@@ -129,7 +135,7 @@ BLOCKBOOM_TEST_URL=http://127.0.0.1:4208/Blockboom-/ npm run test:browser
 node scripts/v07-player-journey.mjs
 ```
 
-Der Journalpfad kennt technische Wegpunkte; er ist keine menschliche Bewertung von Spaß oder Suchzeit. Die tatsächlich ausgerollte Website wird erst nach erfolgreichem Workflow und Prüfung ihres ausgelieferten Bundles als veröffentlicht bezeichnet.
+Der Journalpfad kennt technische Wegpunkte; er ist keine menschliche Bewertung von Spaß oder Suchzeit. Workflow, ausgelieferte Dateien und Live-Prüfungen sind oben getrennt nachgewiesen.
 
 ## Konkrete iPhone-Abnahme
 
@@ -170,4 +176,8 @@ Aktionsmeldungen haben nun für ihre sichtbare Dauer Vorrang vor gewöhnlichen R
 
 Auf dem korrigierten Produktionsbundle **`index-s5m-G2nK.js`** bestanden TypeScript, alle **159 Logiktests** und Build sowie **6/6 Wiederholungen**: BOOM mit tatsächlicher Blockentfernung und Reset sowie frischer Einstieg mit Lesen/Touch, jeweils dreimal. [Nachprüfungslog](artifacts/v07/notice-browser.log). Es wird ausdrücklich kein zweiter vollständig grüner 83-Fälle-Gesamtlauf nach dieser lokalisierten Änderung behauptet.
 
-Alle 83 unterschiedlichen Szenarien wurden damit geprüft; der einzige im Gesamtlauf fehlgeschlagene Fall wurde korrigiert und erfolgreich nachgeprüft. Die Live-Smokeprüfung folgt auf genau diesem Bundle. Die Veröffentlichung gilt erst mit erfolgreichem Workflow, erreichbarer Website und geprüftem ausgeliefertem Bundle als bestätigt.
+Alle 83 unterschiedlichen Szenarien wurden damit geprüft; der einzige im Gesamtlauf fehlgeschlagene Fall wurde korrigiert und erfolgreich nachgeprüft. Anschließend bestand die öffentliche Version alle 20 ausgewählten Live-Prüfungen. Die Veröffentlichung ist durch erfolgreichen Workflow, erreichbare Website und geprüfte ausgelieferte Dateien bestätigt. Das ersetzt keine vollständige neue 83-Fälle-Ausführung auf dem letzten Bundle und keine reale Geräteabnahme.
+
+## Nächster sinnvoller Entwicklungsschritt
+
+Zuerst den oben beschriebenen iPhone-Test durchführen und den vollständigen ersten eigenen Hausbau samt Abenteuerfolge mit einer neuen Spielerin beobachten. Auffindbarkeit, verständliche Aktionen und Kameragefühl haben Vorrang vor weiteren Gegenständen. Danach Bergkonturen und natürlichere Ufer verbessern sowie Start-/Importaufbau und reale mobile Frametimes profilieren. Eine komplette 30–60-Minuten-Story und Grafik auf dem Niveau der Referenzbilder werden für diesen Sprint nicht als erreicht gemeldet.

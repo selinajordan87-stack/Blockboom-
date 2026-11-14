@@ -187,3 +187,5 @@ Der mobile HUD wird auf wenige kompakte Kontrollen reduziert. Echte Third Person
 ## 21. World Discovery – Overnight Sprint v0.7
 
 Erhaltener Recovery-Stand, reale Spielerwege, auffindbare Außenwelt, funktionales Lesen, Bauplan, Farming, Regressionen und tatsächlicher Veröffentlichungsstatus stehen im [Sprintbericht](SPRINT_REPORT.md). Der [Reality Audit](REALITY_AUDIT.md) hält vorherige Fehlannahmen getrennt von tatsächlich geprüften Spielabläufen fest. Browseremulation und vorbereitete Speicherstände gelten nicht als echte iPhone-Abnahme oder unabhängiger Erstspielertest.
+
+Veröffentlicht am 14.11.2026: Softwarecommit `9281aae`, Pages-Workflow erfolgreich, öffentliche Website und identische Produktionsdateien geprüft. **159 Logiktests bestanden; 83 Browserfälle mit einem anschließend behobenen und nachgeprüften Feedbackfehler; danach 20/20 Live-Prüfungen bestanden.** Die vollständige neue Hausbau-/Abenteuerfolge und der reale iPhone-Test bleiben offen. Verbindliche Details und alle Messgrenzen stehen im Sprintbericht.

@@ -40,3 +40,11 @@ Die normale Wanderung setzte ihre unveränderten, zuvor über die Exportfunktion
 ## Letzter Gesamt- und Fehlernachlauf
 
 Der abschließende Lauf umfasste 83 Fälle: 82 bestanden, ein Desktop-BOOM-Feedbackfehler. Eine nachträgliche Regionsmeldung überschrieb die Aktionsmeldung. Der korrigierte Stand (`index-s5m-G2nK.js`) bestand 159 Logiktests und sechs Browser-Wiederholungen (BOOM und frischer Einstieg mit erhaltenem Notizbuchhinweis je dreimal). Kein Test wurde entfernt oder seine Material-/Weltprüfung abgeschwächt. Das ist eine gezielte Nachprüfung nach dem Gesamtlauf; kein erfundener vollständig erneut ausgeführter 83-Fälle-Lauf.
+
+## Prüfung der tatsächlich veröffentlichten Version
+
+Am 14.11.2026 bestand die öffentliche Adresse `https://selinajordan87-stack.github.io/Blockboom-/` **20/20 ausgewählte Browserfälle in 4,0 Minuten**. Es wurde kein lokaler Server als Live-Nachweis verwendet. Der ausgelieferte App-, Three.js- und CSS-Build stimmt bytegenau mit dem geprüften Produktionsbuild überein. [Prüflog](artifacts/v07/live-browser.log), [HTTP-/Hashnachweis](artifacts/v07/deployment.json).
+
+Die Live-Fälle prüfen den frischen Touch-/Lese-/Recheneinstieg, Langdruck und unabhängige Daumen, tatsächliches Sammeln/Herstellen/Pflanzen mit Reload, BOOM/Reset, den realen Touchfang am großen See, Fokusverlust, Pointer-/Touchabbruch, manuelle Pause, Hintergrundwechsel, Third Person mit gespeichertem Abstand, Baumkollision und Rückkehr, Kamera-Reset, Bauen/Abbauen/Inventar, echten Datei-Export und Import, WebGL-Unterbrechung, Schreibkampf mit Fehlerhilfe, Nahkampf gegen einen echten Zombie und den Pages-Unterpfad samt Assets. Vorbereitete vorhandene Spielstände bleiben in den jeweiligen Fällen als solche gekennzeichnet.
+
+Die fehlende reale iPhone-Abnahme sowie der noch nicht vollständig frisch durchgespielte eigene Hausbau mit allen neuen Abenteuerkapiteln bleiben ausdrücklich offen.

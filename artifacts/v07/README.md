@@ -29,3 +29,5 @@ Ein vollständiger frischer Hausbau, die neue Gesamtgeschichte am Stück und ein
 Die mitgespeicherten Exportdateien sind ausschließlich durch diese isolierten automatisierten Testspieler erzeugte Daten. Sie enthalten keinen Spielstand von Paul. Die Fortsetzungen verändern diese Dateien nicht und importieren sie über die normale Spielfunktion. Die Journale halten auch die gescheiterten Wege fest.
 
 Verbindliche Ergebnisse und Grenzen: [Sprintbericht](../../SPRINT_REPORT.md), [Gameplay-Protokoll](../../V07_GAMEPLAY_TESTS.md), [vollständiger Browserlauf](final-browser.log), [letzte Karten-Nachprüfung](release-browser.log).
+
+Die aktualisierten Bilder unter `entry-loop`, `gameplay/reading-maths.png` und `great-lake-play` wurden beim abschließenden Test auf der tatsächlich öffentlichen Pages-Version aufgenommen. [20 bestandene Live-Fälle](live-browser.log), [ausgelieferte Bundle-Prüfsummen](deployment.json). Die letzte Kampf-/Tastatur-Nachprüfung liegt unter `final-regression/v05`; ältere v0.5-Nachweise wurden unverändert erhalten.

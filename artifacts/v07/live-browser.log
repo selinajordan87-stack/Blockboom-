@@ -1,0 +1,27 @@
+
+Running 20 tests using 1 worker
+
+(node:69683) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (17.4s)
+  ✓   2 e2e/discovery-v07.spec.ts:37:1 › v0.7 Langdruck-Inventar und zwei Daumen bleiben unabhängig vom neuen HUD (5.6s)
+  ✓   3 e2e/entry-loop-v07.spec.ts:4:1 › Neuer Survivalstart: Holz und Stein sammeln, Gartenblatt anwenden, Grundrezepte und eigenes Beet (59.3s)
+  ✓   4 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (5.7s)
+  ✓   5 e2e/great-lake-v07.spec.ts:6:1 › großer See: erspielten Stand importieren, Steg betreten und einen echten Fisch mit Touch angeln (52.7s)
+  ✓   6 e2e/mobile-rescue.spec.ts:21:1 › P0: sichtbarer Fokusverlust während Bewegung öffnet keine manuelle Pause (2.1s)
+  ✓   7 e2e/mobile-rescue.spec.ts:65:1 › Bewegung, Kamera, beide Finger gleichzeitig und unabhängiges Loslassen (4.9s)
+  ✓   8 e2e/mobile-rescue.spec.ts:155:3 › pointercancel: keine hängende Bewegung, nächster Kontakt funktioniert (2.3s)
+  ✓   9 e2e/mobile-rescue.spec.ts:155:3 › touchcancel: keine hängende Bewegung, nächster Kontakt funktioniert (2.3s)
+  ✓  10 e2e/mobile-rescue.spec.ts:204:1 › Manuelle Pause nur per Tippen; Ziehen von Kamera oder Menü aktiviert kein Menü (4.7s)
+  ✓  11 e2e/mobile-rescue.spec.ts:246:1 › Hintergrund unterbricht getrennt, sichtbares Blur bewahrt aktive Daumen (2.2s)
+  ✓  12 e2e/mobile-ux.spec.ts:23:1 › Third Person zeigt die Figur, erhöht echte Kameradistanz und speichert die Auswahl (11.2s)
+  ✓  13 e2e/mobile-ux.spec.ts:29:1 › Baumkollision verkürzt die Sicht vorübergehend; Weglaufen stellt den Abstand wieder her (6.0s)
+  ✓  14 e2e/mobile-ux.spec.ts:35:1 › Kamera-Reset löst enge Sicht, bleibt nach Menüwechsel erreichbar und stoppt alte Eingaben (6.2s)
+  ✓  15 e2e/mobile-ux.spec.ts:50:1 › Third-Person-Bauen, Abbauen und Inventar sind über kleine Touchflächen nutzbar (7.6s)
+  ✓  16 e2e/mobile-ux.spec.ts:66:1 › Export ist eine echte Datei; geprüfter Import überlebt Reload und legt eine Sicherung an (12.2s)
+  ✓  17 e2e/mobile-ux.spec.ts:72:1 › WebGL-Unterbrechung hält Menü und Kamera-Reset erreichbar und kann wieder fortgesetzt werden (7.1s)
+  ✓  18 e2e/nightfall.spec.ts:38:1 › Schreibkampf schützt die Eingabe, hilft nach Fehlern und wirkt ohne Zeitlimit (7.7s)
+  ✓  19 e2e/nightfall.spec.ts:79:1 › Nahkampf über sichtbare Waffe trifft einen echten Zombie und belohnt den Sieg (17.5s)
+  ✓  20 e2e/pages.spec.ts:7:1 › Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang (3.7s)
+
+  20 passed (4.0m)
