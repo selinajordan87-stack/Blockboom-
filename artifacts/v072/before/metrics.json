@@ -1,0 +1,678 @@
+{
+  "method": "Controlled identical save fixtures; visual comparison, no fresh-player reachability claim",
+  "errors": [],
+  "results": [
+    {
+      "name": "start",
+      "fixture": {
+        "position": [
+          0,
+          1.01,
+          17
+        ],
+        "yaw": 0,
+        "pitch": -0.12,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        0,
+        1.0000090129937018,
+        17
+      ],
+      "calls": 78,
+      "triangles": 29364,
+      "geometries": 59,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 113,
+        "totalBuildMs": 113,
+        "lastChunkMs": 3.300000000745058,
+        "maxChunkMs": 10.199999999254942,
+        "queue": 0,
+        "rebuilt": 26,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 28,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 7.058408328921828,
+        "frameMs": 200.0999999999999,
+        "p95Ms": 183.30000000000018,
+        "samples": 4
+      }
+    },
+    {
+      "name": "forest",
+      "fixture": {
+        "position": [
+          -100,
+          1.01,
+          30
+        ],
+        "yaw": -0.6,
+        "pitch": -0.1,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        -100,
+        1.0000090679253413,
+        30
+      ],
+      "calls": 79,
+      "triangles": 22110,
+      "geometries": 65,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 195,
+        "totalBuildMs": 195,
+        "lastChunkMs": 5.099999999627471,
+        "maxChunkMs": 10.599999999627471,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 13.997200559888023,
+        "frameMs": 133.39999999999964,
+        "p95Ms": 100.10000000000014,
+        "samples": 7
+      }
+    },
+    {
+      "name": "mountain",
+      "fixture": {
+        "position": [
+          85,
+          1.01,
+          -60
+        ],
+        "yaw": -0.93,
+        "pitch": 0.12,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        85,
+        1.0000090489366116,
+        -60
+      ],
+      "calls": 25,
+      "triangles": 17046,
+      "geometries": 63,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 307,
+        "totalBuildMs": 307,
+        "lastChunkMs": 7.799999998882413,
+        "maxChunkMs": 15.900000000372529,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 23.184452778724857,
+        "frameMs": 33.29999999999973,
+        "p95Ms": 83.29999999999995,
+        "samples": 34
+      }
+    },
+    {
+      "name": "lake",
+      "fixture": {
+        "position": [
+          -115,
+          1.01,
+          -85
+        ],
+        "yaw": 0,
+        "pitch": -0.3,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        -115,
+        1.000009021945525,
+        -85
+      ],
+      "calls": 42,
+      "triangles": 19866,
+      "geometries": 68,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 180.59999999962747,
+        "totalBuildMs": 180.59999999962747,
+        "lastChunkMs": 6.099999999627471,
+        "maxChunkMs": 8.400000000372529,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 9.375585974123378,
+        "frameMs": 150.00000000000023,
+        "p95Ms": 150.00000000000023,
+        "samples": 5
+      }
+    },
+    {
+      "name": "river",
+      "fixture": {
+        "position": [
+          -110,
+          1.01,
+          -65
+        ],
+        "yaw": 3.141592653589793,
+        "pitch": -0.2,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        -110,
+        -0.9999909517415456,
+        -65
+      ],
+      "calls": 48,
+      "triangles": 19978,
+      "geometries": 64,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 208.80000000074506,
+        "totalBuildMs": 208.80000000074506,
+        "lastChunkMs": 6.200000001117587,
+        "maxChunkMs": 10.300000000745058,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 13.469662646176454,
+        "frameMs": 216.69999999999982,
+        "p95Ms": 166.5999999999999,
+        "samples": 22
+      }
+    },
+    {
+      "name": "cave-mouth",
+      "fixture": {
+        "position": [
+          25,
+          1.01,
+          -30
+        ],
+        "yaw": -1.5707963267948966,
+        "pitch": -0.1,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        25,
+        1.0000090810818054,
+        -30
+      ],
+      "calls": 32,
+      "triangles": 21500,
+      "geometries": 67,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 172.59999999962747,
+        "totalBuildMs": 172.59999999962747,
+        "lastChunkMs": 4.799999998882413,
+        "maxChunkMs": 13.099999999627471,
+        "queue": 0,
+        "rebuilt": 34,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 35,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 14.634860237084734,
+        "frameMs": 66.59999999999991,
+        "p95Ms": 100.09999999999991,
+        "samples": 10
+      }
+    },
+    {
+      "name": "cave-inside",
+      "fixture": {
+        "position": [
+          42,
+          -4.99,
+          -30
+        ],
+        "yaw": -1.5707963267948966,
+        "pitch": -0.05,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        42,
+        -4.999990930175945,
+        -30
+      ],
+      "calls": 32,
+      "triangles": 19426,
+      "geometries": 69,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 175.90000000037253,
+        "totalBuildMs": 175.90000000037253,
+        "lastChunkMs": 5.799999998882413,
+        "maxChunkMs": 7,
+        "queue": 0,
+        "rebuilt": 36,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 37,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 19.149751053236308,
+        "frameMs": 66.59999999999991,
+        "p95Ms": 133.29999999999995,
+        "samples": 30
+      }
+    },
+    {
+      "name": "village",
+      "fixture": {
+        "position": [
+          100,
+          1.01,
+          75
+        ],
+        "yaw": 3.141592653589793,
+        "pitch": -0.1,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        100,
+        1.0000090059407365,
+        75
+      ],
+      "calls": 35,
+      "triangles": 23998,
+      "geometries": 70,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 177.09999999962747,
+        "totalBuildMs": 177.09999999962747,
+        "lastChunkMs": 5.300000000745058,
+        "maxChunkMs": 9,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 44,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 15.350265140943344,
+        "frameMs": 116.59999999999991,
+        "p95Ms": 100.09999999999991,
+        "samples": 22
+      }
+    },
+    {
+      "name": "forge",
+      "fixture": {
+        "position": [
+          100,
+          1.01,
+          81
+        ],
+        "yaw": 3.141592653589793,
+        "pitch": -0.05,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        100,
+        1.0000090357801474,
+        81
+      ],
+      "calls": 33,
+      "triangles": 21620,
+      "geometries": 68,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 162.10000000149012,
+        "totalBuildMs": 162.10000000149012,
+        "lastChunkMs": 5.000000001862645,
+        "maxChunkMs": 7.699999999254942,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 44,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 13.06956573397493,
+        "frameMs": 166.70000000000027,
+        "p95Ms": 166.70000000000027,
+        "samples": 22
+      }
+    },
+    {
+      "name": "jetty",
+      "fixture": {
+        "position": [
+          -115,
+          1.01,
+          -85
+        ],
+        "yaw": 0,
+        "pitch": -0.45,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        -115,
+        1.0000090387640885,
+        -85
+      ],
+      "calls": 42,
+      "triangles": 19866,
+      "geometries": 68,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 174.39999999850988,
+        "totalBuildMs": 174.39999999850988,
+        "lastChunkMs": 4.799999998882413,
+        "maxChunkMs": 8,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 10.485233296440848,
+        "frameMs": 250,
+        "p95Ms": 233.30000000000018,
+        "samples": 18
+      }
+    },
+    {
+      "name": "fish",
+      "fixture": {
+        "position": [
+          -82,
+          -0.99,
+          -110
+        ],
+        "yaw": 1.5707963267948966,
+        "pitch": -0.25,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        -82,
+        -0.999990952962246,
+        -110
+      ],
+      "calls": 37,
+      "triangles": 16522,
+      "geometries": 63,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 164,
+        "totalBuildMs": 164,
+        "lastChunkMs": 5.5,
+        "maxChunkMs": 8.900000000372529,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 14.998125234345704,
+        "frameMs": 83.40000000000009,
+        "p95Ms": 83.40000000000009,
+        "samples": 8
+      }
+    },
+    {
+      "name": "animal",
+      "fixture": {
+        "position": [
+          0,
+          1.01,
+          9
+        ],
+        "yaw": 0,
+        "pitch": -0.45,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        0,
+        1.0000090298122652,
+        9
+      ],
+      "calls": 62,
+      "triangles": 24944,
+      "geometries": 58,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 112.29999999888241,
+        "totalBuildMs": 112.29999999888241,
+        "lastChunkMs": 3.199999999254942,
+        "maxChunkMs": 11.400000000372529,
+        "queue": 0,
+        "rebuilt": 22,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 23,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 13.333333333333336,
+        "frameMs": 116.69999999999982,
+        "p95Ms": 116.69999999999982,
+        "samples": 18
+      }
+    },
+    {
+      "name": "garden",
+      "fixture": {
+        "position": [
+          6,
+          1.01,
+          12
+        ],
+        "yaw": 1.5707963267948966,
+        "pitch": -0.5,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        6,
+        1.0000090440538125,
+        12
+      ],
+      "calls": 62,
+      "triangles": 27754,
+      "geometries": 60,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 104,
+        "totalBuildMs": 104,
+        "lastChunkMs": 2.600000001490116,
+        "maxChunkMs": 8.700000001117587,
+        "queue": 0,
+        "rebuilt": 26,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 28,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 12.972271769093561,
+        "frameMs": 183.4000000000001,
+        "p95Ms": 100,
+        "samples": 8
+      }
+    },
+    {
+      "name": "night",
+      "fixture": {
+        "position": [
+          0,
+          1.01,
+          17
+        ],
+        "yaw": 0,
+        "pitch": -0.12,
+        "time": 0.78,
+        "third": false
+      },
+      "actual": [
+        0,
+        1.0000090775553228,
+        17
+      ],
+      "calls": 80,
+      "triangles": 29444,
+      "geometries": 61,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 111.09999999962747,
+        "totalBuildMs": 111.09999999962747,
+        "lastChunkMs": 3.800000000745058,
+        "maxChunkMs": 7,
+        "queue": 0,
+        "rebuilt": 26,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 28,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 17.50145845487124,
+        "frameMs": 83.40000000000009,
+        "p95Ms": 99.89999999999986,
+        "samples": 21
+      }
+    },
+    {
+      "name": "third",
+      "fixture": {
+        "position": [
+          0,
+          1.01,
+          9
+        ],
+        "yaw": 0,
+        "pitch": -0.12,
+        "time": 0.32,
+        "third": true
+      },
+      "actual": [
+        0,
+        1.000009056667735,
+        9
+      ],
+      "calls": 66,
+      "triangles": 27066,
+      "geometries": 51,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 87,
+        "totalBuildMs": 87,
+        "lastChunkMs": 3,
+        "maxChunkMs": 9.199999999254942,
+        "queue": 0,
+        "rebuilt": 22,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 23,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 16.43925694558606,
+        "frameMs": 16.600000000000364,
+        "p95Ms": 100,
+        "samples": 20
+      }
+    },
+    {
+      "name": "ego",
+      "fixture": {
+        "position": [
+          0,
+          1.01,
+          9
+        ],
+        "yaw": 0,
+        "pitch": -0.12,
+        "time": 0.32,
+        "third": false
+      },
+      "actual": [
+        0,
+        1.0000090649414002,
+        9
+      ],
+      "calls": 62,
+      "triangles": 23576,
+      "geometries": 57,
+      "textures": 4,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 77.69999999925494,
+        "totalBuildMs": 77.69999999925494,
+        "lastChunkMs": 3.799999998882413,
+        "maxChunkMs": 5.800000000745058,
+        "queue": 0,
+        "rebuilt": 22,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 23,
+        "currentChunk": null
+      },
+      "frame": {
+        "fps": 16.923076923076916,
+        "frameMs": 16.700000000000273,
+        "p95Ms": 166.5999999999999,
+        "samples": 11
+      }
+    }
+  ]
+}

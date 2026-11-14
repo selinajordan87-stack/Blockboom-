@@ -1,0 +1,12 @@
+import {chromium} from '@playwright/test';
+import {mkdir,writeFile} from 'node:fs/promises';
+const out=process.env.VISUAL_OUT||'artifacts/v072/before';await mkdir(out,{recursive:true});
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const page=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));const results=[];
+const scenes=[['start',[0,1.01,17],0,-.12],['forest',[-100,1.01,30],-.6,-.1],['mountain',[85,1.01,-60],-.93,.12],['lake',[-115,1.01,-85],0,-.3],['river',[-110,1.01,-65],Math.PI,-.2],['cave-mouth',[25,1.01,-30],-Math.PI/2,-.1],['cave-inside',[42,-4.99,-30],-Math.PI/2,-.05],['village',[100,1.01,75],Math.PI,-.1],['forge',[100,1.01,81],Math.PI,-.05],['jetty',[-115,1.01,-85],0,-.45],['fish',[-82,-.99,-110],Math.PI/2,-.25],['animal',[0,1.01,9],0,-.45],['garden',[6,1.01,12],Math.PI/2,-.5],['night',[0,1.01,17],0,-.12,.78],['third',[0,1.01,9],0,-.12,.32,true],['ego',[0,1.01,9],0,-.12]];
+for(const[name,position,yaw,pitch,time=.32,third=false]of scenes){
+ await page.goto('http://127.0.0.1:4208/Blockboom-/?diagnostics=1');
+ await page.evaluate(s=>{localStorage.clear();localStorage.setItem('blockboom.save',JSON.stringify({version:1,position:s.position,yaw:s.yaw,pitch:s.pitch,changes:{},fish:{Rotauge:0,Flussbarsch:0,Hecht:0},settings:{sound:false,quality:1},extension:{version:1,edition:4,tool:'Angel',camera:{version:1,perspective:s.third?'third':'first',distance:6},nightfall:{version:1,mode:'Kreativ',difficulty:'Friedlich',time:s.time,dayLength:1200,refuge:true}}}));},{position,yaw,pitch,time,third});
+ await page.reload();await page.locator('#play').tap();await page.waitForFunction(()=>!!document.querySelector('#world')?.dataset.performance);await page.waitForTimeout(1100);await page.screenshot({path:`${out}/${name}.png`});const m=await page.locator('#world').evaluate(c=>JSON.parse(c.dataset.performance));results.push({name,fixture:{position,yaw,pitch,time,third},actual:m.nightfall.player.pos,calls:m.calls,triangles:m.triangles,geometries:m.geometries,textures:m.textures,chunk:m.chunk,frame:m.frame});
+}
+await writeFile(`${out}/metrics.json`,JSON.stringify({method:'Controlled identical save fixtures; visual comparison, no fresh-player reachability claim',errors,results},null,2));await browser.close();if(errors.length)process.exitCode=1;
