@@ -194,3 +194,6 @@ Veröffentlicht am 14.11.2026: Softwarecommit `9281aae`, Pages-Workflow erfolgre
 ## 22. Kamera, Tiere und See v0.7.1
 
 Der Folgefix macht Kameraauswahl und Wiederherstellung direkt erreichbar, ersetzt die unbrauchbare stark eingeengte Ansicht, stabilisiert Tierziele, ergänzt tatsächliche Jagd mit Grillen/Essen und korrigiert Fischfarben samt Uferverteilung. Belegte Ursachen, Save-Sicherung, genaue Teststände und tatsächlicher Veröffentlichungsstatus stehen im [v0.7.1-Bericht](V071_REPORT.md). Der weiterhin nötige reale iPhone-Test wird dort ausdrücklich getrennt.
+
+
+Veröffentlicht und geprüft am 14.11.2026: v0.7.1, Softwarestand `25fc213`, Pages-Workflow erfolgreich, ausgelieferte App-/Three.js-/CSS-Dateien bytegleich geprüft. TypeScript und 170 Logiktests bestanden. Zwei im 88-Fälle-Gesamtlauf gefundene Zielkonflikte wurden korrigiert; alle 26 abschließenden Nachprüfungen sowie **26/26 Live-Prüfungen** bestanden. Der erneute echte iPhone-Test bleibt offen. Genaue Buildbezüge, Prozessunterbrechung, Grenzen und Nachweise stehen in [V071_REPORT.md](V071_REPORT.md).

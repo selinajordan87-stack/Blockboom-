@@ -1,0 +1,33 @@
+
+Running 26 tests using 1 worker
+
+(node:17441) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (16.8s)
+  ✓   2 e2e/entry-loop-v07.spec.ts:4:1 › Neuer Survivalstart: Holz und Stein sammeln, Gartenblatt anwenden, Grundrezepte und eigenes Beet (57.1s)
+  ✓   3 e2e/game.spec.ts:105:1 › BOOM zerstört und setzt zurück (5.9s)
+  ✓   4 e2e/great-lake-v07.spec.ts:6:1 › großer See: erspielten Stand importieren, Steg betreten und einen echten Fisch mit Touch angeln (50.7s)
+  ✓   5 e2e/lake-shores-v071.spec.ts:4:88 › großer See: farbige Fischgruppe am east-Ufer über dem Seegrund (5.4s)
+  ✓   6 e2e/lake-shores-v071.spec.ts:4:88 › großer See: farbige Fischgruppe am west-Ufer über dem Seegrund (7.1s)
+  ✓   7 e2e/living-v06.spec.ts:39:1 › Hacke, Aussaat, gespeichertes Wachstum und Ernte funktionieren auf Touch (8.9s)
+  ✓   8 e2e/living-v06.spec.ts:45:1 › Möbelplatzierung und getrennte Truhe behalten Inhalt und Bauwerk (25.3s)
+  ✓   9 e2e/mobile-rescue.spec.ts:21:1 › P0: sichtbarer Fokusverlust während Bewegung öffnet keine manuelle Pause (2.7s)
+  ✓  10 e2e/mobile-rescue.spec.ts:65:1 › Bewegung, Kamera, beide Finger gleichzeitig und unabhängiges Loslassen (5.1s)
+  ✓  11 e2e/mobile-rescue.spec.ts:155:3 › pointercancel: keine hängende Bewegung, nächster Kontakt funktioniert (3.0s)
+  ✓  12 e2e/mobile-rescue.spec.ts:155:3 › touchcancel: keine hängende Bewegung, nächster Kontakt funktioniert (2.8s)
+  ✓  13 e2e/mobile-rescue.spec.ts:204:1 › Manuelle Pause nur per Tippen; Ziehen von Kamera oder Menü aktiviert kein Menü (4.6s)
+  ✓  14 e2e/mobile-rescue.spec.ts:246:1 › Hintergrund unterbricht getrennt, sichtbares Blur bewahrt aktive Daumen (2.4s)
+  ✓  15 e2e/mobile-ux.spec.ts:35:1 › Kamera-Reset löst enge Sicht, bleibt nach Menüwechsel erreichbar und stoppt alte Eingaben (7.0s)
+  ✓  16 e2e/mobile-ux.spec.ts:50:1 › Third-Person-Bauen, Abbauen und Inventar sind über kleine Touchflächen nutzbar (10.0s)
+  ✓  17 e2e/mobile-ux.spec.ts:66:1 › Export ist eine echte Datei; geprüfter Import überlebt Reload und legt eine Sicherung an (12.6s)
+  ✓  18 e2e/mobile-ux.spec.ts:72:1 › WebGL-Unterbrechung hält Menü und Kamera-Reset erreichbar und kann wieder fortgesetzt werden (8.1s)
+  ✓  19 e2e/nightfall.spec.ts:38:1 › Schreibkampf schützt die Eingabe, hilft nach Fehlern und wirkt ohne Zeitlimit (7.5s)
+  ✓  20 e2e/nightfall.spec.ts:79:1 › Nahkampf über sichtbare Waffe trifft einen echten Zombie und belohnt den Sieg (14.0s)
+  ✓  21 e2e/pages.spec.ts:7:1 › Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang (3.3s)
+  ✓  22 e2e/rescue-v071.spec.ts:15:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen (8.2s)
+  ✓  23 e2e/rescue-v071.spec.ts:28:1 › enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körper zu bleiben (6.1s)
+  ✓  24 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · first (20.8s)
+  ✓  25 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · third (17.7s)
+  ✓  26 e2e/rescue-v071.spec.ts:58:1 › Angelblick zeigt lebende Fischmodelle beim großen Steg ohne Kamera-Vergrößerung (7.4s)
+
+  26 passed (5.4m)

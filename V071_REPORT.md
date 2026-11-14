@@ -1,6 +1,6 @@
 # BLOCKBOOM v0.7.1 – Kamera, Tiere und See
 
-Stand: 14.11.2026. Getesteter Releasekandidat; Veröffentlichung und Live-Prüfung stehen noch aus. Wildtiere liefern nun grillbare Nahrung, die Kamera ist direkt erreichbar, und echte Fischgruppen sind im großen See sichtbar. Der gelegentliche iPhone-Hänger gilt ohne erneuten Gerätetest nicht pauschal als endgültig behoben.
+Stand: 14.11.2026. **v0.7.1 ist veröffentlicht und durch 26 bestandene Prüfungen auf der tatsächlichen Live-Website bestätigt.** Wildtiere liefern nun grillbare Nahrung, die Kamera ist direkt erreichbar, und echte Fischgruppen sind im großen See sichtbar. Der gelegentliche iPhone-Hänger gilt ohne erneuten Gerätetest nicht pauschal als endgültig behoben.
 
 ## Ausgangspunkt und belegte Ursachen
 
@@ -46,11 +46,11 @@ Keine neue Abhängigkeit und kein Rewrite. Die bestehende Pointer-/Touch-Ownersh
 
 ## Spielstände
 
-Rootformat v1 und alle bisherigen Welt-, Lern- und Inventardaten bleiben erhalten. Tiergesundheit und Wiederbesetzungszeit sind additive Felder. Alte Tiere ohne Gesundheitswert bleiben voll funktionsfähig. Vor dem ersten Upgrade wird, soweit Speicher vorhanden ist, `blockboom.save.pre-v071` angelegt. Neue Gegenstände ergänzen den Katalog; der Grill wird am Ende der Materialliste angehängt, damit alte Slotnummern erhalten bleiben. Export/Import wird in der abschließenden Regression erneut geprüft.
+Rootformat v1 und alle bisherigen Welt-, Lern- und Inventardaten bleiben erhalten. Tiergesundheit und Wiederbesetzungszeit sind additive Felder. Alte Tiere ohne Gesundheitswert bleiben voll funktionsfähig. Vor dem ersten Upgrade wird, soweit Speicher vorhanden ist, `blockboom.save.pre-v071` angelegt. Neue Gegenstände ergänzen den Katalog; der Grill wird am Ende der Materialliste angehängt, damit alte Slotnummern erhalten bleiben. Export/Import wurde in der abschließenden Regression und auf der öffentlichen Website erneut geprüft.
 
 ## Veröffentlichung
 
-Noch nicht veröffentlicht. Abschließende Regression und tatsächlicher Deployment-Status folgen nach ihren Ergebnissen.
+Veröffentlicht unter **https://selinajordan87-stack.github.io/Blockboom-/**. Der [Pages-Workflow 43643011898](https://github.com/selinajordan87-stack/Blockboom-/actions/runs/43643011898) für `25fc213a2c50e2ec8d84cf082cead4861bbf3514` ist erfolgreich. Normale Website sowie App-/Three.js-/CSS-Dateien antworteten mit HTTP 200. Alle drei Dateien sind bytegleich zum lokal geprüften Produktionsverzeichnis; die SHA-256-Prüfsummen stehen im [Deploymentnachweis](artifacts/v071/deployment.json). Die öffentliche Version bestand anschließend **26/26 Browserprüfungen in 5,4 Minuten**. [Live-Protokoll](artifacts/v071/live-browser.log), [Workflowdaten](artifacts/v071/workflow.json).
 
 Erster Kameraschritt: TypeScript und Build bestanden, 17 passende Logiktests bestanden. Fünf vorhandene Kamera-/Bau-/WebGL-Browserfälle bestanden. Ein neuer Browserfall las die Diagnose zu früh; nach Warten auf den nächsten Diagnoseframe bestanden beide neuen Fälle (2/2). Der fehlerhafte erste Lauf wird erhalten. Die ursprüngliche 40.000-Dreiecke-Grenze und alle alten Tests bleiben bestehen.
 
@@ -85,29 +85,29 @@ Die Auswahl berücksichtigt jetzt nur tatsächliche Fische innerhalb von zwölf 
 
 ## Seegrund an den seitlichen Ufern
 
-Eine zusätzliche Logikprüfung über 30 Sekunden Fischbewegung fand am westlichen Rand einen Barsch unter dem tatsächlichen Sandboden. Die beiden seitlichen Gruppen wurden jeweils vier Spielmeter in tieferes Wasser versetzt. Der Test prüft den wirklichen Terrainhöhenwert für jeden Fisch; danach bestehen alle 13 betroffenen Logikfälle. Das laufende 88-Fälle-Browserbundle bleibt dafür unverändert (`index-BpZYmPJX.js`). Die Positionskorrektur erhält anschließend eigene Produktions- und Browsernachprüfungen; sie wird nicht rückwirkend als Bestandteil jenes Bundles ausgegeben. [Roter Bodentest](artifacts/v071/lake-ground-red.log).
+Eine zusätzliche Logikprüfung über 30 Sekunden Fischbewegung fand am westlichen Rand einen Barsch unter dem tatsächlichen Sandboden. Die beiden seitlichen Gruppen wurden jeweils vier Spielmeter in tieferes Wasser versetzt. Der Test prüft den wirklichen Terrainhöhenwert für jeden Fisch; danach bestehen alle 13 betroffenen Logikfälle. Das laufende 88-Fälle-Browserbundle bleibt dafür unverändert (`index-BpZYmPJX.js`). Die Positionskorrektur bestand anschließend eigene Produktions- und Browsernachprüfungen; sie wird nicht rückwirkend als Bestandteil jenes Bundles ausgegeben. [Roter Bodentest](artifacts/v071/lake-ground-red.log).
 
 
 ## Werkzeugpriorität bei nahen Tieren
 
-Der zweite Gesamtlauf fand im unveränderten alten Touch-Farmingfall eine Interaktion zwischen größerem Tierziel und Hacke: Ein Huhn übernahm die Bodenaktion. Bei einer Hacke und anvisiertem Gras/Erde/Acker hat jetzt die Bodenarbeit Vorrang. Tiere bleiben mit anderen Gegenständen bedienbar; der fehlgeschlagene Test wird nicht umgeschrieben. [Fehlerkontext](artifacts/v071/hoe-animal-priority-context.md). Die Korrektur wird nach Ende des unverändert weiterlaufenden Diagnosebundles eigens gebaut und nachgeprüft.
+Der zweite Gesamtlauf fand im unveränderten alten Touch-Farmingfall eine Interaktion zwischen größerem Tierziel und Hacke: Ein Huhn übernahm die Bodenaktion. Bei einer Hacke und anvisiertem Gras/Erde/Acker hat jetzt die Bodenarbeit Vorrang. Tiere bleiben mit anderen Gegenständen bedienbar; der fehlgeschlagene Test wird nicht umgeschrieben. [Fehlerkontext](artifacts/v071/hoe-animal-priority-context.md). Die Korrektur wurde nach Ende des unverändert weiterlaufenden Diagnosebundles eigens gebaut und erfolgreich nachgeprüft.
 
 
-Der folgende unveränderte Truhenfall zeigte dasselbe Problem bei einer Möbelaktion. Die Zielauswahl nutzt deshalb zuerst das tatsächliche sichtbare Tiermesh; das zusätzliche Zielhilfepolster darf kein genauer anvisiertes Möbel oder eine verdeckende Weltfläche verdrängen. Das gilt auch für die Third-Person-Parallaxenkorrektur. [Truhen-Fehlerkontext](artifacts/v071/chest-animal-priority-context.md). Beide vorhandenen Fälle werden auf dem korrigierten Produktionsbuild nachgeprüft.
+Der folgende unveränderte Truhenfall zeigte dasselbe Problem bei einer Möbelaktion. Die Zielauswahl nutzt deshalb zuerst das tatsächliche sichtbare Tiermesh; das zusätzliche Zielhilfepolster darf kein genauer anvisiertes Möbel oder eine verdeckende Weltfläche verdrängen. Das gilt auch für die Third-Person-Parallaxenkorrektur. [Truhen-Fehlerkontext](artifacts/v071/chest-animal-priority-context.md). Beide vorhandenen Fälle bestanden anschließend auf dem korrigierten Produktionsbuild.
 
 
 Der abgeschlossene Diagnose-Gesamtlauf auf `index-BpZYmPJX.js` endete mit **86/88 bestanden in 24,5 Minuten**. Die einzigen Fehler waren die oben belegten Hacken-/Truhenziele. Alle übrigen Kamera-, Jagd-/Grill-, Fang-, Bau-, Save-, Touch-, Kampf- und Lernfälle bestanden. [Vollständiges Protokoll](artifacts/v071/full-browser-before-priority-fix.log). Die folgende Nachprüfung bezieht sich ausdrücklich auf den anschließend gebauten Stand mit korrigierter Zielpriorität und zwei versetzten seitlichen Fischgruppen.
 
 
-Beide unveränderten fehlerhaften Browserfälle bestehen auf dem korrigierten Produktionsbundle **`index-DBQix1VS.js`**: Hacke/Aussaat/Ernte sowie Möbel/Truhe mit Inhalt und Reload, **2/2 in 36,3 Sekunden**. TypeScript, **170/170 Logiktests in 27 Dateien** und Build bestehen ebenfalls. [Nachprüflog](artifacts/v071/priority-browser.log). Die breitere Nachprüfung der betroffenen Funktionen läuft auf demselben unveränderten Bundle.
+Beide unveränderten fehlerhaften Browserfälle bestehen auf dem korrigierten Produktionsbundle **`index-DBQix1VS.js`**: Hacke/Aussaat/Ernte sowie Möbel/Truhe mit Inhalt und Reload, **2/2 in 36,3 Sekunden**. TypeScript, **170/170 Logiktests in 27 Dateien** und Build bestehen ebenfalls. [Nachprüflog](artifacts/v071/priority-browser.log). Die breitere Nachprüfung der betroffenen Funktionen bestand danach alle 26 ausgewählten Fälle auf demselben unveränderten Bundle; die tatsächliche Prozessunterbrechung und Fortsetzung sind unten getrennt dokumentiert.
 
 
 ## Unterbrochene Testprozesse
 
-Beim abschließenden 26-Fälle-Lauf endeten Browser und lokaler Vorschauprozess ohne abschließendes Testergebnis. Das Protokoll belegt fünf erfolgreich abgeschlossene Fälle; es wird nicht als „26 bestanden“ ausgegeben. Im aktuellen Cgroup waren keine OOM-/OOM-Kill-Ereignisse registriert; die tatsächliche Beendigungsursache bleibt unbekannt. Die Vorschau wurde neu gestartet und der identische Bundlebezug `index-DBQix1VS.js` vor der Fortsetzung geprüft. Die übrigen 21 Fälle werden separat ausgeführt. [Fünf abgeschlossene Fälle](artifacts/v071/release-browser-interrupted.log).
+Beim abschließenden 26-Fälle-Lauf endeten Browser und lokaler Vorschauprozess ohne abschließendes Testergebnis. Das Protokoll belegt fünf erfolgreich abgeschlossene Fälle; es wird nicht als „26 bestanden“ ausgegeben. Im aktuellen Cgroup waren keine OOM-/OOM-Kill-Ereignisse registriert; die tatsächliche Beendigungsursache bleibt unbekannt. Die Vorschau wurde neu gestartet und der identische Bundlebezug `index-DBQix1VS.js` vor der Fortsetzung geprüft. Die übrigen 21 Fälle wurden separat ausgeführt und bestanden vollständig. [Fünf abgeschlossene Fälle](artifacts/v071/release-browser-interrupted.log).
 
 
-## Verbindlicher Prüfstand vor Veröffentlichung
+## Verbindlicher Software-Prüfstand
 
 | Prüfung | Tatsächliches Ergebnis |
 | --- | --- |
@@ -116,6 +116,7 @@ Beim abschließenden 26-Fälle-Lauf endeten Browser und lokaler Vorschauprozess 
 | Vollständiger Diagnose-Browserlauf | **86/88** auf `index-BpZYmPJX.js`, 24,5 min; zwei belegte Zielkonflikte gefunden |
 | Beide korrigierten alten Fälle | **2/2** unverändert bestanden, 36,3 s, auf `index-DBQix1VS.js` |
 | Breite abschließende Nachprüfung | **26 unterschiedliche Fälle bestanden** auf `index-DBQix1VS.js`: fünf vor Prozessunterbrechung, **21/21** anschließend in 5,1 min |
+| Öffentliche GitHub-Pages-Version | **26/26**, 5,4 min, ebenfalls `index-DBQix1VS.js`; tatsächliche mobile Aktionen und Save/Reload |
 | Echter iPhone-/Android-Test | nicht ausgeführt; Chromium mit mobiler Emulation und Software-WebGL |
 
 Damit wurden alle 90 jetzt vorhandenen unterschiedlichen Browserfälle im Verlauf ausgeführt; die beiden fehlerhaften Fälle sind korrigiert und erfolgreich nachgeprüft. **Es wird kein vollständig erneut ausgeführter grüner 90-Fälle-Lauf auf dem letzten Bundle behauptet.** Die abschließenden 26 Fälle prüfen alle geänderten Funktionsbereiche einschließlich beiden Zielkonflikten, Jagd/Grill/Essen in beiden Perspektiven, neuem Kamera-Schnellzugriff, allen Fischgruppen, tatsächlichem Stegfang, Spielständen und GPU-Ressourcen. [Abschließende Fortsetzung](artifacts/v071/release-browser-remaining.log), [170 Logiktests](artifacts/v071/release-logic.log), [Build](artifacts/v071/release-build.log).
@@ -134,3 +135,12 @@ Die abschließende Startszene maß 93 Draw Calls, 39.510 Dreiecke, 52 Geometrien
 - `28283d5`: genaue Möbel-/Bodenziele vor zusätzlicher Tierzielhilfe.
 
 Entwicklung auf `fix/v071-camera-wildlife`; bisherige Commits und Speicherformate bleiben erhalten. Keine Force-Pushes.
+
+
+## Endgültiger Live-Status
+
+Die Website **https://selinajordan87-stack.github.io/Blockboom-/** antwortet mit HTTP 200 und liefert das geprüfte Appbundle `index-DBQix1VS.js`. Die Live-Fälle prüften frischen Einstieg, Sammlung/Herstellung/Farming, Stegfang, beide seitlichen Fischgruppen, die beiden korrigierten Zielkonflikte, Mehrfinger und Abbruch, manuelle Pause/Hintergrund, Kamera-Reset/WebGL-Wiederaufnahme, Bauen/Abbauen, Export/Import, Schreibkampf, Zombie-Nahkampf, den Pages-Unterpfad sowie den neuen Jagd-/Grillablauf in Ego und Third Person.
+
+Branch `main` wurde ohne Umschreiben der Historie auf den getesteten Softwarestand `25fc213` aktualisiert und gepusht. Der abschließende Nachweiscommit ergänzt ausschließlich Bericht, Workflow-/Bundle-Nachweis und tatsächlich auf der öffentlichen Version erzeugte Screenshots. Entwicklungsbranch `fix/v071-camera-wildlife` bleibt lokal erhalten. Die alten Berichtsbilder bleiben unverändert; neue Nachweise liegen unter `artifacts/v071/`.
+
+Die neuen Bilder `camera-panel`, `animal-target`, `placed-grill`, `grilling`, `lake-visible-fish`, `lake-east-fish` und `lake-west-fish` wurden zuletzt auf der tatsächlichen Live-Version aufgenommen. Ein echter iPhone-Test wurde nicht durchgeführt. Beim normalen Reload **v0.7.1** prüfen und den vorhandenen Spielstand behalten/exportieren; keine Website-Daten löschen.

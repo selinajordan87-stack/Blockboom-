@@ -14,3 +14,6 @@ Vollständiger Umfang, genaue Teststände und echte Geräteabnahme: [Releaseberi
 [Östliche Gruppe](lake-east-fish.png) und [westliche Gruppe](lake-west-fish.png) wurden im abschließenden Produktionsbuild aus kontrollierten vorhandenen Spielständen im flachen Uferwasser aufgenommen. Das sind Render-/Bewegungsnachweise, keine unabhängige menschliche Suchzeit.
 
 Abschließender Bundlebezug: `index-DBQix1VS.js`. [Fünf erfolgreich abgeschlossene Fälle vor Prozessende](release-browser-interrupted.log), [21/21 fortgesetzte Fälle](release-browser-remaining.log), [Nachprüfung der beiden gefundenen Zielkonflikte](priority-browser.log). Der vorherige Gesamtlauf mit 86/88 bleibt im Bericht klar getrennt.
+
+
+Die aktualisierten Kamerafenster-, Tierziel-, Grill- und Fischgruppenbilder stammen aus der abschließenden **öffentlichen** Version. [26/26 Live-Fälle in 5,4 Minuten](live-browser.log), [HTTP- und SHA-256-Nachweis](deployment.json), [erfolgreicher Workflow](workflow.json). Das bleibt Browseremulation; keine echte Geräteabnahme.
