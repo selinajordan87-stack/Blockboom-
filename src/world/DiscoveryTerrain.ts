@@ -28,7 +28,7 @@ export const TRAILS:readonly (readonly (readonly[number,number])[])[]=[
  [[24,23],[64,27],[100,75],[100,85],[114,102]],
  // Connect the settlement road to the mine road without crossing steep woodland.
  [[64,27],[64,-45]],
- [[24,-24],[27,-30],[64,-45],[100,-70],[130,-90]],
+ [[64,-45],[100,-70],[130,-90]],
  [[100,85],[40,78],[-30,72],[-70,65],[-108,30]],
 ];
 export const legacyArea=(x:number,z:number)=>x>=-60&&x<60&&z>=-60&&z<60;

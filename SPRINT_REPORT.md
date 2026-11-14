@@ -35,6 +35,8 @@ Dabei wurden echte Hindernisse gefunden und nicht als Erfolg gezählt:
 - Der erste Gesamttest fand drei Fehler: zu früh gespeicherte Testposition vor dem Simulationsschritt, 40.414 statt erlaubter 40.000 Dreiecke und eine echte verzögerte Bauzielerkennung. Der Test wartet jetzt auf aktive Spielzeit, rückwärtige Ferngeometrie wird ausgespart, und Bauaktionen verwenden direkte Voxel-Strahlprüfung. Keine Budgetgrenze wurde erhöht.
 - Der neue Gartenschutztest zeigte, dass nur die unmittelbare Bodennähe geprüft wurde. Er schützt jetzt auch gespeicherte Eingriffe weit darüber und darunter. Ein falscher Holztest zielte ursprünglich auf Laub; der korrigierte Spielerpfad sammelt das vierte Holz an einem zweiten realen Baum.
 
+Die erste Fortsetzung erreichte die tiefe Mine, las den Kammerhinweis und entnahm den tatsächlichen Schatz. Auf dem Rückweg blockierte eine irreführende Abkürzung an der erhaltenen alten Geländekante; diese Stichverbindung wurde aus dem Wegenetz entfernt. Der Rückweg verwendet den geprüften südlichen Knoten. [Fortsetzungsaufzeichnung](artifacts/v07/journey-continued/journey.json).
+
 Die Wanderung wird mit ihrer regulär exportierten, unveränderten Datei über das normale Importmenü fortgesetzt. Kein Teleport-Fallback. Die Fortsetzung und ihr endgültiges Ergebnis werden hier separat dokumentiert.
 
 ## Lernen und erste 15–30 Minuten
@@ -71,6 +73,7 @@ Die bisherige Grenze von 50.000 Weltänderungen bleibt bestehen. Der tatsächlic
 | BOOM, Nahkampf, drei Zombiearten, Schreibkampf, Türen | im Gesamtlauf bestanden |
 | Kamera, unabhängige Finger, Abbruch, Safe Areas, Rotation, WebGL-Unterbrechung | im Gesamtlauf bestanden; Chromiumemulation |
 | Farmingwachstum ohne vorgestellte Uhr | bestanden, etwa zwei Minuten echte aktive Spielzeit einschließlich Reload |
+| Letzte Kartenkorrektur | 157 Logiktests, TypeScript, Build und **4/4** Browserfälle auf `index-DR5BWunQ.js`; [Log](artifacts/v07/release-browser.log) |
 | Echter iPhone-/Android-Test | nicht ausgeführt |
 
 Kein alter Test wurde gelöscht. Frühere erfolglose Läufe und ihre Ursachen bleiben dokumentiert. Vorbereitete Save-Fixtures sichern gezielt Funktionen; sie gelten nicht als Beweis für normale Auffindbarkeit.
@@ -103,6 +106,7 @@ Neue passive Wissensboni auf Fangwahrscheinlichkeit, Farming als zusätzlicher K
 | `494769a` | Spezialblockindex und weniger Rebuilds |
 | `bab5d86` | direkte Voxelziele und frischer Sammel-/Gartenweg |
 | `eb38a5b` | 82 bestandene Browserfälle mit Nachweisen |
+| `98d386e` | Wegverbindung, hoher/tiefer Gartenschutz, 157 Logiktests |
 
 Weg-/Gartenschutzfix ist mit 157 Logiktests und zehn gezielten Browserfällen gesichert. Abschließende Gehwegbelege und Live-Prüfung werden nach ihren tatsächlichen Ergebnissen ergänzt. Es wurde bisher nicht auf `main` gepusht.
 

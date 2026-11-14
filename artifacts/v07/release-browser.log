@@ -1,0 +1,12 @@
+
+Running 4 tests using 1 worker
+
+(node:59564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/discovery-v07.spec.ts:7:1 › v0.7 frischer Touchstart: sechs direkte Slots, echte Fundtexte und freiwillige Mathematik (18.0s)
+  ✓  2 e2e/mobile-ux.spec.ts:66:1 › Export ist eine echte Datei; geprüfter Import überlebt Reload und legt eine Sicherung an (12.7s)
+  ✓  3 e2e/pages.spec.ts:7:1 › Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang (3.2s)
+{"v03NewWorld":{"calls":93,"triangles":39114,"geometries":52,"textures":4,"chunks":28,"ratio":1}}
+  ✓  4 e2e/v03.spec.ts:42:1 › neue Welt migriert auf Edition 4 mit begrenztem Renderbudget (5.8s)
+
+  4 passed (41.0s)

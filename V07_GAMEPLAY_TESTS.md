@@ -30,3 +30,9 @@ Es wird kein bestandener Gerätetest behauptet; hier steht Chromium mit emuliert
 - Vorbereitete Save-Fixtures prüfen alte Funktionen und Migrationen unter kontrollierten Bedingungen. Sie beweisen nicht, dass ein neuer Spieler den jeweiligen Ort ohne Hilfe findet.
 - Kamera-, Mehrfinger-, Sichtbarkeits- und Tastaturhöhenprüfungen emulieren Browserzustände. Safari-Tastatur, Home-Indikator, thermische Last und reales Touchgefühl müssen am iPhone geprüft werden.
 - Screenshots werden nur von tatsächlich laufenden Versionen aufgenommen; die beigestellten Referenzbilder sind keine Implementierungsnachweise.
+
+## Spätere Korrekturen und Buildbezug
+
+Der vollständige Gesamtlauf gehört zu `index-BdAeCH9T.js`. Danach bestand die Wegverbindung acht Nachtests, der erweiterte Gartenschutz zehn Nachtests (`index-unVfjpAn.js`). Die zuletzt entfernte unpassierbare Stichverbindung besteht 157 Logiktests und vier passende Browserfälle (`index-DR5BWunQ.js`). Keine Behauptung, alle 82 seien auf jedem Zwischenbundle erneut ausgeführt worden. Die Kernlogik blieb bei den letzten Kartenänderungen unverändert.
+
+Die normale Wanderung setzte ihre unveränderten, zuvor über die Exportfunktion erzeugten Dateien über das Importmenü fort. Das ist ein fortgesetzter tatsächlich gespielter Stand und kein zweiter frischer Start. Separate Tageslichtaufnahmen dürfen die vorhandene Kreativ-/Tageszeiteinstellung verwenden und sind entsprechend bezeichnet.

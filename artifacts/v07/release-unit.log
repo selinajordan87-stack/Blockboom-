@@ -1,0 +1,52 @@
+
+> blockboom@0.7.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/blockboom
+
+stdout | src/tests/discovery-world.test.ts > begrenzt Runtime-Generierung pro Schritt und misst tatsächliche Laufzeit
+{"streamSteps":378,"lastMs":0.2586189999999533,"maxRuntimeMs":2.4561459999999897,"maxColumnMs":2.1740920000002006,"generatedChunks":31,"unloadedChunks":10,"pendingChunks":0,"generatedColumns":4464,"blocks":68106}
+
+ ✓ src/tests/discovery-world.test.ts (9 tests) 1527ms
+   ✓ erzeugt echte offene Eingänge und durchgehende Mine bis zur tiefen Fundkammer  393ms
+   ✓ verbindet Siedlung und Mine mit einem wirklich begehbaren Weg und erhält eigene Baublöcke  498ms
+ ✓ src/tests/living.test.ts (15 tests) 956ms
+   ✓ entlädt äußere Chunks und restauriert Bauwerke und entfernte Erze deterministisch  650ms
+stdout | src/tests/rendering.test.ts > behält eine begrenzte Geometriezahl und baut nur betroffene Chunks neu
+{"worldMeshes":16,"buildMs":38.17,"meanPickMs":0.365,"oldPickBudgetPer60Frames":60,"newMaxPicksPerSecond":20,"rebuiltMeshes":4}
+
+stdout | src/tests/rendering.test.ts > gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam
+{"streamingPasses":8,"peakMeshes":38,"peakBlocks":59675,"remainingGeometry":27,"disposedGeometry":152,"maxRebuildMs":149.82}
+
+ ✓ src/tests/rendering.test.ts (3 tests) 1089ms
+   ✓ gibt Geometrien entladener Regionen frei und hält Materialien beim Streaming gemeinsam  989ms
+stdout | src/tests/stream-budget.test.ts > misst reale Buildslices und hält Geometrien bei wiederholten kleinen Bauaktionen begrenzt
+{"rendererBudgetMs":4,"slices":18,"maxObservedSliceMs":4.05,"meanSliceMs":2.19,"maxChunkCpuMs":2.06,"activeMeshes":16}
+
+ ✓ src/tests/stream-budget.test.ts (6 tests) 253ms
+ ✓ src/tests/props-performance.test.ts (3 tests) 294ms
+ ✓ src/tests/nightfall.test.ts (15 tests) 209ms
+ ✓ src/tests/fishing-v04.test.ts (6 tests) 79ms
+ ✓ src/tests/target.test.ts (4 tests) 58ms
+ ✓ src/tests/discovery-fishing.test.ts (5 tests) 47ms
+ ✓ src/tests/discovery.test.ts (10 tests) 49ms
+ ✓ src/tests/logic.test.ts (12 tests) 44ms
+ ✓ src/tests/camera.test.ts (8 tests) 44ms
+ ✓ src/tests/living-discovery.test.ts (7 tests) 35ms
+ ✓ src/tests/v03.test.ts (5 tests) 38ms
+ ✓ src/tests/blueprint.test.ts (5 tests) 26ms
+ ✓ src/tests/expansion.test.ts (4 tests) 30ms
+ ✓ src/tests/fish-v2.test.ts (2 tests) 17ms
+ ✓ src/tests/mobile-discovery.test.ts (13 tests) 13ms
+ ✓ src/tests/transfer.test.ts (4 tests) 9ms
+ ✓ src/tests/input.test.ts (11 tests) 8ms
+ ✓ src/tests/learning-v2.test.ts (5 tests) 7ms
+ ✓ src/tests/entry-recipes.test.ts (3 tests) 4ms
+ ✓ src/tests/save-edge-cells.test.ts (2 tests) 4ms
+
+ Test Files  23 passed (23)
+      Tests  157 passed (157)
+   Start at  06:30:10
+   Duration  9.75s (transform 534ms, setup 0ms, collect 1.55s, tests 4.84s, environment 3ms, prepare 1.05s)
+

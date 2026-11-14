@@ -55,6 +55,11 @@ async function run(){
   await j.menu('menu-map');await page.screenshot({path:`${j.out}/15-discovery-map.png`});await j.close();
   await j.readEntry('start-plan','14-reading-adventure');
   await j.menu('night-menu');await page.locator('#difficulty').selectOption('Friedlich');await page.locator('#apply-night').tap();j.events.push({event:'setting',difficulty:'Friedlich',method:'normal settings UI; exploration control run, combat tested separately'});
+  if(['overview','daylake'].includes(process.env.BLOCKBOOM_JOURNEY_ROUTE)){
+   await j.menu('night-menu');await page.locator('#survival-mode').selectOption('Kreativ');await page.locator('#apply-night').tap();
+   await j.menu('night-menu');await page.locator('#world-time').selectOption('0.3');await page.locator('#apply-night').tap();
+   j.events.push({event:'photo-setting',method:'normal creative/time settings UI for daylight visibility; separate visual check, not fresh survival gameplay'});
+  }
   const route=[
    {name:'forest',points:[[0,7],[-27,7],[-30,8]],photo:'02-forest'},
    {name:'lake',points:[[-26,7],[-26,-20],[-30,-35],[-36,-35]],photo:'04-lake'},
@@ -63,10 +68,10 @@ async function run(){
    {name:'old-settlement',points:[[41,-30],[34,-30],[27,-30],[24,-30],[24,20],[28,22]],photo:'08-abandoned-settlement',look:[42,3,34]},
    {name:'outer-settlement',points:[[28,22],[54,23],[64,27],[76,43],[88,59],[100,75]],photo:'08b-larger-settlement',look:[107,4,91]},
    {name:'mountains',points:[[88,59],[76,43],[64,27],[64,-45],[100,-70],[122,-84],[129,-90]],photo:'03-mountain',look:[145,18,-105]},
-   {name:'outer-forest',points:[[149,-90],[143,-90],[137,-90],[131,-90],[129,-90],[122,-84],[100,-70],[64,-45],[27,-30],[20,-34],[-25,-34],[-26,-20],[-26,7],[-24,23],[-64,23],[-108,30]],photo:'02b-outer-forest',look:[-115,4,25]},
+   {name:'outer-forest',points:[[149,-90],[143,-90],[137,-90],[131,-90],[129,-90],[122,-84],[100,-70],[64,-45],[64,27],[54,23],[24,23],[-24,23],[-64,23],[-108,30]],photo:'02b-outer-forest',look:[-115,4,25]},
    {name:'great-lake',points:[[-145,-25],[-145,-77],[-110,-78]],photo:'04b-great-lake',look:[-110,.4,-100]},
   ];
-  const active=process.env.BLOCKBOOM_JOURNEY_ROUTE==='continue-mine'?route.slice(6).map((leg,i)=>i===0?{...leg,points:leg.points.slice(2)}:leg):process.env.BLOCKBOOM_JOURNEY_ROUTE==='outer'?route.slice(5):process.env.BLOCKBOOM_JOURNEY_ROUTE==='west'?route.slice(7):route;
+  const active=process.env.BLOCKBOOM_JOURNEY_ROUTE==='overview'?[{name:'mountain-overview',points:[[64,-30],[64,-45],[85,-60]],photo:'03-mountain-overview',look:[145,18,-105]}]:process.env.BLOCKBOOM_JOURNEY_ROUTE==='daylake'?[{name:'day-lake',points:[],photo:'04c-day-great-lake',look:[-110,.4,-100]}]:process.env.BLOCKBOOM_JOURNEY_ROUTE==='return-west'?[{...route[7],points:[[64,-30],[64,27],[54,23],[24,23],[-24,23],[-64,23],[-108,30]]},route[8]]:process.env.BLOCKBOOM_JOURNEY_ROUTE==='continue-mine'?route.slice(6).map((leg,i)=>i===0?{...leg,points:leg.points.slice(2)}:leg):process.env.BLOCKBOOM_JOURNEY_ROUTE==='outer'?route.slice(5):process.env.BLOCKBOOM_JOURNEY_ROUTE==='west'?route.slice(7):route;
   for(const leg of active){
    for(const [x,z]of leg.points)await j.walk(x,z,{name:`${leg.name}:${x},${z}`});
    if(leg.look)await j.aim(...leg.look);await j.capture(leg.photo);
@@ -92,7 +97,7 @@ async function run(){
     if(!state.extension.living.looted.includes('159,-12,-90'))throw Error('Deep chamber loot was not actually awarded');
     await j.capture('09b-chamber-find');
    }
-   if(leg.name==='great-lake'){await j.look(Math.PI,-.14);await j.capture('05-connected-river');}
+   if(['great-lake','day-lake'].includes(leg.name)){await j.look(Math.PI,-.14);await j.capture('05-connected-river');}
   }
   await j.save();await page.reload();await page.locator('#play').tap();await j.capture('17-save-reload');
  }catch(error){j.events.push({event:'failure',message:String(error)});await page.screenshot({path:`j.out/failure.png`.replace('j.out',j.out)}).catch(()=>{});throw error;}finally{await j.finish();await browser.close();}

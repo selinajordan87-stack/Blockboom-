@@ -1,0 +1,474 @@
+{
+  "kind": "input-only known-route technical gameplay proof, not independent human exploration",
+  "events": [
+    {
+      "event": "start",
+      "version": "WORLD DISCOVERY · v0.7.0",
+      "method": "fresh isolated context, UI and input only; technical known route, no save/position injection; no human finding-time claim"
+    },
+    {
+      "event": "continue",
+      "method": "actual previously exported played save imported through normal UI"
+    },
+    {
+      "event": "capture",
+      "name": "00-continued-played-position",
+      "seconds": 9.316,
+      "position": [
+        65.15403858067535,
+        1.0000090025426218,
+        15.377425075551644
+      ],
+      "region": "meadow",
+      "frames": 31,
+      "performance": {
+        "calls": 45,
+        "geometries": 61,
+        "textures": 4,
+        "frame": {
+          "fps": 19.166666666666668,
+          "frameMs": 33.400000000000546,
+          "p95Ms": 83.40000000000009,
+          "samples": 23
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 312.70000000298023,
+          "totalBuildMs": 312.70000000298023,
+          "lastChunkMs": 6.4000000059604645,
+          "maxChunkMs": 36.900000005960464,
+          "queue": 0,
+          "rebuilt": 37,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 40,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0,
+          "maxColumnMs": 35.400000005960464,
+          "generatedChunks": 21,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 3024
+        },
+        "activeMeshes": 94,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 25780809
+      }
+    },
+    {
+      "event": "capture",
+      "name": "16-mobile-hud",
+      "seconds": 10.315,
+      "position": [
+        65.15403858067535,
+        1.0000090653410014,
+        15.377425075551644
+      ],
+      "region": "meadow",
+      "frames": 54,
+      "performance": {
+        "calls": 45,
+        "geometries": 61,
+        "textures": 4,
+        "frame": {
+          "fps": 20.752503834701802,
+          "frameMs": 33.399999999999636,
+          "p95Ms": 83.40000000000009,
+          "samples": 46
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 312.70000000298023,
+          "totalBuildMs": 312.70000000298023,
+          "lastChunkMs": 6.4000000059604645,
+          "maxChunkMs": 36.900000005960464,
+          "queue": 0,
+          "rebuilt": 37,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 40,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0.10000000894069672,
+          "maxRuntimeMs": 0.10000000894069672,
+          "maxColumnMs": 35.400000005960464,
+          "generatedChunks": 21,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 3024
+        },
+        "activeMeshes": 94,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 31407654
+      }
+    },
+    {
+      "event": "read-text",
+      "id": "start-plan",
+      "text": "Bauwissen · Lesestufe A\n\nEin Platz für die Nacht\n\nSammle Holz am Baum und Stein am Felsen; wähle danach einen Block und setze ihn am durchsichtigen Umriss.\n\nEigene Wände, Tür, Dach und Licht bilden deinen Unterschlupf – ergänze Werkbank, Bett und Truhe.\n\n▷ Vorlesen\nHinweis\n\nGelesen · weiter\nIm Buch blättern"
+    },
+    {
+      "event": "setting",
+      "difficulty": "Friedlich",
+      "method": "normal settings UI; exploration control run, combat tested separately"
+    },
+    {
+      "event": "arrived",
+      "name": "mountains:64,27",
+      "position": [
+        64.02021746419118,
+        1.0000090668327843,
+        26.796272419999706
+      ],
+      "seconds": 12.45
+    },
+    {
+      "event": "arrived",
+      "name": "mountains:64,-45",
+      "position": [
+        64.00020050693914,
+        1.0000090140705606,
+        -44.678724777072794
+      ],
+      "seconds": 50.11
+    },
+    {
+      "event": "arrived",
+      "name": "mountains:100,-70",
+      "position": [
+        99.94840139595428,
+        1.000009035364623,
+        -69.96368775593587
+      ],
+      "seconds": 29.489
+    },
+    {
+      "event": "arrived",
+      "name": "mountains:122,-84",
+      "position": [
+        121.96639289739139,
+        1.0000090041685954,
+        -83.97861016894316
+      ],
+      "seconds": 19.504
+    },
+    {
+      "event": "arrived",
+      "name": "mountains:129,-90",
+      "position": [
+        128.91721088811184,
+        1.0000090468930871,
+        -89.92912521050906
+      ],
+      "seconds": 8.2
+    },
+    {
+      "event": "capture",
+      "name": "03-mountain",
+      "seconds": 136.103,
+      "position": [
+        128.91721088811184,
+        1.0000090437734543,
+        -89.92912521050906
+      ],
+      "region": "mountain",
+      "frames": 3392,
+      "performance": {
+        "calls": 29,
+        "geometries": 67,
+        "textures": 4,
+        "frame": {
+          "fps": 25.715479647269355,
+          "frameMs": 33.29999999998836,
+          "p95Ms": 66.69999999999709,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 312.70000000298023,
+          "totalBuildMs": 13220.999998018146,
+          "lastChunkMs": 7.700000017881393,
+          "maxChunkMs": 90.19999998807907,
+          "queue": 0,
+          "rebuilt": 374,
+          "columns": 0,
+          "restarts": 561,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 39.70000000298023,
+          "maxColumnMs": 36.400000005960464,
+          "generatedChunks": 99,
+          "unloadedChunks": 75,
+          "pendingChunks": 0,
+          "generatedColumns": 14256
+        },
+        "activeMeshes": 85,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 35052418
+      }
+    },
+    {
+      "event": "read-text",
+      "id": "mine-map",
+      "text": "Abenteuerhinweise · Lesestufe B\n\nDie Karte des Bergmanns\n\nDer dunkle Spalt führt über einen abfallenden Gang in den Berg. Folge zunächst dem breiten Weg und merke dir jede Abzweigung.\n\nWeiter unten liegen andere Erze. Nimm Fackeln mit und lass auf deinem Rückweg Lichtpunkte zurück. Eine Spitzhacke und ein sicherer Ausgang sind wichtiger als ein voller Rucksack.\n\n▷ Vorlesen\nHinweis\n\nGelesen · weiter\nIm Buch blättern"
+    },
+    {
+      "event": "arrived",
+      "name": "real-mine-descent:132",
+      "position": [
+        131.841438197827,
+        1.000009071035774,
+        -89.99635348667738
+      ],
+      "seconds": 3.126
+    },
+    {
+      "event": "arrived",
+      "name": "real-mine-descent:137",
+      "position": [
+        136.71515038068557,
+        -1.9999909697900056,
+        -90.10840061362458
+      ],
+      "seconds": 4.112
+    },
+    {
+      "event": "arrived",
+      "name": "real-mine-descent:143",
+      "position": [
+        142.86423579972572,
+        -4.999990915943565,
+        -90.00234162356506
+      ],
+      "seconds": 7.093
+    },
+    {
+      "event": "arrived",
+      "name": "real-mine-descent:149",
+      "position": [
+        149.08538975975708,
+        -7.999990946868799,
+        -90.00597487226688
+      ],
+      "seconds": 7.194
+    },
+    {
+      "event": "arrived",
+      "name": "real-mine-descent:154",
+      "position": [
+        153.96038615711993,
+        -9.999990959483313,
+        -90.00004817976932
+      ],
+      "seconds": 5.24
+    },
+    {
+      "event": "capture",
+      "name": "07b-deep-mine",
+      "seconds": 164.792,
+      "position": [
+        153.96038615711993,
+        -9.999990978472155,
+        -90.00004817976932
+      ],
+      "region": "cave",
+      "frames": 4103,
+      "performance": {
+        "calls": 27,
+        "geometries": 69,
+        "textures": 4,
+        "frame": {
+          "fps": 25.487718105837782,
+          "frameMs": 66.69999999998254,
+          "p95Ms": 66.70000000001164,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 312.70000000298023,
+          "totalBuildMs": 14923.499997764826,
+          "lastChunkMs": 14.800000011920929,
+          "maxChunkMs": 90.19999998807907,
+          "queue": 0,
+          "rebuilt": 419,
+          "columns": 0,
+          "restarts": 618,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 39.70000000298023,
+          "maxColumnMs": 36.400000005960464,
+          "generatedChunks": 109,
+          "unloadedChunks": 85,
+          "pendingChunks": 0,
+          "generatedColumns": 15696
+        },
+        "activeMeshes": 84,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 26457638
+      }
+    },
+    {
+      "event": "read-text",
+      "id": "crystal-code",
+      "text": "Abenteuerhinweise · Lesestufe D\n\nZeichen an der alten Kammer\n\nZwischen den Zeichen ist die Skizze einer eckigen, durchscheinenden Spitze zu erkennen. Darunter steht: Kein Metall, kein Holz. Unser Fund wuchs im Stein und trägt seinen Namen mit zwei l.\n\nIm Schmiedebuch wurde die geschützte Kammer erwähnt. Kombiniere die Spur vom Fluss, den Hinweis des Schmieds und dieses Zeichen. Die alte Fundtruhe liegt am Rand der Kammer, nicht oben auf dem Berg.\n\n▷ Vorlesen\nHinweis\n\nDen Hinweis ausprobieren\nGelesen · weiter\nIm Buch blättern"
+    },
+    {
+      "event": "capture",
+      "name": "09b-chamber-find",
+      "seconds": 169.015,
+      "position": [
+        153.96038615711993,
+        -9.99999091960754,
+        -90.00004817976932
+      ],
+      "region": "cave",
+      "frames": 4175,
+      "performance": {
+        "calls": 29,
+        "geometries": 69,
+        "textures": 4,
+        "frame": {
+          "fps": 24.33164025669878,
+          "frameMs": 64.20000000001164,
+          "p95Ms": 66.70000000001164,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 312.70000000298023,
+          "totalBuildMs": 14923.499997764826,
+          "lastChunkMs": 14.800000011920929,
+          "maxChunkMs": 90.19999998807907,
+          "queue": 0,
+          "rebuilt": 419,
+          "columns": 0,
+          "restarts": 618,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 39.70000000298023,
+          "maxColumnMs": 36.400000005960464,
+          "generatedChunks": 109,
+          "unloadedChunks": 85,
+          "pendingChunks": 0,
+          "generatedColumns": 15696
+        },
+        "activeMeshes": 85,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 34521487
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:149,-90",
+      "position": [
+        149.87288615726305,
+        -7.999990930867234,
+        -89.99993197365498
+      ],
+      "seconds": 17.048
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:143,-90",
+      "position": [
+        144.09788615746527,
+        -4.999990975492813,
+        -89.9997389215618
+      ],
+      "seconds": 18.397
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:137,-90",
+      "position": [
+        137.79788615768587,
+        -1.9999909890573284,
+        -89.99954212088429
+      ],
+      "seconds": 18.6
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:131,-90",
+      "position": [
+        132.02288615788808,
+        1.000009068993705,
+        -89.9993490687911
+      ],
+      "seconds": 18.404
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:129,-90",
+      "position": [
+        129.0978861579905,
+        1.0000090550233909,
+        -89.99932470299294
+      ],
+      "seconds": 3.097
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:122,-84",
+      "position": [
+        122.1669884267543,
+        1.000009079844236,
+        -84.1411439581585
+      ],
+      "seconds": 8.198
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:100,-70",
+      "position": [
+        100.1631184133214,
+        1.0000090844555016,
+        -70.10406076998035
+      ],
+      "seconds": 19.411
+    },
+    {
+      "event": "arrived",
+      "name": "outer-forest:64,-45",
+      "position": [
+        64.39845365424591,
+        1.0000090741469116,
+        -45.27660296775964
+      ],
+      "seconds": 29.888
+    },
+    {
+      "event": "failure",
+      "message": "Error: Walk timeout at outer-forest:27,-30; position [60.30203511719884,2.0000090278965224,-30.884049061988467]; no teleport fallback was used"
+    },
+    {
+      "event": "export",
+      "method": "normal save export UI, actual played state",
+      "storage": {
+        "characters": 7784,
+        "estimatedUTF16Bytes": 15568,
+        "worldChanges": 6,
+        "mapTiles": 106
+      }
+    }
+  ],
+  "errors": []
+}
