@@ -15,3 +15,5 @@ Die acht Fischarten, Angelmodelle, Gewässerdetails und 60 Angelaufgaben aus v0.
 Auch die Regionen, Höhlen, Siedlung, sechs Tiermodelle, Pflanzen, Möbel, Karte, Erze und 24 zusätzlichen Aufgaben aus v0.6 sind eigene Projektgeometrien beziehungsweise Texte. Kein externer Assetdownload und keine zusätzliche Laufzeitbibliothek.
 
 Die Third-Person-Figur und ihre Werkzeugdarstellungen aus v0.6.1 wurden ebenfalls für BLOCKBOOM im Code erstellt. Kamera, UI und Sicherungstransfer benötigen keine zusätzlichen Drittanbieter-Assets oder Abhängigkeiten.
+
+Die Fern-Landmarken, physischen Notizbücher, Hotbar-SVGs und Bauplanvorschau aus v0.7 sind eigene Projektgeometrien und Texte. Die vom Auftrag beigefügten Referenzbilder wurden nicht als Spielassets übernommen. Keine zusätzlichen Abhängigkeiten oder externen Assetdienste.

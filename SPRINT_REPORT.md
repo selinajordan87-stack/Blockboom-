@@ -64,7 +64,7 @@ Der Diagnoseexport enthält Framerate, Framezeit, Chunk-/Generierungszeiten, sic
 
 ## Noch offen vor der Veröffentlichung
 
-Vollständige Browserregression, Abschluss der äußeren Wanderung, konsistenter Einstieg in die Grundrezepte an der Werkbank, abschließende Live-Prüfung und ein echter iPhone-Test. Eine dauerhafte Tierzucht, Endloswelt, Multiplayer oder Cloud-Synchronisierung wurden nicht begonnen.
+Abschluss der äußeren Wanderung, abschließende Live-Prüfung und ein echter iPhone-Test. Vollständige Browserregression und konsistenter Survival-Einstieg in die Werkbankrezepte sind inzwischen bestanden. Eine dauerhafte Tierzucht, Endloswelt, Multiplayer oder Cloud-Synchronisierung wurden nicht begonnen.
 
 ## Stabilisierung nach vollständiger Regression
 
@@ -72,4 +72,21 @@ Der erste Gesamtlauf bestand 78/81 Browsertests. Die drei Fehler wurden einzeln 
 
 Zusätzlicher frischer Survivalpfad ohne Vorrats-/Positionsinjektion: Holz an zwei erreichbaren Bäumen sammeln, Stein abbauen, Gartenblatt mit optionalem Vorlesen lesen, Bretter und Hacke im gleichen Werkbankmenü herstellen, Boden bearbeiten, Karotten pflanzen, speichern und neu laden. Bestanden in 57,8 Sekunden automatisierter Bedienung. Ein zunächst falscher Test zielte auf das Laub des alten dreiblöckigen Stamms; er wurde auf einen echten zweiten Baum korrigiert.
 
-Alle **154 Logiktests in 23 Dateien**, TypeScript strict und Produktionsbuild bestanden am 14.11.2026. Erneute vollständige Browserregression läuft auf dem unveränderten Build `index-BdAeCH9T.js`. Grundrezepte sind jetzt gemeinsam mit Möbeln erreichbar, kreative Vorräte korrekt mit ∞ gekennzeichnet und Höhlenfackeln auch bei Tageslicht aktiv. Ein zusätzlicher Brief erklärt den Unterschied zwischen altem Außenposten und größerer Siedlung. Grenztests sichern Haustierpositionen an hohen Baublöcken und die Bauplan-Metadaten am Welt-/Höhenrand.
+Alle **154 Logiktests in 23 Dateien**, TypeScript strict und Produktionsbuild bestanden am 14.11.2026. Die erneute vollständige Browserregression bestand **82/82 Fälle in 20,9 Minuten** auf dem unveränderten Build `index-BdAeCH9T.js`. Grundrezepte sind jetzt gemeinsam mit Möbeln erreichbar, kreative Vorräte korrekt mit ∞ gekennzeichnet und Höhlenfackeln auch bei Tageslicht aktiv. Ein zusätzlicher Brief erklärt den Unterschied zwischen altem Außenposten und größerer Siedlung. Grenztests sichern Haustierpositionen an hohen Baublöcken und die Bauplan-Metadaten am Welt-/Höhenrand.
+
+## Konkrete iPhone-Abnahme
+
+1. Vor dem Update in Safari **Menü → Einstellungen → Spielstand exportieren/importieren → Exportieren** nutzen. Dieselbe Pages-Adresse und denselben Browser behalten; keine Website-Daten löschen.
+2. Nach Veröffentlichung normal neu laden. Die Startseite muss **v0.7.0** zeigen. Im Querformat laufen und zugleich rechts umsehen, beide Finger einzeln lösen. Menü darf sich dabei nicht öffnen.
+3. **Menü → Kamera & Steuerung**: Third Person, größere Entfernung, an Baum/Wand herangehen und wieder zurück. Abstand muss zurückkehren; **Kamera zurücksetzen** muss weiter funktionieren.
+4. Die sechs unteren Slots ausprobieren. Baum mit Axt abbauen, Stein mit Spitzhacke. **Werkbank** im Menü öffnen: Bretter und Hacke sind dort gemeinsam mit Möbeln erreichbar. Einen Block wählen, grüne Vorschau suchen, bauen, entfernen und rückgängig machen.
+5. Ein kleines Buch auf der Startwiese anvisieren und **Lesen** nutzen. Text in Ruhe lesen oder ausdrücklich vorlesen lassen; Fenster selbst schließen. Im **Entdeckerbuch** erneut öffnen. Die Vorratsrechnung freiwillig mit Fehler und Hilfe ausprobieren.
+6. Gartenblatt und sichtbares Beet suchen. Kürbis ernten, Samen im Garten wählen und pflanzen. Mit Hacke Gras bearbeiten und ein eigenes Feld anlegen. Während des Wachstums weiterspielen; die Uhr zählt weder im Menü noch bei geschlossener Seite.
+7. Ohne Koordinatenhilfe nach Felsöffnung, Weg, Turm und Rauch suchen. Festhalten, ob Höhle und größere Schmiede tatsächlich auffallen und welche Hinweise verständlich sind. Falls sie nicht gefunden werden, ist das ein offener Designfehler, kein Versagen des Spielers.
+8. Angel ausrüsten und einen vollständigen Fang spielen; anschließend eine Zombiebegegnung oder den friedlichen Modus prüfen. Schreibkampf mit Bildschirmtastatur öffnen/schließen.
+9. Eigenen Block, Pflanze, Fundtext und gegebenenfalls Haustier speichern. Safari kurz verlassen, zurückkehren und neu laden. Alles muss erhalten bleiben. Abschließend eine neue Exportdatei sichern.
+10. iPhone-Modell, iOS/Safari-Version, störende Überlagerungen, Kameraprobleme und subjektive Flüssigkeit nach etwa zehn Minuten notieren. Eine reale Smartphone-Framerate oder endgültige Abnahme wird hier nicht vorweggenommen.
+
+## Abschließender lokaler Gesamtlauf
+
+Am 14.11.2026 bestanden alle **82 Browsertests** in einem vollständigen Lauf mit einem Worker. Log: [final-browser.log](artifacts/v07/final-browser.log). Das umfasst alte Spielstände, reale Speicherquote, Export/Import, Mehrfingerbesitz und Abbruch, Browserwechsel, Third Person, Kamerakollision/Reset, WebGL-Wiederaufnahme, Bauen/Undo, Fischen/Drill, BOOM, Haustiere, Farming, Erz/Ofen, die bestehenden Missionen, Zombies, Schreibkämpfe und Pages-Assets. Nach wiederholtem Bau/Undo blieb die GPU-Zahl bei 54 Geometrien und vier Texturen. Die drei ursprünglichen Fehler traten nicht mehr auf.

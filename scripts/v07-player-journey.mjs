@@ -43,7 +43,7 @@ export class FreshJourney{
  async close(){if(await this.page.locator('#close').isVisible())await this.page.locator('#close').tap();}
  async save(){await this.menu('save');const state=await this.page.evaluate(()=>JSON.parse(localStorage.getItem('blockboom.save')));await this.page.locator('#resume').tap();return state;}
  async readEntry(id,photo){await this.menu('menu-book');await this.page.locator(`[data-book-entry="${id}"]`).tap();const text=await this.page.locator('#panel-content').innerText();this.events.push({event:'read-text',id,text});if(photo)await this.page.screenshot({path:`${this.out}/${photo}.png`});await this.page.locator('#note-done').tap();return text;}
- async finish(){try{await this.menu('menu-settings');await this.page.locator('#save-transfer').tap();const pending=this.page.waitForEvent('download');await this.page.locator('#export-save').tap();await(await pending).saveAs(`${this.out}/played-save.json`);this.events.push({event:'export',method:'normal save export UI, actual played state'});}catch(error){this.events.push({event:'export-failure',message:String(error)});}await writeFile(`${this.out}/journey.json`,JSON.stringify({kind:'input-only known-route technical gameplay proof, not independent human exploration',events:this.events,errors:this.errors},null,2)+'\n');}
+ async finish(){try{await this.menu('menu-settings');await this.page.locator('#save-transfer').tap();const pending=this.page.waitForEvent('download');await this.page.locator('#export-save').tap();await(await pending).saveAs(`${this.out}/played-save.json`);const storage=await this.page.evaluate(()=>{const raw=localStorage.getItem('blockboom.save')||'',s=JSON.parse(raw);return {characters:raw.length,estimatedUTF16Bytes:raw.length*2,worldChanges:Object.keys(s.changes).length,mapTiles:s.extension.living.explored.length};});this.events.push({event:'export',method:'normal save export UI, actual played state',storage});}catch(error){this.events.push({event:'export-failure',message:String(error)});}await writeFile(`${this.out}/journey.json`,JSON.stringify({kind:'input-only known-route technical gameplay proof, not independent human exploration',events:this.events,errors:this.errors},null,2)+'\n');}
 }
 
 async function run(){
@@ -63,9 +63,36 @@ async function run(){
    {name:'old-settlement',points:[[41,-30],[34,-30],[27,-30],[24,-30],[24,20],[28,22]],photo:'08-abandoned-settlement',look:[42,3,34]},
    {name:'outer-settlement',points:[[28,22],[54,23],[64,27],[76,43],[88,59],[100,75]],photo:'08b-larger-settlement',look:[107,4,91]},
    {name:'mountains',points:[[88,59],[76,43],[64,27],[64,-45],[100,-70],[122,-84],[129,-90]],photo:'03-mountain',look:[145,18,-105]},
+   {name:'outer-forest',points:[[149,-90],[143,-90],[137,-90],[131,-90],[129,-90],[122,-84],[100,-70],[64,-45],[27,-30],[20,-34],[-25,-34],[-26,-20],[-26,7],[-24,23],[-64,23],[-108,30]],photo:'02b-outer-forest',look:[-115,4,25]},
+   {name:'great-lake',points:[[-145,-25],[-145,-77],[-110,-78]],photo:'04b-great-lake',look:[-110,.4,-100]},
   ];
-  const active=process.env.BLOCKBOOM_JOURNEY_ROUTE==='outer'?route.slice(5):route;
-  for(const leg of active){for(const [x,z]of leg.points)await j.walk(x,z,{name:`${leg.name}:${x},${z}`});if(leg.look)await j.aim(...leg.look);await j.capture(leg.photo);}
+  const active=process.env.BLOCKBOOM_JOURNEY_ROUTE==='outer'?route.slice(5):process.env.BLOCKBOOM_JOURNEY_ROUTE==='west'?route.slice(7):route;
+  for(const leg of active){
+   for(const [x,z]of leg.points)await j.walk(x,z,{name:`${leg.name}:${x},${z}`});
+   if(leg.look)await j.aim(...leg.look);await j.capture(leg.photo);
+   console.log(JSON.stringify({arrived:leg.name,elapsedSeconds:+((Date.now()-j.startedAt)/1000).toFixed(1)}));
+   if(leg.name==='outer-settlement'){
+    await j.walk(100.5,81.5,{tolerance:.65,name:'forge-front-door'});await j.aim(100.5,1.6,83.5);
+    if(!(await page.locator('#target-label').textContent()).includes('Tür'))throw Error('Forge door was not actually targeted');
+    await page.locator('#interact').tap();await j.walk(100.5,84.5,{tolerance:.65,name:'through-open-forge-door'});
+    await j.readEntry('forge-diary','14b-forge-reading');await j.capture('08c-inside-forge');
+    await j.walk(104.5,85.5,{tolerance:.65,name:'forge-store'});await j.aim(102.5,1.5,88.5);
+    if(!(await page.locator('#target-label').textContent()).includes('Schatztruhe'))throw Error('Forge blueprint chest was not actually targeted');
+    await page.locator('#interact').tap();await j.menu('menu-plan');await page.screenshot({path:`${j.out}/09-found-blueprint.png`});await j.close();
+    await j.walk(100.5,84.5,{tolerance:.65,name:'return-to-forge-door'});
+    await j.walk(100.5,80,{name:'leave-forge'});await j.walk(100,75,{name:'return-to-mine-trail'});
+   }
+   if(leg.name==='mountains'){
+    await j.readEntry('mine-map','14c-mine-reading');
+    for(const x of [132,137,143,149,154])await j.walk(x,-90,{name:`real-mine-descent:${x}`});
+    await j.capture('07b-deep-mine');await j.readEntry('crystal-code','14d-chamber-reading');
+    await j.aim(159.5,-11.5,-89.5);
+    if(!(await page.locator('#target-label').textContent()).includes('Schatztruhe'))throw Error('Deep chamber chest was not actually targeted');
+    await page.locator('#interact').tap();const state=await j.save();
+    if(!state.extension.living.looted.includes('159,-12,-90'))throw Error('Deep chamber loot was not actually awarded');
+    await j.capture('09b-chamber-find');
+   }
+  }
   await j.save();await page.reload();await page.locator('#play').tap();await j.capture('17-save-reload');
  }catch(error){j.events.push({event:'failure',message:String(error)});await page.screenshot({path:`j.out/failure.png`.replace('j.out',j.out)}).catch(()=>{});throw error;}finally{await j.finish();await browser.close();}
 }

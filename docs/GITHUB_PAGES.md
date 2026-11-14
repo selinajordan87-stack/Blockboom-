@@ -2,7 +2,7 @@
 
 ## Aktueller Stand
 
-Repository, `main`, Remote und Pages-Quelle **GitHub Actions** sind eingerichtet; die Veröffentlichung ist ausdrücklich freigegeben. Aktueller Umfang, geprüfter Release-Status und Geräteanleitung stehen im [v0.6-Bericht](../V06_REPORT.md). Die vorhandene Historie einschließlich `467adf6` bleibt erhalten. Das Repository heißt tatsächlich `Blockboom-`; dazu passt der Base-Pfad `/Blockboom-/`.
+Repository, `main`, Remote und Pages-Quelle **GitHub Actions** sind eingerichtet; die Veröffentlichung ist ausdrücklich freigegeben. Aktueller Umfang, geprüfter Release-Status und Geräteanleitung stehen im [Sprintbericht](../SPRINT_REPORT.md). Die vorhandene Historie einschließlich `467adf6` bleibt erhalten. Das Repository heißt tatsächlich `Blockboom-`; dazu passt der Base-Pfad `/Blockboom-/`.
 
 ## Nach ausdrücklicher Freigabe
 

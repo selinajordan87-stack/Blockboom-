@@ -183,3 +183,7 @@ Sechs Regionen, gestreamte äußere Chunks, begehbare Höhlen, Erz-/Werkzeugfort
 ## 20. MOBILE UX RESCUE v0.6.1
 
 Der mobile HUD wird auf wenige kompakte Kontrollen reduziert. Echte Third Person mit sichtbarer Figur, veränderlicher Distanz, Kamerakollision und Reset ersetzt den verengenden Zoom. Touch-Fallback, lokale Diagnose und manueller Export/Import ergänzen die bestehenden Systeme. Belegte Ursachen, Screenshots, genaue Teststände, offene Gerätefragen und Veröffentlichung stehen im [v0.6.1-Bericht](V061_REPORT.md).
+
+## 21. World Discovery – Overnight Sprint v0.7
+
+Erhaltener Recovery-Stand, reale Spielerwege, auffindbare Außenwelt, funktionales Lesen, Bauplan, Farming, Regressionen und tatsächlicher Veröffentlichungsstatus stehen im [Sprintbericht](SPRINT_REPORT.md). Der [Reality Audit](REALITY_AUDIT.md) hält vorherige Fehlannahmen getrennt von tatsächlich geprüften Spielabläufen fest. Browseremulation und vorbereitete Speicherstände gelten nicht als echte iPhone-Abnahme oder unabhängiger Erstspielertest.

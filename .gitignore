@@ -4,3 +4,6 @@ test-results/
 artifacts/pages/
 artifacts/v06/
 artifacts/v061/
+
+# Reproducible sprint runs; selected evidence is tracked explicitly.
+artifacts/v07/

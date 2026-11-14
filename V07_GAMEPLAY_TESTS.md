@@ -16,4 +16,17 @@ Der Journey-Treiber kennt technische Wegpunkte und liest die diagnostizierte Pos
 
 ## Ergebnisse
 
-Noch nicht ausgeführt: Die Tests warten auf den integrierten v0.7-Produktionsbuild auf Port 4208. Dieser Abschnitt wird nach realer Ausführung durch tatsächliche Resultate ersetzt. Es wird kein bestandener Gerätetest behauptet; hier steht Chromium mit emulierter Mobilansicht und Software-WebGL zur Verfügung.
+Die vier neuen Discovery-Fälle bestanden im ersten integrierten Produktionslauf. Der zusätzliche Survival-Einstieg in `e2e/entry-loop-v07.spec.ts` bestand ebenfalls: reale Holz-/Steingewinnung, gelesenes Gartenwissen, Rezepte, Hacke, eigenes Beet, Karotte und Reload. Der Blueprint-Fall bestand mit vorbereitetem vorhandenem Spielstand; er wird ausdrücklich nicht als frischer Sammelpfad gezählt.
+
+Die zweite technische Wanderung erreichte Wald (61,7 s), See (130,2 s), alten Höhleneingang (198,3 s), innere Kammer (220,8 s) und alte Siedlung (337,4 s). Das sind Zeiten eines geführten Eingabetreibers, keine menschlichen Suchzeiten. Sie scheiterte anschließend abseits des sichtbaren Wegs beim äußeren Abschnitt. Die erste Wanderung scheiterte tatsächlich an einer Uferstufe; die reparierte Uferpassage wurde im zweiten Lauf durchquert. Beide Fehler bleiben dokumentiert.
+
+Ein erster Gesamtlauf bestand 78/81 Browserfälle. Alle drei Ursachen wurden geprüft und gezielte Nachläufe bestanden. Der abschließende **82-Fälle-Lauf bestand vollständig in 20,9 Minuten** auf dem unveränderten Produktionsbundle `index-BdAeCH9T.js`. Der endgültige Gesamtausgang und die Live-Prüfung werden im Sprintbericht dokumentiert.
+
+Es wird kein bestandener Gerätetest behauptet; hier steht Chromium mit emulierter Mobilansicht und Software-WebGL zur Verfügung.
+
+## Was die Tests nicht belegen
+
+- Die sieben neuen Kapitel sind als Zustandskette mit tatsächlichen Bau-/Sammel-/Schlaf-/Erzbelegen in der Logik geprüft. Es gibt noch keinen abgeschlossenen unabhängigen Erstspielertest der gesamten Geschichte und keine gemessene 20–30-Minuten-Spieldauer.
+- Vorbereitete Save-Fixtures prüfen alte Funktionen und Migrationen unter kontrollierten Bedingungen. Sie beweisen nicht, dass ein neuer Spieler den jeweiligen Ort ohne Hilfe findet.
+- Kamera-, Mehrfinger-, Sichtbarkeits- und Tastaturhöhenprüfungen emulieren Browserzustände. Safari-Tastatur, Home-Indikator, thermische Last und reales Touchgefühl müssen am iPhone geprüft werden.
+- Screenshots werden nur von tatsächlich laufenden Versionen aufgenommen; die beigestellten Referenzbilder sind keine Implementierungsnachweise.
