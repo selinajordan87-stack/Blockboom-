@@ -5,7 +5,7 @@ export const FISH_PER_SPECIES = 3;
 export const MAX_FISH_ACTORS=32;
 // Large lakes need visible fish near a reachable shore, rather than a small
 // school hidden at the distant centre (which also contains an island).
-const LAKE_SCHOOLS=[{x:-117,z:-91},{x:-82,z:-110},{x:-138,z:-110}];
+const LAKE_SCHOOLS=[{x:-117,z:-91},{x:-86,z:-110},{x:-134,z:-110}];
 const swimCenter=(spot:AnglingSpot,index=0)=>spot.id==="great"?LAKE_SCHOOLS[index<4?0:index<6?1:2]:spot.center;
 
 export interface FishActor {

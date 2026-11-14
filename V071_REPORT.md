@@ -79,3 +79,8 @@ Die Fische und Landschaft bleiben stilisierte Voxelmodelle. Es wird kein grafisc
 Der erste vollständige 88-Fälle-Lauf wurde nach 18 bestandenen Fällen, einem großen-See-Fehler und einem unterbrochenen Fall angehalten; 68 waren noch nicht ausgeführt. Das ist kein erfolgreicher Gesamtlauf. Der Fangfall blieb bei „Köder im Wasser“. Die bisherige Zufallsauswahl berücksichtigte Art und Ausrüstung, aber nicht die Entfernung der nun verteilten Gruppen. Ein neuer deterministischer Test wählte einen Fisch **29,48 Meter** vom Schwimmer entfernt und reproduzierte den Fehler.
 
 Die Auswahl berücksichtigt jetzt nur tatsächliche Fische innerhalb von zwölf Spielmetern um den Köder und gewichtet näher schwimmende Tiere stärker. Wunscharten werden innerhalb dieser lokalen Gruppe bevorzugt; fehlt die gewünschte Art, bleibt ein anderer naher Fisch fangbar. Keine Teleportation von Fischen, keine simulierte Textfangmeldung und keine Verlängerung des Test-Zeitlimits. [Roter Logiktest](artifacts/v071/lake-selection-red.log), [angehaltener Gesamtlauf](artifacts/v071/interrupted-full-before-lake-fix.log).
+
+
+## Seegrund an den seitlichen Ufern
+
+Eine zusätzliche Logikprüfung über 30 Sekunden Fischbewegung fand am westlichen Rand einen Barsch unter dem tatsächlichen Sandboden. Die beiden seitlichen Gruppen wurden jeweils vier Spielmeter in tieferes Wasser versetzt. Der Test prüft den wirklichen Terrainhöhenwert für jeden Fisch; danach bestehen alle 13 betroffenen Logikfälle. Das laufende 88-Fälle-Browserbundle bleibt dafür unverändert (`index-BpZYmPJX.js`). Die Positionskorrektur erhält anschließend eigene Produktions- und Browsernachprüfungen; sie wird nicht rückwirkend als Bestandteil jenes Bundles ausgegeben. [Roter Bodentest](artifacts/v071/lake-ground-red.log).
