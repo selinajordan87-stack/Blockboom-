@@ -50,5 +50,13 @@ export class LivingView {
   }
   this.crops.count=i;this.crops.userData.cells=cells;this.crops.instanceMatrix.needsUpdate=true;if(this.crops.instanceColor)this.crops.instanceColor.needsUpdate=true;
  }
- hit(ray:T.Raycaster,s:LivingState,range=4.5):Animal|null{return targetAnimal(ray.ray,s,range)?.animal||null;}
+ pick(ray:T.Raycaster,s:LivingState,range=4.5){
+  const exact=ray.intersectObject(this.animals,false).find(h=>h.distance<=range&&h.instanceId!==undefined);
+  if(exact?.instanceId!==undefined){
+   const animal=s.animals.find(a=>a.id===this.animals.userData.ids[exact.instanceId!]&&a.health!==0);
+   if(animal)return {animal,distance:exact.distance,point:exact.point,precise:true};
+  }
+  const assisted=targetAnimal(ray.ray,s,range);return assisted?{...assisted,precise:false}:null;
+ }
+ hit(ray:T.Raycaster,s:LivingState,range=4.5):Animal|null{return this.pick(ray,s,range)?.animal||null;}
 }

@@ -84,3 +84,11 @@ Die Auswahl berücksichtigt jetzt nur tatsächliche Fische innerhalb von zwölf 
 ## Seegrund an den seitlichen Ufern
 
 Eine zusätzliche Logikprüfung über 30 Sekunden Fischbewegung fand am westlichen Rand einen Barsch unter dem tatsächlichen Sandboden. Die beiden seitlichen Gruppen wurden jeweils vier Spielmeter in tieferes Wasser versetzt. Der Test prüft den wirklichen Terrainhöhenwert für jeden Fisch; danach bestehen alle 13 betroffenen Logikfälle. Das laufende 88-Fälle-Browserbundle bleibt dafür unverändert (`index-BpZYmPJX.js`). Die Positionskorrektur erhält anschließend eigene Produktions- und Browsernachprüfungen; sie wird nicht rückwirkend als Bestandteil jenes Bundles ausgegeben. [Roter Bodentest](artifacts/v071/lake-ground-red.log).
+
+
+## Werkzeugpriorität bei nahen Tieren
+
+Der zweite Gesamtlauf fand im unveränderten alten Touch-Farmingfall eine Interaktion zwischen größerem Tierziel und Hacke: Ein Huhn übernahm die Bodenaktion. Bei einer Hacke und anvisiertem Gras/Erde/Acker hat jetzt die Bodenarbeit Vorrang. Tiere bleiben mit anderen Gegenständen bedienbar; der fehlgeschlagene Test wird nicht umgeschrieben. [Fehlerkontext](artifacts/v071/hoe-animal-priority-context.md). Die Korrektur wird nach Ende des unverändert weiterlaufenden Diagnosebundles eigens gebaut und nachgeprüft.
+
+
+Der folgende unveränderte Truhenfall zeigte dasselbe Problem bei einer Möbelaktion. Die Zielauswahl nutzt deshalb zuerst das tatsächliche sichtbare Tiermesh; das zusätzliche Zielhilfepolster darf kein genauer anvisiertes Möbel oder eine verdeckende Weltfläche verdrängen. Das gilt auch für die Third-Person-Parallaxenkorrektur. [Truhen-Fehlerkontext](artifacts/v071/chest-animal-priority-context.md). Beide vorhandenen Fälle werden auf dem korrigierten Produktionsbuild nachgeprüft.

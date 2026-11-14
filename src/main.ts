@@ -388,16 +388,17 @@ function aim() {
   ray.setFromCamera(new T.Vector2(0, 0), camera);
   if(expansion.camera.perspective==="third"&&!cameraRig.temporaryFirst){
     const crosshair=worldHit(40);
-    const seenAnimal=livingView.hit(ray,expansion.living,18);
+    const seen=livingView.pick(ray,expansion.living,18);
+    const seenAnimal=seen&&expansion.tool!=="Hacke"&&(!crosshair||seen.distance<crosshair.distance-.05&&(seen.precise||crosshair.object===view.group))?seen.animal:null;
     const animalPoint=seenAnimal?new T.Vector3(seenAnimal.pos[0],seenAnimal.pos[1]+.6*animalScale(seenAnimal),seenAnimal.pos[2]):null;
     const visibleAnimal=animalPoint&&lineOfSight(world,camera.position.toArray() as Cell,animalPoint.toArray() as Cell);
     const point=visibleAnimal?animalPoint:crosshair?.point||ray.ray.at(40,new T.Vector3());
     const eye=new T.Vector3(player.pos[0],player.pos[1]+1.6,player.pos[2]);ray.ray.set(eye,point.clone().sub(eye).normalize());
   }
   const hit = worldHit();
-  animalTarget=livingView.hit(ray,expansion.living);
+  const animalHit=livingView.pick(ray,expansion.living);
+  animalTarget=animalHit&&(!hit||animalHit.distance<hit.distance-.05&&(animalHit.precise||hit.object===view.group))?animalHit.animal:null;
   if(animalTarget&&!lineOfSight(world,ray.ray.origin.toArray() as Cell,[animalTarget.pos[0],animalTarget.pos[1]+.6*animalScale(animalTarget),animalTarget.pos[2]]))animalTarget=null;
-  document.querySelector(".crosshair")!.classList.toggle("animal-aim",!!animalTarget);
   noteTarget=discoveryView.hit(ray);if(noteTarget&&hit&&hit.distance<ray.ray.origin.distanceTo(new T.Vector3(...noteTarget.position))-.8)noteTarget=null;
   target = null;
   adjacent = null;
@@ -426,6 +427,10 @@ function aim() {
     $("target-label").textContent = (world.get(...target) || "") +
       (night.damage[target.join(",")]?` · Zustand ${Math.max(0,100-night.damage[target.join(",")])}%`:"");
   }
+  // A hoe works the aimed soil even when a nearby chicken overlaps its
+  // forgiving animal target. Feeding remains available with the other tools.
+  if(expansion.tool==="Hacke"&&target&&["Gras","Erde","Acker"].includes(world.get(...target)||""))animalTarget=null;
+  document.querySelector(".crosshair")!.classList.toggle("animal-aim",!!animalTarget);
   if (expansion.tool === "Holzknüppel") {
     const fish = fishView.hit(ray, 3.4);
     if (fish && (!hit || fish.distance < hit.distance))

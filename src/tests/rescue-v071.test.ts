@@ -25,7 +25,7 @@ it("erkennt dasselbe Tier nach Bewegung über seine frühere Trefferbegrenzung h
  const view=new LivingView(new T.Scene()),ray=new T.Raycaster(new T.Vector3(0,1.6,3),new T.Vector3(0,0,-1));
  view.update(state,new T.Vector3(0,2,3));expect(view.hit(ray,state)?.id).toBe(a.id);
  a.pos=[20,1,0];view.update(state,new T.Vector3(20,2,3));ray.ray.origin.x=20;
- expect(view.hit(ray,state)?.id).toBe(a.id);
+ expect(view.hit(ray,state)?.id).toBe(a.id);expect(view.pick(ray,state)?.precise).toBe(true);
 });
 
 it("verteilt sichtbare Fische im großen See auf mehrere Ufergruppen innerhalb des festen Limits",()=>{
