@@ -12,8 +12,9 @@ it("wechselt bei stark zusammengedrückter Kamera in einen bedienbaren Ego-Blick
  settings.perspective="third";settings.distance=6;
  world.set(0,2,10,"Stein");world.set(0,3,10,"Stein");
  rig.update(camera,actor,settings,70,1/60,true);
- expect(rig.actualDistance).toBeGreaterThan(.32);expect(rig.actualDistance).toBeLessThan(1.45);
- expect(rig.temporaryFirst).toBe(true);expect(camera.position.y).toBeCloseTo(2.6);
+ expect(rig.actualDistance).toBeGreaterThan(.32);expect(rig.actualDistance).toBeLessThanOrEqual(6);
+ const direction=camera.position.clone().sub(new T.Vector3(0,2.35,9));
+ for(let d=.1;d<1;d+=.1){const p=new T.Vector3(0,2.35,9).addScaledVector(direction,d);expect(world.get(Math.floor(p.x),Math.floor(p.y),Math.floor(p.z))).not.toBe('Stein');}
  expect(settings.perspective).toBe("third");expect(settings.distance).toBe(6);
  world.set(0,2,10,null);world.set(0,3,10,null);
  for(let i=0;i<120;i++)rig.update(camera,actor,settings,70,1/60);

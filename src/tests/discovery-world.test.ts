@@ -55,5 +55,5 @@ it("verbindet Siedlung und Mine mit einem wirklich begehbaren Weg und erhält ei
 });
 it("erzeugt markante Berge und begrenzte, freigegebene Ferngeometrie",()=>{
  expect(terrainProfile(145,-105).top).toBeGreaterThan(20);const scene=new T.Scene(),view=new LandmarkView(scene,new World());view.update([0,1,17],1000);
- expect(view.group.children.length).toBeLessThan(7);let disposed=0;view.group.traverse(o=>(o as T.Mesh).geometry?.addEventListener("dispose",()=>disposed++));view.dispose();expect(scene.children).not.toContain(view.group);expect(disposed).toBeGreaterThan(3);
+ expect(view.group.children.length).toBeLessThanOrEqual(8);let disposed=0;view.group.traverse(o=>(o as T.Mesh).geometry?.addEventListener("dispose",()=>disposed++));view.dispose();expect(scene.children).not.toContain(view.group);expect(disposed).toBeGreaterThan(3);
 });

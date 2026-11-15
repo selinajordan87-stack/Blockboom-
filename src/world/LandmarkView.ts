@@ -84,7 +84,7 @@ export class LandmarkView {
   const horizontal=Math.hypot(this.forward.x,this.forward.z)||1;
   const behind=(px:number,pz:number,d:number)=>d>72&&((px-x)*this.forward.x+(pz-z)*this.forward.z)/horizontal<-.2*d;
   if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z),chunkDistance=Math.hypot(Math.floor(cx/12)*12+6-x,Math.floor(cz/12)*12+6-z);
-   if(this.tileLOD[i]===2&&chunkDistance>=155||this.tileLOD[i]===1&&chunkDistance<155)continue;
+   if(this.tileLOD[i]===2&&chunkDistance>=110||this.tileLOD[i]===1&&chunkDistance<110)continue;
    if(this.world.terrainRevision===2&&terrainProfile(cx,cz,2).lake<.97)continue;
    if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;for(const a of this.tileTriangles[i])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
   let trees=0,canopies=0;

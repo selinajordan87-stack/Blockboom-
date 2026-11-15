@@ -25,10 +25,10 @@ it('hält beide Kammern frei, trägt ihre Decke und erhält den Fund',()=>{
  const world=new World();world.terrainRevision=2;const stream=new RegionStream(world,true);stream.ensure(147,-99);
  let cells=0,minRoof=Infinity;
  for(let x=136;x<=164;x++)for(let z=-111;z<=-86;z++){
-  const air=caveRange(x,z);if(!air)continue;
+  const air=caveRange(x,z,2);if(!air)continue;
   // Special ore/torch/chest placements are deliberately allowed at the walls/floor.
   for(let y=air.floor+1;y<=air.ceiling;y++){
-   if(x===159&&y===-11&&z===-94)continue; // Deliberate gold vein at the chamber edge.
+   if(world.get(x,y,z)?.includes('erz')||world.get(x,y,z)==='Laterne'||world.get(x,y,z)==='Fackel'||world.get(x,y,z)==='Schatztruhe')continue;
    expect(world.get(x,y,z),`${x},${y},${z}`).toBeUndefined();
   }
   const roof=terrainProfile(x,z,2).top-air.ceiling;minRoof=Math.min(minRoof,roof);

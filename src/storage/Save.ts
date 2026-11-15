@@ -98,7 +98,7 @@ export function decode(raw: string | null): Save | null {
     )
       s.progress = emptyProgress();
     s.missionActive = !!s.missionActive;
-    s.pitch = Math.max(-1.45, Math.min(1.45, s.pitch));
+    s.pitch = Math.max(-1.56, Math.min(1.56, s.pitch));
     s.settings = {
       sound: s.settings?.sound === true,
       quality: [1, 1.5].includes(s.settings?.quality)

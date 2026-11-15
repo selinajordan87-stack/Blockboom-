@@ -33,7 +33,7 @@ async function saved(page: Page) {
   await page.keyboard.press("Escape");
   await page.locator("#save").click();
   const value = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("blockboom.save")!),
+    JSON.parse((localStorage.getItem("blockboom.save.terrain2")??localStorage.getItem("blockboom.save"))!),
   );
   await page.locator("#resume").click();
   return value;

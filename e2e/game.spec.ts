@@ -31,7 +31,7 @@ async function getSave(page: any) {
   await page.keyboard.press("Escape");
   await page.locator("#save").click();
   const s = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("blockboom.save")!),
+    JSON.parse((localStorage.getItem("blockboom.save.terrain2")??localStorage.getItem("blockboom.save"))!),
   );
   await page.locator("#resume").click();
   await page.waitForTimeout(100);

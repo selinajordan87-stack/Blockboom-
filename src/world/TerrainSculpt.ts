@@ -25,7 +25,7 @@ export function mountainSculpt(x:number,z:number){
  }
  // Broken buttresses and high saddles, not concentric conical terraces.
  elevation+=Math.min(1,elevation/7)*(1.25*Math.sin(x*.41+z*.15)+.7*Math.sin(z*.55-x*.19));
- const {distance,height:road}=mountainPathSample(x,z),width=1.1+.45*(1+Math.sin(x*.19+z*.13));
+ const {distance,height:road}=mountainPathSample(x,z),width=2.6+.3*(1+Math.sin(x*.19+z*.13));
  const shoulder=Math.max(0,Math.min(1,(distance-width)/3.4));
  const top=Math.min(26,Math.max(0,Math.floor(road*(1-shoulder)+elevation*shoulder)));
  const stratum=Math.sin(x*.12+z*.21+top*.8);

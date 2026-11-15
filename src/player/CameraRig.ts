@@ -39,10 +39,10 @@ export class CameraRig {
    }
    return desired;
   }
- update(camera:T.PerspectiveCamera,actor:{pos:Cell;yaw:number;pitch:number},settings:CameraSettings,fov:number,dt:number,force=false){
+ update(camera:T.PerspectiveCamera,actor:{pos:Cell;yaw:number;pitch:number},settings:CameraSettings,fov:number,dt:number,force=false,nearWork=false){
   if(!Number.isFinite(actor.yaw)||!Number.isFinite(actor.pitch)){actor.yaw=0;actor.pitch=-.12;this.recoveries++;force=true;}
   if(!Number.isFinite(this.actualDistance)){this.actualDistance=0;this.recoveries++;force=true;}
-  actor.yaw%=Math.PI*2;actor.pitch=Math.max(-1.45,Math.min(1.45,actor.pitch));
+  actor.yaw%=Math.PI*2;actor.pitch=Math.max(-1.56,Math.min(1.56,actor.pitch));
   camera.fov=finite(fov,55,90,70);camera.rotation.order="YXZ";
   this.direction.set(-Math.sin(actor.yaw)*Math.cos(actor.pitch),Math.sin(actor.pitch),-Math.cos(actor.yaw)*Math.cos(actor.pitch));
   this.pivot.set(actor.pos[0],actor.pos[1]+1.35,actor.pos[2]);
@@ -70,7 +70,9 @@ export class CameraRig {
    this.temporaryFirst=this.compressed||this.actualDistance<.52;
    if(!this.temporaryFirst){
     camera.position.copy(this.pivot).addScaledVector(this.cameraOffset,this.actualDistance);
-    this.sample.copy(this.pivot).addScaledVector(this.direction,5);camera.lookAt(this.sample);
+    // Converge near the hands for ground work. The old five-block focus
+    // kept the centre reticle far ahead of the avatar at ordinary down angles.
+    this.sample.copy(this.pivot).addScaledVector(this.direction,nearWork?2.5:5);camera.lookAt(this.sample);
    }
   }else {this.actualDistance=0;this.compressed=false;}
   if(settings.perspective==="first"||this.temporaryFirst){camera.position.set(actor.pos[0],actor.pos[1]+1.6,actor.pos[2]);camera.rotation.set(actor.pitch,actor.yaw,0);}

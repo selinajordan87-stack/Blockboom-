@@ -44,7 +44,7 @@ async function saveState(page: Page) {
   await page.locator("#menu").tap();
   await page.locator("#save").tap();
   const s = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("blockboom.save")!),
+    JSON.parse((localStorage.getItem("blockboom.save.terrain2")??localStorage.getItem("blockboom.save"))!),
   );
   await page.locator("#resume").tap();
   return s;

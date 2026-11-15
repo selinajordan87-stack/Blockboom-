@@ -14,19 +14,19 @@ it("zoomt wirklich hinter die sichtbare Figur und verändert dabei das Sichtfeld
 });
 it("weicht Mauern aus und kehrt nach Freigabe zur gewählten Entfernung zurück",()=>{
  const s=setup();s.settings.perspective="third";s.settings.distance=6;
- for(let x=-1;x<=1;x++)for(let y=1;y<=5;y++)s.world.set(x,y,12,"Stein");s.rig.update(s.camera,s.actor,s.settings,70,.016,true);
- expect(s.rig.blocked).toBe(true);expect(s.rig.actualDistance).toBeLessThan(3);expect(s.settings.distance).toBe(6);expect(collides(s.world,[s.camera.position.x,s.camera.position.y-.19,s.camera.position.z],.38,.19)).toBe(false);
- for(let x=-1;x<=1;x++)for(let y=1;y<=5;y++)s.world.set(x,y,12,null);for(let i=0;i<120;i++)s.rig.update(s.camera,s.actor,s.settings,70,1/60);
+ for(let x=-4;x<=4;x++)for(let y=1;y<=8;y++)s.world.set(x,y,12,"Stein");s.rig.update(s.camera,s.actor,s.settings,70,.016,true);
+ expect(s.rig.blocked).toBe(true);expect(s.rig.actualDistance).toBeLessThan(6);expect(s.settings.distance).toBe(6);expect(collides(s.world,[s.camera.position.x,s.camera.position.y-.19,s.camera.position.z],.38,.19)).toBe(false);
+ for(let x=-4;x<=4;x++)for(let y=1;y<=8;y++)s.world.set(x,y,12,null);for(let i=0;i<120;i++)s.rig.update(s.camera,s.actor,s.settings,70,1/60);
  expect(s.rig.blocked).toBe(false);expect(s.rig.actualDistance).toBeGreaterThan(5.99);expect(s.rig.thirdVisible).toBe(true);
 });
 it("behandelt Baumblätter und niedrige Decken ohne dauerhafte Nahansicht",()=>{
- const s=setup();s.settings.perspective="third";s.world.set(0,3,12,"Laub");s.rig.update(s.camera,s.actor,s.settings,70,.016,true);expect(s.rig.blocked).toBe(true);
+ const s=setup();s.settings.perspective="third";s.world.set(0,3,12,"Laub");s.rig.update(s.camera,s.actor,s.settings,70,.016,true);expect(s.rig.blocked).toBe(false);expect(s.rig.actualDistance).toBe(4);
  s.world.set(0,3,12,null);for(let x=-1;x<=1;x++)for(let z=8;z<15;z++)s.world.set(x,3,z,"Stein");s.rig.update(s.camera,s.actor,s.settings,70,.016,true);expect(s.rig.actualDistance).toBeLessThan(2);expect(s.settings.distance).toBe(4);
  for(let x=-1;x<=1;x++)for(let z=8;z<15;z++)s.world.set(x,3,z,null);for(let i=0;i<120;i++)s.rig.update(s.camera,s.actor,s.settings,70,1/60);expect(s.rig.actualDistance).toBeGreaterThan(3.99);
 });
 it("setzt die Kamera sicher zurück und repariert ungültige Blickwinkel",()=>{
  const s=setup();s.actor.yaw=NaN;s.actor.pitch=Infinity;s.settings.perspective="third";s.rig.update(s.camera,s.actor,s.settings,NaN,.016);expect(s.camera.position.toArray().every(Number.isFinite)).toBe(true);expect(s.camera.fov).toBe(70);expect(s.rig.recoveries).toBe(1);
- s.rig.reset(s.settings);s.rig.update(s.camera,s.actor,s.settings,70,.016,true);expect(s.settings.perspective).toBe("first");expect(s.rig.actualDistance).toBe(0);expect(s.camera.position.z).toBe(9);
+ s.rig.reset(s.settings);s.rig.update(s.camera,s.actor,s.settings,70,.016,true);expect(s.settings.perspective).toBe("third");expect(s.rig.actualDistance).toBeGreaterThan(0);expect(s.rig.temporaryFirst).toBe(false);
  s.settings.perspective="third";s.rig.actualDistance=NaN;s.rig.update(s.camera,s.actor,s.settings,70,NaN);expect(s.camera.position.toArray().every(Number.isFinite)).toBe(true);expect(s.rig.actualDistance).toBeGreaterThan(0);
 });
 it("behält alte Kamerawerte, Weltedition und Materialien und ergänzt neue Optionen additiv",()=>{

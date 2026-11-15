@@ -89,6 +89,8 @@ export function terrainProfile(x:number,z:number,revision:1|2=1){
 type AirRange={floor:number;ceiling:number};
 export function caveRange(x:number,z:number,revision:1|2=1):AirRange|null{
  if(revision===2){
+  // Preserve the junction's one-block steps before widening the main gallery.
+  if(x>=146&&x<=148&&z>=-106&&z<=-93){const floor=-7+Math.min(7,Math.floor((-z-91)/2));return {floor,ceiling:floor+3};}
   if(x>=125&&x<=161&&Math.abs(z+90)<=2+(x<134||x>138&&x<144||x>153?1:0)){
    const floor=1-Math.max(0,Math.min(13,Math.floor((x-130)/2)));
    return {floor,ceiling:floor+3+(Math.abs(z+90)<2?1:0)+(x>138&&x<144?1:0)};
@@ -193,7 +195,7 @@ export function decorateDiscoveryChunk(world:World,cx:number,cz:number){
  if(world.terrainRevision===2){
   // Ore ribs along the carved walls, deliberately clear of the walking channel.
   for(const [x,y,z,b]of [[140,-2,-86,'Kupfererz'],[149,-6,-93,'Eisenerz'],[160,-10,-95,'Golderz']] as const)
-   for(let d=0;d<3;d++){w.set(x+d,y+(d%2),z,b,false);w.set(x+d,y-1,z,'Stein',false);}
+   for(let d=0;d<3;d++){w.set(x+d,y+(d%2),z,b,false);const air=caveRange(x+d,z,2);if(!air||y-1<air.floor||y-1>air.ceiling)w.set(x+d,y-1,z,'Stein',false);}
   for(const[x,y,z]of [[141,-2,-88],[147,2,-109],[158,-9,-94]] as const)w.set(x,y,z,'Laterne',false);
   // Dock posts and small lights preserve the existing walkable jetty surface.
   for(const z of [-83,-95,-106]){w.set(-117,0,z,'Holz',false);w.set(-117,1,z,'Zaun',false);w.set(-117,2,z,'Laterne',false);}
