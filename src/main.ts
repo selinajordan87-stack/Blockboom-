@@ -163,7 +163,7 @@ try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.disc
 const discovery=new DiscoveryEngine(expansion.discovery,expansion);
 try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.living&&!localStorage.getItem(SAVE_KEY+".pre-v06"))localStorage.setItem(SAVE_KEY+".pre-v06",raw);}catch{}
 if (!saved) {expansion.nightfall.mode = "Survival";expansion.nightfall.refuge=true;}
-if(!saved){expansion.terrainRevision=2;expansion.camera.perspective='third';expansion.camera.distance=4;}
+if(!saved)expansion.terrainRevision=2;
 if(VISUAL_PREVIEW&&!saved){
  expansion.view.fov=70;expansion.tool='Angel';expansion.nightfall.time=.23;
  player.pos=[-122,1.02,-73];player.yaw=-.10;player.pitch=-.06;
@@ -1098,6 +1098,11 @@ $("play").onclick = () => {
     player.pitch = -0.12;
   }
   toast(VISUAL_PREVIEW ? "Willkommen am Spiegelsee. Weitere Orte findest du im Menü unter Orte besuchen." : "Auf der Wiese liegen Notizbücher. Die Welt und dein nächstes Abenteuer warten draußen.");
+  updateCamera(0,true);
+  // The start-screen camera is a separate view. Do not expose its resource
+  // counters as if they described the player's first gameplay frame.
+  delete canvas.dataset.performance;
+  diagnosticsAt=0;
 };
 function nearLake() {
   return currentSpot()?.id === "small";
@@ -1880,7 +1885,7 @@ function tickFrame(now:number){
     if(VISUAL_PREVIEW){camera.position.set(-124,4.2,-68);camera.lookAt(-112,6,-125);}else{camera.position.set(23,18,29);camera.lookAt(-2,0,-2);}
   }
   dayView.update(night.time,camera.position);
-  atmosphere.update(now,night.time,camera.position);waterfall?.update(now,night.time);scenicWater?.update(now,night.time,(scene.fog as T.Fog).color);
+  atmosphere.update(now,night.time,camera.position);waterfall?.update(now,night.time);scenicWater?.update(now,night.time,(scene.fog as T.Fog).color,camera);
   for(const cloud of movingClouds)cloud.position.x=cloud.userData.baseX+Math.sin(expansion.living.clock*.015+cloud.position.z)*2;
   if(player.pos[1]<-3)ambient.intensity*=.48;
   livingView.update(expansion.living,camera.position);

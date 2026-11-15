@@ -5,14 +5,18 @@ import {ART_RIVER} from './EnvironmentForm';
 export class ScenicWater{
  readonly mesh:T.Mesh<T.BufferGeometry,T.ShaderMaterial>;
  private bed:T.Mesh;
+ private tiles:{x:number;z:number;size:number;start:number;coarse:boolean}[]=[];
+ private index!:T.BufferAttribute;private visibleKey='';private frustum=new T.Frustum();private matrix=new T.Matrix4();private sphere=new T.Sphere();
  constructor(scene:T.Scene){
   const p:number[]=[],depth:number[]=[],floor:number[]=[],sand:number[]=[];const tint=new T.Color();
-  const quad=(x:number,z:number,s:number)=>{
+  const quad=(x:number,z:number,s:number,coarse=false)=>{
+   this.tiles.push({x:x+s/2,z:z+s/2,size:s,start:p.length/3,coarse});
    for(const[dx,dz]of [[0,0],[0,s],[s,0],[s,0],[0,s],[s,s]]){
     const xx=x+dx,zz=z+dz; p.push(xx,.38,zz);const d=Math.max(.15,.38-terrainProfile(xx,zz,2).top-1);depth.push(d);floor.push(xx,Math.min(-.25,.38-d-.05),zz);tint.set(0xd6d5a1).lerp(new T.Color(0x428e91),Math.min(1,d/5));sand.push(tint.r,tint.g,tint.b);
    }
   };
   for(let x=-160;x<-60;x+=2)for(let z=-148;z<-73;z+=2)if(terrainProfile(x+1,z+1,2).lake<1.05)quad(x,z,2);
+  for(let x=-160;x<-60;x+=8)for(let z=-148;z<-73;z+=8)if(terrainProfile(x+4,z+4,2).lake<1.02)quad(x,z,8,true);
   // The same irregular corridor is used by the river's floor and its surface.
   const seen=new Set<string>();for(const[a,b]of ART_RIVER.slice(1).map((p,i)=>[ART_RIVER[i],p])){
    for(let x=Math.floor(Math.min(a[0],b[0])-5);x<Math.max(a[0],b[0])+5;x++)for(let z=Math.floor(Math.min(a[1],b[1])-5);z<Math.max(a[1],b[1])+5;z++){
@@ -38,7 +42,21 @@ export class ScenicWater{
      #include <colorspace_fragment>
     }`});
   this.mesh=new T.Mesh(geometry,material);this.mesh.name='clear shallows and moving river';this.mesh.renderOrder=2;scene.add(this.mesh);
+  this.index=new T.BufferAttribute(new Uint32Array(p.length/3),1).setUsage(T.DynamicDrawUsage);
+  geometry.setIndex(this.index);bedGeometry.setIndex(this.index);
  }
- update(time:number,day:number,fog:T.Color){this.mesh.material.uniforms.time.value=time*.001;this.mesh.material.uniforms.light.value=.3+.7*T.MathUtils.smoothstep(Math.sin((day-.05)*Math.PI*2),-.38,.2);this.mesh.material.uniforms.fogColor.value.copy(fog);}
+ update(time:number,day:number,fog:T.Color,camera?:T.Camera){
+  if(camera){
+   const direction=camera.getWorldDirection(new T.Vector3()),key=`${Math.floor(camera.position.x/4)},${Math.floor(camera.position.y/4)},${Math.floor(camera.position.z/4)},${Math.round(direction.x*20)},${Math.round(direction.y*20)},${Math.round(direction.z*20)},${camera.projectionMatrix.elements[0]},${camera.projectionMatrix.elements[5]}`;
+   if(key!==this.visibleKey){this.visibleKey=key;this.matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);this.frustum.setFromProjectionMatrix(this.matrix);let n=0;
+    for(const t of this.tiles){const distance=Math.hypot(t.x-camera.position.x,t.z-camera.position.z);if(distance>210||t.coarse&&distance<70||!t.coarse&&t.size===2&&distance>=70)continue;
+     this.sphere.center.set(t.x,-1,t.z);this.sphere.radius=t.size+6;if(!this.frustum.intersectsSphere(this.sphere))continue;
+     for(let j=0;j<6;j++)this.index.setX(n++,t.start+j);
+    }
+    this.index.needsUpdate=true;this.mesh.geometry.setDrawRange(0,n);this.bed.geometry.setDrawRange(0,n);
+   }
+  }
+  this.mesh.material.uniforms.time.value=time*.001;this.mesh.material.uniforms.light.value=.3+.7*T.MathUtils.smoothstep(Math.sin((day-.05)*Math.PI*2),-.38,.2);this.mesh.material.uniforms.fogColor.value.copy(fog);
+ }
  dispose(){this.bed.geometry.dispose();(this.bed.material as T.Material).dispose();this.bed.removeFromParent();this.mesh.geometry.dispose();this.mesh.material.dispose();this.mesh.removeFromParent();}
 }

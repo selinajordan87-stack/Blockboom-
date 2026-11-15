@@ -18,9 +18,9 @@ function tuft(){
  result.setAttribute('color',new T.Float32BufferAttribute(rgb,3));return result;
 }
 function flower(){
- const stem=painted(new T.BoxGeometry(.055,.55,.055),0x467438);stem.translate(0,.275,0);const pieces=[stem];
- for(let i=0;i<4;i++){const g=painted(new T.BoxGeometry(.19,.06,.14),0xffffff);g.translate(Math.cos(i*Math.PI/2)*.13,.55,Math.sin(i*Math.PI/2)*.13);pieces.push(g);}
- pieces.push(painted(new T.BoxGeometry(.11,.075,.11),0xf5cd64).translate(0,.57,0));
+ const stem=painted(new T.PlaneGeometry(.055,.55),0x467438);stem.translate(0,.275,0);const pieces=[stem,stem.clone().rotateY(Math.PI/2)];
+ for(let i=0;i<4;i++){const g=painted(new T.PlaneGeometry(.19,.14).rotateX(-Math.PI/2),0xffffff);g.translate(Math.cos(i*Math.PI/2)*.13,.55,Math.sin(i*Math.PI/2)*.13);pieces.push(g);}
+ pieces.push(painted(new T.PlaneGeometry(.11,.11).rotateX(-Math.PI/2),0xf5cd64).translate(0,.57,0));
  const r=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());return r;
 }
 /** Small clustered art batches; no collision or writes to saved terrain. */
@@ -30,7 +30,7 @@ export class NatureDetails{
  constructor(private world:World,scene:T.Scene){
   const mat=new T.MeshLambertMaterial({color:0xffffff,vertexColors:true,side:T.DoubleSide});
   this.shadows=new T.InstancedMesh(new T.PlaneGeometry(1,1),contactMaterial(),100);this.shadows.frustumCulled=false;this.shadows.count=0;this.group.add(this.shadows);
-  this.grass=new T.InstancedMesh(tuft(),mat,360);this.flowers=new T.InstancedMesh(flower(),mat,64);
+  this.grass=new T.InstancedMesh(tuft(),mat,240);this.flowers=new T.InstancedMesh(flower(),mat,64);
   const reedParts=[painted(new T.BoxGeometry(.055,1,.055),0x91ac60).translate(0,.5,0),painted(new T.BoxGeometry(.13,.3,.13),0x765232).translate(0,1,0)];
   const reed=mergeGeometries(reedParts);reedParts.forEach(g=>g.dispose());this.reeds=new T.InstancedMesh(reed,mat,90);
   this.stones=new T.InstancedMesh(painted(new T.DodecahedronGeometry(1,0),0xffffff),mat,28);
