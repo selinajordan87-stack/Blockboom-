@@ -1,4 +1,4 @@
-import {decode,SAVE_KEY,TERRAIN2_SAVE_KEY,readSaveRaw,saveKey,assertSupportedSave,type Save} from "./Save";
+import {decode,SAVE_KEY,TERRAIN2_SAVE_KEY,readSaveRaw,saveKey,assertSupportedSave,NewerSaveError,type Save} from "./Save";
 import {LEARNING_KEY,loadProfile,type Profile} from "../learning/Engine";
 export const IMPORT_BACKUP="blockboom.pre-import";
 export interface Transfer {world:Save;learning?:Profile|null}
@@ -26,13 +26,14 @@ export function importTransfer(storage:Pick<Storage,"getItem"|"setItem"|"removeI
   oldWorld=storage.getItem(SAVE_KEY);oldTerrain=storage.getItem(TERRAIN2_SAVE_KEY);oldLearning=storage.getItem(LEARNING_KEY);
   const active=readSaveRaw(storage),previous=active?JSON.parse(active):null;
   const backup={format:"blockboom-backup",version:previous?.extension?.terrainRevision===2?2:1,world:previous,learning:oldLearning?JSON.parse(oldLearning):null};
-  assertSupportedSave(active);assertSupportedSave(JSON.stringify(data.world));
+  assertSupportedSave(oldWorld);assertSupportedSave(oldTerrain);assertSupportedSave(JSON.stringify(data.world));
   storage.setItem(IMPORT_BACKUP,JSON.stringify(backup));
   changed=true;storage.setItem(saveKey(data.world),JSON.stringify(data.world));
   if(saveKey(data.world)===SAVE_KEY)storage.removeItem(TERRAIN2_SAVE_KEY);
   if(data.learning!==undefined){if(data.learning===null)storage.removeItem(LEARNING_KEY);else storage.setItem(LEARNING_KEY,JSON.stringify(data.learning));}
   return {ok:true,error:""};
- }catch{
+ }catch(error){
+  if(!changed&&error instanceof NewerSaveError)return {ok:false,error:error.message+" Deine Daten bleiben unverändert."};
   if(changed){try{if(oldWorld===null)storage.removeItem(SAVE_KEY);else storage.setItem(SAVE_KEY,oldWorld);if(oldTerrain===null)storage.removeItem(TERRAIN2_SAVE_KEY);else storage.setItem(TERRAIN2_SAVE_KEY,oldTerrain);if(oldLearning===null)storage.removeItem(LEARNING_KEY);else storage.setItem(LEARNING_KEY,oldLearning);}catch{return {ok:false,error:"Import unterbrochen. Die Sicherung liegt unter blockboom.pre-import. Lade die Seite noch nicht neu und exportiere deinen aktuellen Stand."};}}
   return {ok:false,error:"Import nicht möglich. Dein bisheriger Stand bleibt erhalten. Prüfe den verfügbaren Browserspeicher."};
  }

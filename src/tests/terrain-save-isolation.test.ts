@@ -32,3 +32,9 @@ it('stellt bei Quota-Fehler im Import beide Weltbereiche wieder her',()=>{
  expect(importTransfer(s,{world:world(1),learning:freshProfile()}).ok).toBe(false);
  expect(s.getItem(SAVE_KEY)).toBe(old);expect(s.getItem(TERRAIN2_SAVE_KEY)).toBe(second);
 });
+it('überschreibt auch eine inaktive unbekannte Zukunftswelt beim Import nicht',()=>{
+ const s=memory();persist(s,world(2));s.setItem(SAVE_KEY,JSON.stringify({...world(1),extension:{terrainRevision:3}}));
+ const before=new Map(s.values);
+ const result=importTransfer(s,{world:world(1)});expect(result.ok).toBe(false);expect(result.error).toContain('neueren BLOCKBOOM-Version');expect(s.values).toEqual(before);
+ expect(importTransfer(s,{world:world(2)}).ok).toBe(false);expect(s.values).toEqual(before);
+});
