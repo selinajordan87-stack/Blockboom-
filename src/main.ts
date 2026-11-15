@@ -1,3 +1,6 @@
+import {VISUAL_PREVIEW} from "./Preview";
+import {ScenicWater} from "./world/ScenicWater";
+import {Atmosphere} from "./world/Atmosphere";
 import "./ui/style.css";
 import "./ui/mobile-rescue.css";
 import { installLifecycle } from "./core/Lifecycle";
@@ -104,11 +107,12 @@ $("app").innerHTML = `
  <div class="touch-actions"><button id="jump" aria-label="Springen">↑</button><button id="zoom" aria-label="Zoom umschalten" aria-pressed="false">⌕</button><button id="break" aria-label="Block entfernen">−</button><button id="place" aria-label="Block platzieren">+</button></div>
  <div id="tool-palette" hidden></div><footer><div class="toolrow"><button id="tool-toggle">Bauwerkzeug</button><button id="tackle">≈ Angelset</button><button id="learn">✦ Challenge</button><button id="journal">Aufträge</button><button id="undo" aria-label="Letzte Bauaktion rückgängig" disabled>↶</button></div><div class="hotbar" id="hotbar"></div><span class="desktop-help">WASD bewegen · Maus umsehen · Leertaste springen<br>Links abbauen · Rechts bauen · E halten zum Angeln · I Inventar</span><span class="mobile-help">Links bewegen · rechts umsehen</span></footer>
 </div>
-<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">WORLD DISCOVERY · v0.7.1</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Am Horizont wartet mehr.<br>Folge den Spuren deiner Welt.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung.</small></div><div class="world-note"><span>07 / WORLD DISCOVERY</span><b>Deine Welt.<br>Deine Perspektive.</b><p>Berge. Bücher. Dein eigener Weg.</p></div></section>
+<section class="overlay" id="start"><div class="start-copy"><div class="eyebrow">${VISUAL_PREVIEW?"v0.7.2 PREVIEW · SILBER & WASSER":"WORLD DISCOVERY · v0.7.1"}</div><h1>BLOCK<span>BOOM</span><i>Ein Zuhause. Tausend Möglichkeiten.</i></h1><p>Am Horizont wartet mehr.<br>Folge den Spuren deiner Welt.</p><button class="primary" id="play">Los geht’s <span>↗</span></button><div class="start-meta"><span>◈ Bauen</span><span>❧ Leben</span><span>◇ Entdecken</span></div><small>${VISUAL_PREVIEW?"Visuelle Werkstatt · Eigener Preview-Spielstand":"Deine Welt bleibt auf diesem Gerät. Ohne Anmeldung."}</small></div><div class="world-note"><span>07 / WORLD DISCOVERY</span><b>Deine Welt.<br>Deine Perspektive.</b><p>Berge. Bücher. Dein eigener Weg.</p></div></section>
 <div id="interruption" hidden role="status"><b id="interruption-text">Spiel unterbrochen</b><button id="continue">Weiter</button></div>
 <section class="overlay panel-overlay" id="modal" hidden><article class="panel"><div class="panel-head"><span id="panel-tag"></span><button id="close" aria-label="Schließen">✕</button></div><div id="panel-content"></div></article></section>
 `;
 const zoomControl=$("zoom");
+if(VISUAL_PREVIEW){document.title='BLOCKBOOM · v0.7.2 PREVIEW';document.body.classList.add('visual-preview');}
 const canvas = $<HTMLCanvasElement>("world");
 let renderer: T.WebGLRenderer;
 try {
@@ -124,7 +128,7 @@ try {
 }
 const scene = new T.Scene();
 scene.background = new T.Color(0x9ed2df);
-scene.fog = new T.Fog(0xa9d3d5, 45, 215);
+scene.fog = new T.Fog(0xb6d8e2, 65, 235);
 const camera = new T.PerspectiveCamera(70, innerWidth / innerHeight, 0.08, 240);
 camera.rotation.order = "YXZ";
 const ambient = new T.HemisphereLight(0xeaf8ff, 0x66724f, 2.25);
@@ -157,6 +161,11 @@ try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.disc
 const discovery=new DiscoveryEngine(expansion.discovery,expansion);
 try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.living&&!localStorage.getItem(SAVE_KEY+".pre-v06"))localStorage.setItem(SAVE_KEY+".pre-v06",raw);}catch{}
 if (!saved) {expansion.nightfall.mode = "Survival";expansion.nightfall.refuge=true;}
+if(VISUAL_PREVIEW&&!saved){
+ expansion.terrainRevision=2;expansion.camera.perspective='third';expansion.camera.distance=5;expansion.tool='Angel';
+ expansion.nightfall.mode='Kreativ';expansion.nightfall.difficulty='Friedlich';expansion.nightfall.time=.23;
+ player.pos=[-115,1.02,-81];player.yaw=0;player.pitch=-.12;
+}
 try {
   const raw = readSaveRaw(localStorage);
   if(raw && !JSON.parse(raw).extension?.nightfall && !localStorage.getItem(SAVE_KEY+".pre-v05"))
@@ -180,7 +189,7 @@ const zombies = new ZombieEngine(world,night);
 const nightAudio = new NightAudio();
 world.terrainRevision=expansion.terrainRevision===2?2:1;
 const regionStream = new RegionStream(world,true);
-regionStream.ensure(saved?.position[0]||0,saved?.position[2]||17);
+regionStream.ensure(saved?.position[0]??player.pos[0],saved?.position[2]??player.pos[2]);
 const cameraRig=new CameraRig(world);
 camera.fov = expansion.view.fov;
 camera.updateProjectionMatrix();
@@ -248,7 +257,9 @@ const view = new WorldView(world, scene);
 view.update();
 const fishView = new FishView(shoal, scene, camera);
 const water = new WaterView(scene, expansion.edition);
-const fishingWaters = new FishingWaters(scene);
+const fishingWaters = new FishingWaters(scene,world.terrainRevision);
+const scenicWater=world.terrainRevision===2?new ScenicWater(scene):null;
+const atmosphere=new Atmosphere(scene);
 const fishingView = new FishingView(scene);
 const dayView = new DayView(scene,sun,ambient);
 const zombieView = new ZombieView(scene);
@@ -275,9 +286,10 @@ for (const [x, z] of [
   cloud.position.set(x, 14, z);
   cloud.scale.set(7, 1.2, 3);
   cloud.userData.baseX=x;movingClouds.push(cloud);
-  scene.add(cloud);
+  if(!VISUAL_PREVIEW)scene.add(cloud);
 }
 function sign(text: string, x: number, z: number, color: string) {
+  if(VISUAL_PREVIEW)return;
   const c = document.createElement("canvas");
   c.width = 512;
   c.height = 160;
@@ -632,13 +644,19 @@ function closePanel() {
 $("close").onclick = closePanel;
 function menu() {
   $("interruption").hidden=true;
-  openPanel("DEINE WELT",`<h2>Dein Abenteuer</h2><div class="menu-priority"><button id="resume" class="primary">Weiter</button><button id="camera-reset">Kamera zurücksetzen</button><button id="save">Speichern</button></div><div class="menu-grid"><button id="menu-inventory">Inventar</button><button id="menu-tools">Werkzeuge</button><button id="menu-building">Baumaterial</button><button id="menu-adventure">Welt & Karte</button><button id="menu-learning">Challenge</button><button id="menu-missions">Aufträge</button><button id="menu-tackle">Angelset</button><button id="night-menu">Crafting & Survival</button><button id="menu-camera">Kamera & Steuerung</button><button id="menu-settings">Einstellungen</button><button id="menu-gather">Beeren sammeln</button><button id="menu-notice">Letzter Hinweis</button>${nearBoom()?'<button id="menu-boom">BOOM-Aufbau</button>':""}${zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<12)?'<button id="menu-battle">Schreibkampf</button>':""}</div>`);
+  openPanel("DEINE WELT",`<h2>Dein Abenteuer</h2>${VISUAL_PREVIEW?'<button id="preview-places">v0.7.2 Preview · Orte ansehen</button>':""}<div class="menu-priority"><button id="resume" class="primary">Weiter</button><button id="camera-reset">Kamera zurücksetzen</button><button id="save">Speichern</button></div><div class="menu-grid"><button id="menu-inventory">Inventar</button><button id="menu-tools">Werkzeuge</button><button id="menu-building">Baumaterial</button><button id="menu-adventure">Welt & Karte</button><button id="menu-learning">Challenge</button><button id="menu-missions">Aufträge</button><button id="menu-tackle">Angelset</button><button id="night-menu">Crafting & Survival</button><button id="menu-camera">Kamera & Steuerung</button><button id="menu-settings">Einstellungen</button><button id="menu-gather">Beeren sammeln</button><button id="menu-notice">Letzter Hinweis</button>${nearBoom()?'<button id="menu-boom">BOOM-Aufbau</button>':""}${zombies.actors.some(z=>z.hp>0&&Math.hypot(z.pos[0]-player.pos[0],z.pos[2]-player.pos[2])<12)?'<button id="menu-battle">Schreibkampf</button>':""}</div>`);
   for(const [id,label,action]of [["menu-plan","Bauplan",()=>blueprintUI.show()],["menu-log","Abenteuerlog",()=>discoveryUI.log()],["menu-book","Entdeckerbuch",()=>discoveryUI.book()],["menu-map","Karte",()=>livingUI.map()],["menu-garden","Garten",()=>livingUI.garden()],["menu-workbench","Werkbank",()=>livingUI.recipes(false)]] as const){const b=document.createElement("button");b.id=id;b.textContent=label;b.onclick=action;$("panel-content").querySelector(".menu-grid")!.prepend(b);}
   const go=(id:string)=>{closePanel();$(id).click();};
   $("resume").onclick=resumeGame;$("camera-reset").onclick=resetCamera;
   $("save").onclick=()=>{const ok=save();$("save").textContent=ok?"Gespeichert ✓":"Speicherfehler";toast(ok?"Deine Welt ist gespeichert.":"Speichern fehlgeschlagen. Bitte Speicherplatz prüfen.");};
   $("menu-inventory").onclick=showInventory;$("menu-tools").onclick=()=>{resumeGame();$("tool-toggle").click();};$("menu-building").onclick=showMaterials;
   $("menu-adventure").onclick=()=>livingUI.hub();$("menu-learning").onclick=()=>adventure.challenge();$("menu-missions").onclick=()=>adventure.journal();
+  if(VISUAL_PREVIEW)$("preview-places").onclick=()=>{
+   const places=[{name:'Spiegelsee',pos:[-115,1.02,-81],yaw:0,pitch:-.12},{name:'Silbergebirge',pos:[100,1.02,-70],yaw:-.9,pitch:.12},{name:'Flüsterwald',pos:[-105,1.02,29],yaw:-.5,pitch:-.12},{name:'Alte Mine',pos:[130,1.02,-90],yaw:-Math.PI/2,pitch:0},{name:'Schmiede & Siedlung',pos:[100,1.02,75],yaw:Math.PI,pitch:0},{name:'Flussauen',pos:[-70,1.02,65],yaw:1.1,pitch:-.15}];
+   openPanel('VISUELLE PREVIEW',`<h2>Ein Blick in die Welt</h2><p>Besuche einen Ort. Deinen Preview-Spielstand behältst du.</p><div class="menu-grid">${places.map((p,i)=>`<button data-art-place="${i}">${p.name}</button>`).join('')}</div><label>Tagesstimmung<select id="art-time"><option value=".23">Morgenlicht</option><option value=".35">Mittag</option><option value=".60">Abend</option><option value=".78">Mondnacht</option></select></label>`);
+   $<HTMLSelectElement>('art-time').onchange=e=>{night.time=Number((e.target as HTMLSelectElement).value);closePanel();};
+   document.querySelectorAll<HTMLButtonElement>('[data-art-place]').forEach(b=>b.onclick=()=>{const p=places[Number(b.dataset.artPlace)];clearInput();regionStream.ensure(p.pos[0],p.pos[2]);player.pos=[...p.pos] as [number,number,number];player.yaw=p.yaw;player.pitch=p.pitch;player.vy=0;player.safeSpawn();view.setFocus(player.pos[0],player.pos[2]);view.update();closePanel();});
+  };
   $("menu-tackle").onclick=showTackle;$("night-menu").onclick=()=>nightUI.settings();$("menu-camera").onclick=controlSettings;$("menu-settings").onclick=generalSettings;$("menu-gather").onclick=()=>go("gather");
   $("menu-notice").onclick=()=>openPanel("HINWEIS",`<h2>Dein letzter Hinweis</h2><p>${escapeHTML(lastNotice||"Hier erscheinen Meldungen aus deiner Welt.")}</p>`);
   if(nearBoom())$("menu-boom").onclick=()=>go("reset-boom");if($("menu-battle"))$("menu-battle").onclick=()=>{resumeGame();nightUI.startBattle();};
@@ -1070,14 +1088,12 @@ $("play").onclick = () => {
   started = true;
   $("start").hidden = true;
   $("hud").hidden = false;
-  if (!saved) {
+  if (!saved && !VISUAL_PREVIEW) {
     player.pos = [0, 1.02, 17];
     player.yaw = 0;
     player.pitch = -0.12;
   }
-  toast(
-    "Auf der Wiese liegen Notizbücher. Die Welt und dein nächstes Abenteuer warten draußen.",
-  );
+  toast(VISUAL_PREVIEW ? "Willkommen am Spiegelsee. Weitere Orte findest du im Menü unter Preview." : "Auf der Wiese liegen Notizbücher. Die Welt und dein nächstes Abenteuer warten draußen.");
 };
 function nearLake() {
   return currentSpot()?.id === "small";
@@ -1835,12 +1851,12 @@ function tickFrame(now:number){
     mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Grill","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:night.mode==="Kreativ"?"∞":expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
     $("place").dataset.label=planningTower?"Turm":"Bauen";$("place").setAttribute("aria-label",planningTower?"Aussichtsturm am Vorschauplatz bauen":"Block platzieren");
   } else if (!started) {
-    camera.position.set(23, 18, 29);
-    camera.lookAt(-2, 0, -2);
+    if(VISUAL_PREVIEW){camera.position.set(-119,5.2,-77);camera.lookAt(-111,4,-116);}else{camera.position.set(23,18,29);camera.lookAt(-2,0,-2);}
   }
   dayView.update(night.time,camera.position);
+  atmosphere.update(now,night.time,camera.position);scenicWater?.update(now,night.time,(scene.fog as T.Fog).color);
   for(const cloud of movingClouds)cloud.position.x=cloud.userData.baseX+Math.sin(expansion.living.clock*.015+cloud.position.z)*2;
-  if(player.pos[1]<-3)ambient.intensity*=.25;
+  if(player.pos[1]<-3)ambient.intensity*=.48;
   livingView.update(expansion.living,camera.position);
   discoveryView.update(player.pos,expansion.discovery.read);
   landmarks.update(player.pos,now,camera);

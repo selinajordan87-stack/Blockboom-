@@ -1,3 +1,4 @@
+import {storageKey} from "../Preview";
 import { readExpansion, type Expansion } from "../inventory/Equipment";
 import { TYPES, type Block, type Cell, LIMIT, MIN_Y, MAX_Y } from "../world/World";
 import { emptyProgress, type LearningProgress } from "../learning/Learning";
@@ -14,9 +15,9 @@ export interface Save {
   missionActive: boolean;
   settings: { sound: boolean; quality: number };
 }
-export const SAVE_KEY = "blockboom.save";
+export const SAVE_KEY = storageKey("blockboom.save");
 /** Old clients only know SAVE_KEY. Never place generation-2 worlds there. */
-export const TERRAIN2_SAVE_KEY = "blockboom.save.terrain2";
+export const TERRAIN2_SAVE_KEY = storageKey("blockboom.save.terrain2");
 export function readSaveRaw(storage:Pick<Storage,"getItem">){return storage.getItem(TERRAIN2_SAVE_KEY)??storage.getItem(SAVE_KEY);}
 export function saveKey(save:Save){return save.extension?.terrainRevision===2?TERRAIN2_SAVE_KEY:SAVE_KEY;}
 export class NewerSaveError extends Error {constructor(){super("Dieser Spielstand wurde mit einer neueren BLOCKBOOM-Version erstellt.");}}

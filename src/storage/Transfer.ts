@@ -1,6 +1,7 @@
+import {storageKey} from "../Preview";
 import {decode,SAVE_KEY,TERRAIN2_SAVE_KEY,readSaveRaw,saveKey,assertSupportedSave,NewerSaveError,type Save} from "./Save";
 import {LEARNING_KEY,loadProfile,type Profile} from "../learning/Engine";
-export const IMPORT_BACKUP="blockboom.pre-import";
+export const IMPORT_BACKUP=storageKey("blockboom.pre-import");
 export interface Transfer {world:Save;learning?:Profile|null}
 export function exportTransfer(world:Save,learning:Profile){return {format:"blockboom-backup",version:world.extension?.terrainRevision===2?2:1,created:new Date().toISOString(),world,learning};}
 export function parseTransfer(text:string):Transfer{

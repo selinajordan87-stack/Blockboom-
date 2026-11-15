@@ -1,3 +1,4 @@
+import {storageKey} from "../Preview";
 import contents from "./challenges.json";
 import fishingContents from "./fishing-challenges.json";
 import { LIVING_CHALLENGES } from "./living-content";
@@ -35,7 +36,7 @@ export interface Profile {
   recent: string[];
   results: Record<string, Result>;
 }
-export const LEARNING_KEY = "blockboom.learning.v1";
+export const LEARNING_KEY = storageKey("blockboom.learning.v1");
 export const freshProfile = (): Profile => ({
   version: 1,
   mode: "Lern-Challenge",

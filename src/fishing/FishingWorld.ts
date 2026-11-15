@@ -46,7 +46,7 @@ export class FishingWaters {
   group = new T.Group();
   private surfaces: T.Mesh<T.CircleGeometry, T.MeshBasicMaterial>[] = [];
   private current: T.LineSegments;
-  constructor(scene: T.Scene) {
+  constructor(scene: T.Scene, revision:1|2=1) {
     this.group.name = "Fishing Adventure waters";
     scene.add(this.group);
     const geometry = new T.CircleGeometry(1, 48);
@@ -66,6 +66,7 @@ export class FishingWaters {
       surface.scale.set(spot.radius.x, spot.radius.z, 1);
       surface.userData.spot = spot.id;
       surface.renderOrder = 2;
+      if(revision===2&&spot.id==="great")surface.visible=false;
       this.surfaces.push(surface);
       this.group.add(surface);
     }

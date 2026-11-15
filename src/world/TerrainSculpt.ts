@@ -1,6 +1,11 @@
 import type {Block} from './World';
-export const MOUNTAIN_PATH:readonly (readonly[number,number,number])[]=[[130,-90,0],[112,-108,5],[127,-132,10],[155,-132,15],[166,-111,19],[145,-105,24]];
-const peaks:readonly (readonly[number,number,number,number])[]=[[145,-105,25,44],[123,-121,21,32],[164,-125,23,32]];
+export const MOUNTAIN_PATH:readonly (readonly[number,number,number])[]=[
+ [130,-90,0],[122,-98,2],[112,-108,5],[115,-119,7],[127,-132,10],
+ [141,-136,13],[155,-132,15],[165,-123,17],[166,-111,19],[158,-106,21],[145,-105,25],
+];
+const peaks:readonly (readonly[number,number,number,number,number])[]=[
+ [145,-105,26,26,23],[124,-122,23,23,26],[164,-126,22,22,24],[150,-145,16,25,16],
+];
 export function mountainPathSample(x:number,z:number){
  let distance=Infinity,height=0;
  for(let i=1;i<MOUNTAIN_PATH.length;i++){
@@ -9,17 +14,21 @@ export function mountainPathSample(x:number,z:number){
  }
  return {distance,height};
 }
-/** Generation 2 is immutable and opt-in. Existing saves always decode as 1. */
+/** Experimental sculpt. Kept separate from immutable generation 1. */
 export function mountainSculpt(x:number,z:number){
- const edge=Math.hypot(x-145,z+105);
- if(edge>=70)return null;
- let elevation=0;for(const [px,pz,h,r]of peaks)elevation=Math.max(elevation,h*Math.max(0,1-Math.hypot((x-px)*.9,z-pz)/r));
- const {distance,height:road}=mountainPathSample(x,z);
- // A broad shoulder blends the walking route into rock instead of cutting a trench.
- const weight=Math.max(0,Math.min(1,(distance-2)/6));
- const top=Math.min(25,Math.max(0,Math.floor(road*(1-weight)+elevation*weight)));
- const surface:Block=distance<1.8?'Kalkstein':top>21?'Kalkstein':top>14?'Schiefer':top>7?'Stein':'Gras';
- // The whole former mountain footprint participates. Blending only inside the
- // small peaks left a ring of old high terrain around new valleys.
+ const edge=Math.hypot(x-145,z+105);if(edge>=70)return null;
+ let elevation=0;
+ for(const[px,pz,h,rx,rz]of peaks){
+  const dx=(x-px)/rx,dz=(z-pz)/rz,angle=Math.atan2(dz,dx);
+  const radius=Math.hypot(dx,dz)*(1+.11*Math.sin(angle*3+px)+.07*Math.cos(angle*5));
+  elevation=Math.max(elevation,h*Math.max(0,1-radius)**.83);
+ }
+ // Broken buttresses and high saddles, not concentric conical terraces.
+ elevation+=Math.min(1,elevation/7)*(1.25*Math.sin(x*.41+z*.15)+.7*Math.sin(z*.55-x*.19));
+ const {distance,height:road}=mountainPathSample(x,z),width=1.1+.45*(1+Math.sin(x*.19+z*.13));
+ const shoulder=Math.max(0,Math.min(1,(distance-width)/3.4));
+ const top=Math.min(26,Math.max(0,Math.floor(road*(1-shoulder)+elevation*shoulder)));
+ const stratum=Math.sin(x*.12+z*.21+top*.8);
+ const surface:Block=distance<width?'Kalkstein':top>21?'Kalkstein':top>13?(stratum>.15?'Schiefer':'Stein'):top>7?(stratum>.7?'Kalkstein':'Stein'):'Gras';
  return {top,surface,distance,blend:Math.min(1,(70-edge)/15)};
 }

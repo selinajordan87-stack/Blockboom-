@@ -1,4 +1,6 @@
 import * as T from "three";
+import {groveSeeds} from "./EnvironmentForm";
+import {mountainPathSample} from "./TerrainSculpt";
 import {World,LIMIT,type Cell} from "./World";
 import {terrainProfile,legacyArea,RIVER_POINTS} from "./DiscoveryTerrain";
 
@@ -8,6 +10,7 @@ export class LandmarkView {
  private peaks:T.InstancedMesh;private peakData:number[][]=[];
  private far:T.Mesh;private silhouettes:T.InstancedMesh;private smoke:T.InstancedMesh;
  private tileCenters:[number,number][]=[];private tileLOD:number[]=[];private indices:Uint32Array;private key="";private dummy=new T.Object3D();private color=new T.Color();
+ private grove:T.InstancedMesh;private trunks:T.InstancedMesh;private groveData:number[][]=[];
  private forward=new T.Vector3(0,0,-1);
  private landmarks:[number,number,number,number,number,number,number][]=[];
  constructor(scene:T.Scene,private world:World){
@@ -16,20 +19,36 @@ export class LandmarkView {
   for(let x=-LIMIT;x<LIMIT;x+=12)for(let z=-LIMIT;z<LIMIT;z+=12){
    // Only the revised ridge receives a denser silhouette, sampled from the SAME
    // height function as collision terrain. The rest retains its old LOD budget.
-   const ridge=world.terrainRevision===2&&Math.hypot(x+6-145,z+6+105)<76;
+   const ridge=world.terrainRevision===2&&(Math.hypot(x+6-145,z+6+105)<76||Math.hypot(x+6+110,z+6+153)<55);
    for(const step of ridge?[12,4]:[12])for(let tx=x;tx<x+12;tx+=step)for(let tz=z;tz<z+12;tz+=step){
     this.tileCenters.push([tx+step/2,tz+step/2]);
     this.tileLOD.push(ridge?(step===4?2:1):0);
     for(const[dx,dz]of [[0,0],[step,0],[0,step],[step,step]]){
      const xx=tx+dx,zz=tz+dz,profile=terrainProfile(xx,zz,this.world.terrainRevision),height=legacyArea(xx,zz)?0:profile.top;
-     p.push(xx,height+(world.terrainRevision===2?1.02:.12),zz);const c=new T.Color(profile.surface==="Sand"?0xc5b47c:profile.surface==="Kalkstein"?0xb7b9a2:height>7?0x87918b:0x70935b);colors.push(c.r,c.g,c.b);
+     p.push(xx,height+(world.terrainRevision===2?1.02:.12),zz);const c=new T.Color(profile.surface==="Sand"?0xc5b47c:profile.surface==="Kalkstein"?0xb7b9a2:height>7?0x87959b:0x79a35b);colors.push(c.r,c.g,c.b);
     }
    }
   }
   this.indices=new Uint32Array(this.tileCenters.length*6);
-  const geometry=new T.BufferGeometry();geometry.setAttribute("position",new T.Float32BufferAttribute(p,3));geometry.setAttribute("normal",new T.Float32BufferAttribute(p.map((_,i)=>i%3===1?1:0),3));geometry.setAttribute("color",new T.Float32BufferAttribute(colors,3));geometry.setIndex(new T.BufferAttribute(this.indices,1).setUsage(T.DynamicDrawUsage));geometry.computeBoundingSphere();
-  this.far=new T.Mesh(geometry,new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide}));this.far.name="distant terrain LOD";this.group.add(this.far);
+  for(let i=0;i<this.tileCenters.length;i++){const v=i*4;this.indices.set([v,v+2,v+1,v+1,v+2,v+3],i*6);}
+  const geometry=new T.BufferGeometry();geometry.setAttribute("position",new T.Float32BufferAttribute(p,3));geometry.setAttribute("normal",new T.Float32BufferAttribute(p.map((_,i)=>i%3===1?1:0),3));geometry.setAttribute("color",new T.Float32BufferAttribute(colors,3));geometry.setIndex(new T.BufferAttribute(this.indices,1).setUsage(T.DynamicDrawUsage));geometry.computeVertexNormals();geometry.computeBoundingSphere();
+  const terrainMaterial=new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide});
+  terrainMaterial.onBeforeCompile=shader=>{
+   shader.vertexShader='varying vec3 artPosition;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nartPosition=position;');
+   shader.fragmentShader='varying vec3 artPosition;\n'+shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+    float grain=fract(sin(dot(floor(artPosition*2.),vec3(12.9898,78.233,37.719)))*43758.5453);
+    float strata=step(.88,fract(artPosition.y*.62+sin(artPosition.x*.16)*.12));
+    diffuseColor.rgb*=.92+grain*.13-strata*.12;
+   `);
+  };
+  this.far=new T.Mesh(geometry,terrainMaterial);this.far.name="distant terrain LOD";this.group.add(this.far);
   const box=new T.BoxGeometry(1,1,1);
+  this.grove=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0xffffff}),1400);this.trunks=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0x69503c}),700);
+  this.grove.frustumCulled=this.trunks.frustumCulled=false;this.grove.count=this.trunks.count=0;this.group.add(this.grove,this.trunks);
+  if(world.terrainRevision===2)for(const t of groveSeeds(-205,210,-205,160)){
+   const p=terrainProfile(t.x,t.z,2);if(legacyArea(t.x,t.z)||p.top>10||p.lake<1.17||p.river<5||p.trail<4||p.village||mountainPathSample(t.x,t.z).distance<4)continue;
+   this.groveData.push([t.x,p.top+1,t.z,t.h,t.kind]);
+  }
   this.silhouettes=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0xffffff,fog:false}),100);this.silhouettes.frustumCulled=false;this.silhouettes.name="distant landmark LOD";this.group.add(this.silhouettes);
   const add=(x:number,y:number,z:number,sx:number,sy:number,sz:number,c:number)=>this.landmarks.push([x,y,z,sx,sy,sz,c]);
   const peakGeometry=new T.ConeGeometry(1,1,4,3);peakGeometry.rotateY(Math.PI/4);
@@ -38,7 +57,7 @@ export class LandmarkView {
    if(this.world.terrainRevision===2&&cx===145)continue;
    const height=h*(peak===1?1:.72);this.peakData.push([cx+(peak-1)*13,height/2,cz-peak*5,15-peak*2,height,12,peak===1?0xb7c7c8:0x718995]);
   }
-  for(const[cx,cz]of [[-100,30],[-125,17],[-87,41]])for(let i=0;i<5;i++)add(cx+Math.sin(i*2.4)*8,5+i%3,cz+Math.cos(i*2.4)*8,5,9+i%3,5,i%2?0x335e42:0x46764c);
+  if(world.terrainRevision===1)for(const[cx,cz]of [[-100,30],[-125,17],[-87,41]])for(let i=0;i<5;i++)add(cx+Math.sin(i*2.4)*8,5+i%3,cz+Math.cos(i*2.4)*8,5,9+i%3,5,i%2?0x335e42:0x46764c);
   add(117,6.5,105,6,13,6,0x7f8578);add(102,2.5,87,9,5,9,0x966f56);add(116,3,92,9,6,9,0x89765a);add(92,2.5,83,8,5,8,0x9a8362);add(47.5,4,40.5,5,8,5,0x8c8270);
   this.smoke=new T.InstancedMesh(box,new T.MeshBasicMaterial({color:0xd1d5c7,transparent:true,opacity:.25,depthWrite:false}),10);this.smoke.frustumCulled=false;this.smoke.name="forge smoke";this.group.add(this.smoke);
   const waterPoints:number[]=[],arrows:number[]=[];
@@ -47,8 +66,8 @@ export class LandmarkView {
    for(const v of [[a[0]+nx,a[1]+nz],[a[0]-nx,a[1]-nz],[b[0]+nx,b[1]+nz],[b[0]+nx,b[1]+nz],[a[0]-nx,a[1]-nz],[b[0]-nx,b[1]-nz]])waterPoints.push(v[0],.34,v[1]);
    for(let j=1;j<=4;j++){const x=a[0]+dx*j/5,z=a[1]+dz*j/5;arrows.push(x-dx/length-nx*.3,.38,z-dz/length-nz*.3,x,.38,z,x-dx/length+nx*.3,.38,z-dz/length+nz*.3,x,.38,z);}
   }
-  const waterGeometry=new T.BufferGeometry();waterGeometry.setAttribute("position",new T.Float32BufferAttribute(waterPoints,3));waterGeometry.computeVertexNormals();const river=new T.Mesh(waterGeometry,new T.MeshPhongMaterial({color:0x4e9bac,transparent:true,opacity:.54,depthWrite:false,side:T.DoubleSide}));river.name="connected river";this.group.add(river);
-  const arrowsGeometry=new T.BufferGeometry();arrowsGeometry.setAttribute("position",new T.Float32BufferAttribute(arrows,3));this.group.add(new T.LineSegments(arrowsGeometry,new T.LineBasicMaterial({color:0xc4e4d8,transparent:true,opacity:.35})));
+  const waterGeometry=new T.BufferGeometry();waterGeometry.setAttribute("position",new T.Float32BufferAttribute(waterPoints,3));waterGeometry.computeVertexNormals();const river=new T.Mesh(waterGeometry,new T.MeshPhongMaterial({color:0x4e9bac,transparent:true,opacity:.54,depthWrite:false,side:T.DoubleSide}));river.name="connected river";river.visible=world.terrainRevision===1;this.group.add(river);
+  const arrowsGeometry=new T.BufferGeometry();arrowsGeometry.setAttribute("position",new T.Float32BufferAttribute(arrows,3));const arrowsMesh=new T.LineSegments(arrowsGeometry,new T.LineBasicMaterial({color:0xc4e4d8,transparent:true,opacity:.35}));arrowsMesh.visible=world.terrainRevision===1;this.group.add(arrowsMesh);
  }
  update(position:Cell,time:number,camera?:T.Camera){
   if(camera)camera.getWorldDirection(this.forward);
@@ -59,7 +78,14 @@ export class LandmarkView {
   const behind=(px:number,pz:number,d:number)=>d>72&&((px-x)*this.forward.x+(pz-z)*this.forward.z)/horizontal<-.2*d;
   if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z),chunkDistance=Math.hypot(Math.floor(cx/12)*12+6-x,Math.floor(cz/12)*12+6-z);
    if(this.tileLOD[i]===2&&chunkDistance>=100||this.tileLOD[i]===1&&chunkDistance<100)continue;
+   if(this.world.terrainRevision===2&&terrainProfile(cx,cz,2).lake<1.16)continue;
    if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;const v=i*4;for(const a of [v,v+2,v+1,v+1,v+2,v+3])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
+  let trees=0,canopies=0;
+  for(const[tx,ty,tz,h,kind]of this.groveData){const distance=Math.hypot(tx-x,tz-z);if(distance>160||distance<30||behind(tx,tz,distance)||this.world.activeChunks.has(`${Math.floor(tx/12)},${Math.floor(tz/12)}`))continue;if(trees>=700)break;
+   this.dummy.position.set(tx+.5,ty+h*.38,tz+.5);this.dummy.scale.set(.65,h*.76,.65);this.dummy.rotation.set(0,0,0);this.dummy.updateMatrix();this.trunks.setMatrixAt(trees++,this.dummy.matrix);
+   for(let layer=0;layer<2;layer++){this.dummy.position.set(tx+.5+(layer?.35:0),ty+h*(layer?.92:.68),tz+.5+(layer?-.25:0));const width=(kind===0?4.2:5.4)*(layer?.65:1);this.dummy.scale.set(width,kind===0?h*.35:h*.32,width*.88);this.dummy.updateMatrix();this.grove.setMatrixAt(canopies,this.dummy.matrix);this.grove.setColorAt(canopies++,this.color.set(kind===0?0x3c6453:kind===1?0x628541:0x54844b));}
+  }
+  this.trunks.count=trees;this.grove.count=canopies;this.trunks.instanceMatrix.needsUpdate=this.grove.instanceMatrix.needsUpdate=true;if(this.grove.instanceColor)this.grove.instanceColor.needsUpdate=true;
   let i=0;for(const[px,py,pz,sx,sy,sz,c]of this.landmarks){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||behind(px,pz,distance)||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.silhouettes.setMatrixAt(i,this.dummy.matrix);this.silhouettes.setColorAt(i++,this.color.set(c));}this.silhouettes.count=i;this.silhouettes.instanceMatrix.needsUpdate=true;if(this.silhouettes.instanceColor)this.silhouettes.instanceColor.needsUpdate=true;
   let peakCount=0;for(const[px,py,pz,sx,sy,sz,c]of this.peakData){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||behind(px,pz,distance)||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.peaks.setMatrixAt(peakCount,this.dummy.matrix);this.peaks.setColorAt(peakCount++,this.color.set(c));}this.peaks.count=peakCount;this.peaks.instanceMatrix.needsUpdate=true;if(this.peaks.instanceColor)this.peaks.instanceColor.needsUpdate=true;
   i=0;for(const[cx,cz,h]of [[104,90,10],[44,28,6]])for(let j=0;j<5;j++){const t=((time*.0006+j*.23)%1);this.dummy.position.set(cx+Math.sin(t*3)*1.3,h+t*9,cz+t*2);this.dummy.scale.setScalar(.6+t*2);this.dummy.updateMatrix();this.smoke.setMatrixAt(i++,this.dummy.matrix);}this.smoke.instanceMatrix.needsUpdate=true;

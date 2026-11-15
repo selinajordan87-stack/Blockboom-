@@ -3,14 +3,14 @@ import { World, MIN_Y, MAX_Y, type Block } from "./World";
 import { special } from "../nightfall/Defense";
 
 export const colors: Record<Block, number> = {
-  Gras: 0x6b9950,
+  Gras: 0x82ae60,
   Erde: 0x956747,
-  Stein: 0x78858c,
+  Stein: 0x82949d,
   Holz: 0x765035,
   Bretter: 0xc99a68,
   Glas: 0x9cdde0,
-  Laub: 0x356b43,
-  Sand: 0xcdb98b,
+  Laub: 0x5f934f,
+  Sand: 0xe0c98d,
   Boom: 0xe59a3f,
   Ziegel: 0xb95f45,
   Kopfstein: 0x737f81,
@@ -18,7 +18,7 @@ export const colors: Record<Block, number> = {
   Moosstein: 0x667b5b,
   Dunkelholz: 0x4f372b,
   Kalkstein: 0xc8c4aa,
-  Schiefer: 0x53616e,
+  Schiefer: 0x657584,
   Tür:0x976b3d,"Tür offen":0x976b3d,Tor:0x87613b,"Tor offen":0x87613b,Zaun:0x997445,Leiter:0xb89764,Treppe:0x8e9a99,Fackel:0xf5bd5d,Falle:0x788a72,Lagerkiste:0xa37b45,Barriere:0x6d7157,Mauer:0x727d83,
   Kohleerz:0x4e5357,Kupfererz:0xba8260,Eisenerz:0xa0a3a1,Golderz:0xd1ac4d,Acker:0x68503b,Bett:0x9f7772,Tisch:0xad8256,Stuhl:0x9a734d,Regal:0x8a6847,Truhe:0xba8d51,Werkbank:0xa78a61,Ofen:0x626f78,Laterne:0xf2d18a,Teppich:0x6f96a2,Schatztruhe:0xd1ad55,Grill:0x696f6b,
 };
@@ -66,21 +66,21 @@ export function createVoxelAtlas() {
         const px = (index % ATLAS_COLUMNS) * TILE_SIZE + x;
         const py = Math.floor(index / ATLAS_COLUMNS) * TILE_SIZE + y;
         const at = (py * width + px) * 4;
-        const hash = (x * 31 + y * 17 + index * 47) % 19;
+        const hash = ((x*374761393 ^ y*668265263 ^ index*1274126177)>>>8) % 19;
         let shade = 226 + hash - 9;
-        if (index === 0) shade += (x + y * 3) % 7 === 0 ? -35 : 8;
+        if (index === 0) shade = 235 + (hash - 9) * .8;
         if (index === 1)
           shade += y < 4 ? 18 : (x * 3 + y) % 9 === 0 ? -28 : 0;
         if (index === 2) shade += (x * 5 + y * 7) % 13 === 0 ? -30 : 0;
         if ([3, 10, 12, 14, 15].includes(index))
-          shade += (x + y * 2 + index) % 11 === 0 ? -42 : 4;
+          shade += Math.floor(y/5)%2===0?4:-5;
+        if([3,10,12,14,15].includes(index)&&((x+Math.floor(y/5)*7)%13===0||y%7===0))shade-=17;
         if ([4, 13].includes(index))
           shade += x % 5 === 0 ? -34 : y % 7 === 0 ? 12 : 0;
         if (index === 5)
           shade += y % 8 === 0 ? -40 : x % 11 === 0 ? -18 : 8;
         if (index === 6) shade = x === y || x + y === 15 ? 255 : 220;
-        if (index === 7)
-          shade += (x * 7 + y * 11) % 17 === 0 ? -38 : 10;
+        if (index === 7) shade = 241 + (hash - 9) * .6;
         if (index === 8)
           shade +=
             y % 6 === 0 ||
@@ -88,7 +88,7 @@ export function createVoxelAtlas() {
               ? -48
               : 8;
         if (index === 9)
-          shade += (x * 7 + y * 5) % 10 < 2 ? -38 : 15;
+          shade += ((x>>2)+(y>>2)*3)%5===0 ? -18 : 10;
         if (index === 11) shade += (x + y) % 8 === 0 ? 16 : -4;
         if (index === 16) {
           const distance = Math.max(Math.abs(x - 7.5), Math.abs(y - 7.5));
@@ -102,8 +102,8 @@ export function createVoxelAtlas() {
   const texture = new T.DataTexture(data, width, height, T.RGBAFormat);
   texture.colorSpace = T.SRGBColorSpace;
   texture.magFilter = T.NearestFilter;
-  texture.minFilter = T.NearestFilter;
-  texture.generateMipmaps = false;
+  texture.minFilter = T.NearestMipmapLinearFilter;
+  texture.generateMipmaps = true;
   texture.needsUpdate = true;
   texture.name = "BLOCKBOOM procedural voxel atlas";
   return texture;
@@ -215,7 +215,7 @@ export class WorldView {
   private focusZ=17;
   private visibleDistance=64;
   private faceColors=Object.fromEntries(Object.entries(colors).map(([block,color])=>[block,new T.Color(color)])) as Record<Block,T.Color>;
-  private grassSide=new T.Color(0x8d8c55);
+  private grassSide=new T.Color(0x8a9457);
   readonly metrics:WorldRenderMetrics={lastBuildMs:0,maxBuildMs:0,maxRuntimeBuildMs:0,totalBuildMs:0,lastChunkMs:0,maxChunkMs:0,queue:0,rebuilt:0,columns:0,restarts:0,activeMeshes:0,currentChunk:null};
   constructor(public world: World, scene: T.Scene, private clock:()=>number=()=>performance.now()) {
     this.group.name = "chunked voxel world";
@@ -342,7 +342,7 @@ export class WorldView {
       if (neighbor && !special(neighbor) && (neighbor !== "Glas" || block === "Glas")) continue;
       const offset = data.p.length / 3;
       const color=block==="Gras"&&face.n[1]===0?this.grassSide:this.faceColors[block];
-      const variation=block==="Laub"?.84+((Math.floor(x/4)*13+Math.floor(z/4)*7)&7)*.035:1;
+      const variation=block==="Laub"?.88+((Math.floor(x/4)*13+Math.floor(z/4)*7)&7)*.035:block==="Gras"?.94+.06*Math.sin(x*.22+Math.sin(z*.19)):1;
       const shade=face.shade*(0.97+((x*13+z*7+y*3)&7)*0.007)*variation;
       const atlasTile = tileFor(block, face.n);
       const column = atlasTile % ATLAS_COLUMNS;
@@ -353,7 +353,12 @@ export class WorldView {
         const vertex = face.v[j];
         data.p.push(x + vertex[0], y + vertex[1], z + vertex[2]);
         data.n.push(...face.n);
-        data.c.push(color.r*shade,color.g*shade,color.b*shade);
+        // Local corner shade provides depth beneath overhangs without shadow maps.
+        const axes=[0,1,2].filter(a=>face.n[a]===0),base=[x+face.n[0],y+face.n[1],z+face.n[2]],a=[...base],b=[...base],c=[...base];
+        a[axes[0]]+=vertex[axes[0]]?1:-1;b[axes[1]]+=vertex[axes[1]]?1:-1;c[axes[0]]=a[axes[0]];c[axes[1]]=b[axes[1]];
+        const occupied=(p:number[])=>!!this.world.get(p[0],p[1],p[2]);
+        const ao=block==='Glas'||block==='Laub'?1:1-.13*(Number(occupied(a))+Number(occupied(b))+Number(occupied(c)));
+        data.c.push(color.r*shade*ao,color.g*shade*ao,color.b*shade*ao);
         data.uv.push(
           (column + uvCorners[j][0]) / ATLAS_COLUMNS +
             (uvCorners[j][0] ? -paddingU : paddingU),

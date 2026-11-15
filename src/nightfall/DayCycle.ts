@@ -14,8 +14,8 @@ export class DayView {
   private sunMesh: T.Mesh;
   private moon: T.Mesh;
   private stars: T.Points<T.BufferGeometry, T.PointsMaterial>;
-  private day = new T.Color(0x80b9d5);
-  private night = new T.Color(0x1b3049);
+  private day = new T.Color(0xb6d8e2);
+  private night = new T.Color(0x253a59);
   private sunset = new T.Color(0xb77c79);
   constructor(private scene: T.Scene, private sun: T.DirectionalLight, private ambient: T.HemisphereLight) {
     const sphere = new T.SphereGeometry(1, 8, 6);
@@ -39,9 +39,9 @@ export class DayView {
     if (time > .53 && time < .73) sky.lerp(this.sunset, Math.sin((time-.53)/.2*Math.PI)*.55);
     (this.scene.fog as T.Fog).color.copy(sky);
     this.sun.position.set(Math.cos(angle)*30, height*40, -12);
-    this.sun.intensity = .15 + daylight*1.4;
-    this.sun.color.set(daylight < .6 ? 0xffb980 : 0xffdfac);
-    this.ambient.intensity = .8 + daylight*.9;
+    this.sun.intensity = .25 + daylight*1.8;
+    this.sun.color.set(daylight < .6 ? 0xffb980 : 0xffedcf);
+    this.ambient.intensity = .78 + daylight*.68;
     this.ambient.color.set(daylight < .3 ? 0x91b0dd : 0xeaf8ff);
     this.sunMesh.position.set(origin.x+Math.cos(angle)*49, Math.max(-9,height*49),origin.z-14);
     this.sunMesh.scale.setScalar(1.7);
