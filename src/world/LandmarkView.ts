@@ -14,10 +14,15 @@ export class LandmarkView {
   this.group.name="Discovery distant LOD and river";this.group.userData.lod=true;scene.add(this.group);
   const p:number[]=[],colors:number[]=[];
   for(let x=-LIMIT;x<LIMIT;x+=12)for(let z=-LIMIT;z<LIMIT;z+=12){
-   this.tileCenters.push([x+6,z+6]);
-   for(const[dx,dz]of [[0,0],[12,0],[0,12],[12,12]]){
-    const xx=x+dx,zz=z+dz,profile=terrainProfile(xx,zz,this.world.terrainRevision),height=legacyArea(xx,zz)?0:profile.top;
-    p.push(xx,height+.12,zz);const c=new T.Color(profile.surface==="Sand"?0xc5b47c:height>7?0x87918b:0x70935b);colors.push(c.r,c.g,c.b);
+   // Only the revised ridge receives a denser silhouette, sampled from the SAME
+   // height function as collision terrain. The rest retains its old LOD budget.
+   const step=world.terrainRevision===2&&Math.hypot(x+6-145,z+6+105)<76?4:12;
+   for(let tx=x;tx<x+12;tx+=step)for(let tz=z;tz<z+12;tz+=step){
+    this.tileCenters.push([tx+step/2,tz+step/2]);
+    for(const[dx,dz]of [[0,0],[step,0],[0,step],[step,step]]){
+     const xx=tx+dx,zz=tz+dz,profile=terrainProfile(xx,zz,this.world.terrainRevision),height=legacyArea(xx,zz)?0:profile.top;
+     p.push(xx,height+(world.terrainRevision===2?1.02:.12),zz);const c=new T.Color(profile.surface==="Sand"?0xc5b47c:profile.surface==="Kalkstein"?0xb7b9a2:height>7?0x87918b:0x70935b);colors.push(c.r,c.g,c.b);
+    }
    }
   }
   this.indices=new Uint32Array(this.tileCenters.length*6);

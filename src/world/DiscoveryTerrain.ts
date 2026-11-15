@@ -1,4 +1,4 @@
-import {mountainSculpt} from "./TerrainSculpt";
+import {mountainSculpt,mountainPathSample} from "./TerrainSculpt";
 import {World,MIN_Y,MAX_Y,type Block,type Cell} from "./World";
 
 /** v0.7 is an additive outer ring. All v0.1–v0.6 terrain coordinates survive. */
@@ -53,7 +53,15 @@ export function terrainProfile(x:number,z:number,revision:1|2=1){
  if(river<3.7){top=river<1.5?-2:river<2.4?-1:0;surface=river<2.4?"Sand":"Ton";}
  if(island){top=1;surface="Gras";}
  const sculpt=revision===2?mountainSculpt(x,z):null;
- if(sculpt&&!village&&lake>1.1&&river>5&&trail>2.15){top=Math.round(top+(sculpt.top-top)*sculpt.blend);surface=top>21?"Kalkstein":top>14?"Schiefer":top>7?"Stein":sculpt.surface;}
+ if(sculpt&&!village&&lake>1.1&&river>5&&trail>2.15){
+  top=Math.round(top+(sculpt.top-top)*sculpt.blend);
+  // Keep the old road at its original height, but grade the NEW mountain's
+  // shoulder into it. Never cut the mountain chambers open from above.
+  const shoulder=Math.min(1,Math.max(0,(trail-2.15)/9)),air=caveRange(x,z);
+  top=Math.round(top*shoulder);
+  if(air&&x>=136)top=Math.max(top,air.ceiling+3);
+  surface=top>21?"Kalkstein":top>14?"Schiefer":top>7?"Stein":sculpt.surface;
+ }
  // A timber crossing at the river, and a jetty to the island, are real solids.
  const bridge=river<3.9&&trail<2.15;
  const jetty=Math.abs(x+115)<1.6&&z>=-111&&z<=-77;
@@ -118,7 +126,7 @@ export function decorateDiscoveryChunk(world:World,cx:number,cz:number){
  for(let x=cx*12+2;x<cx*12+12;x+=6)for(let z=cz*12+2;z<cz*12+12;z+=6){
   // Mix grid coordinates: the former 4-cell grid made (31*x+73*z)%4 always zero.
   if(legacyArea(x,z))continue;const p=terrainProfile(x,z,world.terrainRevision),hash=(Math.imul(Math.floor(x/2),73856093)^Math.imul(Math.floor(z/2),19349663))>>>0;
-  if(p.lake<1.1||p.river<5||p.trail<3.5||p.village||caveRange(x,z)||p.top>9)continue;
+  if(p.lake<1.1||p.river<5||p.trail<3.5||p.village||caveRange(x,z)||p.top>9||world.terrainRevision===2&&mountainPathSample(x,z).distance<5)continue;
   const dense=Math.hypot(x+100,z-30)<62;
   if(dense&&(Math.hypot(x+100,z-30)<6||Math.hypot(x+108,z-39)<5))continue;
   if(dense&&hash%4!==0||!dense&&hash%11===0)tree(w,x,z,4+Math.floor(hash/8)%4,hash%3!==0);
