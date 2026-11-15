@@ -57,7 +57,7 @@ import { WaterView } from "./world/WaterView";
 import { Inventory, FISH } from "./fishing/Fishing";
 import { ReadingEngine, mission } from "./learning/Learning";
 import { explode } from "./boom/Boom";
-import { load, persist, SAVE_KEY, type Save } from "./storage/Save";
+import { load, persist, SAVE_KEY, NewerSaveError, type Save } from "./storage/Save";
 import {exportTransfer,parseTransfer,importTransfer,IMPORT_BACKUP,type Transfer} from "./storage/Transfer";
 import {DiscoveryEngine} from "./discovery/Engine";
 import {DiscoveryUI} from "./discovery/UI";
@@ -238,7 +238,8 @@ function safeLoad() {
       } catch {}
     }
     return result;
-  } catch {
+  } catch(error) {
+    if(error instanceof NewerSaveError){$("start").innerHTML=`<div class="panel"><h2>Spielstand geschützt</h2><p>${error.message}</p><p>Bitte öffne eine aktuelle Version. Deine Daten bleiben unverändert.</p></div>`;throw error;}
     return null;
   }
 }

@@ -1,4 +1,4 @@
-import {decode,SAVE_KEY,type Save} from "./Save";
+import {decode,SAVE_KEY,assertSupportedSave,type Save} from "./Save";
 import {LEARNING_KEY,loadProfile,type Profile} from "../learning/Engine";
 export const IMPORT_BACKUP="blockboom.pre-import";
 export interface Transfer {world:Save;learning?:Profile|null}
@@ -8,6 +8,7 @@ export function parseTransfer(text:string):Transfer{
  let raw:any;try{raw=JSON.parse(text);}catch{throw Error("Die Datei enthält keinen lesbaren Spielstand.");}
  const envelope=raw?.format==="blockboom-backup";
  if(envelope&&raw.version!==1)throw Error("Diese Sicherungsversion wird noch nicht unterstützt.");
+ assertSupportedSave(JSON.stringify(envelope?raw.world:raw));
  const world=decode(JSON.stringify(envelope?raw.world:raw));if(!world)throw Error("Dieser Spielstand ist beschädigt oder nicht kompatibel.");
  const result:Transfer={world};if(envelope&&raw.learning!==undefined){
   const p=raw.learning;if(p===null)result.learning=null;
@@ -24,6 +25,7 @@ export function importTransfer(storage:Pick<Storage,"getItem"|"setItem"|"removeI
  try{
   oldWorld=storage.getItem(SAVE_KEY);oldLearning=storage.getItem(LEARNING_KEY);
   const backup={format:"blockboom-backup",version:1,world:oldWorld?JSON.parse(oldWorld):null,learning:oldLearning?JSON.parse(oldLearning):null};
+  assertSupportedSave(oldWorld);assertSupportedSave(JSON.stringify(data.world));
   storage.setItem(IMPORT_BACKUP,JSON.stringify(backup));
   storage.setItem(SAVE_KEY,JSON.stringify(data.world));changed=true;
   if(data.learning!==undefined){if(data.learning===null)storage.removeItem(LEARNING_KEY);else storage.setItem(LEARNING_KEY,JSON.stringify(data.learning));}

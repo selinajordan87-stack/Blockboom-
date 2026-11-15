@@ -15,6 +15,11 @@ export interface Save {
   settings: { sound: boolean; quality: number };
 }
 export const SAVE_KEY = "blockboom.save";
+export class NewerSaveError extends Error {constructor(){super("Dieser Spielstand wurde mit einer neueren BLOCKBOOM-Version erstellt.");}}
+export function assertSupportedSave(raw:string|null){
+ if(!raw)return;let data:any;try{data=JSON.parse(raw);}catch{return;}
+ if(typeof data?.version==="number"&&data.version>1||typeof data?.extension?.terrainRevision==="number"&&data.extension.terrainRevision>2)throw new NewerSaveError();
+}
 export function decode(raw: string | null): Save | null {
   try {
     if (!raw) return null;
@@ -101,13 +106,15 @@ export function decode(raw: string | null): Save | null {
 }
 export function load(storage: Pick<Storage, "getItem">) {
   try {
-    return decode(storage.getItem(SAVE_KEY));
-  } catch {
+    const raw=storage.getItem(SAVE_KEY);assertSupportedSave(raw);return decode(raw);
+  } catch(error) {
+    if(error instanceof NewerSaveError)throw error;
     return null;
   }
 }
-export function persist(storage: Pick<Storage, "setItem">, save: Save) {
+export function persist(storage: Pick<Storage, "setItem"> & Partial<Pick<Storage,"getItem">>, save: Save) {
   try {
+    if(storage.getItem)assertSupportedSave(storage.getItem(SAVE_KEY));
     // Never replace a readable save with a world that the loader would reject.
     if(Object.keys(save.changes).length>50000)return false;
     storage.setItem(SAVE_KEY, JSON.stringify(save));
