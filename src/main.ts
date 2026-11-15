@@ -1616,7 +1616,12 @@ function resize() {
   // Chrome on iOS also changes its visual viewport as browser controls move.
   // Use one rectangle for the app, input coordinates and WebGL, not a mix of
   // device-height, fill-available and dynamic viewport units.
-  const rect = gameViewport(window.visualViewport || {width:innerWidth,height:innerHeight,scale:1,offsetLeft:0,offsetTop:0});
+  const editing=!!document.activeElement?.matches('input:not([type="range"]),textarea,[contenteditable="true"]');
+  const rect = gameViewport(window.visualViewport || {width:innerWidth,height:innerHeight,scale:1,offsetLeft:0,offsetTop:0},{
+    width:Math.max(innerWidth,document.documentElement.clientWidth),
+    height:Math.max(innerHeight,document.documentElement.clientHeight),
+    keyboard:editing,
+  });
   const visibleWidth = rect.width;
   const visibleHeight = rect.height;
   const rootStyle = document.documentElement.style;
@@ -1634,6 +1639,8 @@ function resize() {
 window.addEventListener("resize", resize);
 installGameGestureGuard(document,canPlay);
 window.addEventListener("pageshow", resize);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){resize();setTimeout(resize,300);}});
+document.addEventListener("focusout",()=>setTimeout(resize,300));
 window.addEventListener("orientationchange", () => {
   clearInput();
   requestAnimationFrame(resize);

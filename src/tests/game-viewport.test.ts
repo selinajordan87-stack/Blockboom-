@@ -9,12 +9,15 @@ describe('browser zoom recovery',()=>{
    // Final display size includes CSS compensation AND browser magnification.
    expect(44*r.inverseScale*scale).toBeCloseTo(44);
    expect(r.width*r.inverseScale).toBeCloseTo(844/scale);
-   expect(r.left).toBe(45);expect(r.top).toBe(20);
+   expect(r.left).toBe(scale===1?0:45);expect(r.top).toBe(scale===1?0:20);
   }
  });
  it('follows rotation and keyboard height instead of imposing device-height',()=>{
-  expect(gameViewport({width:390,height:300,scale:1,offsetLeft:0,offsetTop:50})).toMatchObject({width:390,height:300,top:50});
+  expect(gameViewport({width:390,height:300,scale:1,offsetLeft:0,offsetTop:50},{width:390,height:844,keyboard:true})).toMatchObject({width:390,height:300,top:50});
   expect(gameViewport({width:844,height:390,scale:1,offsetLeft:0,offsetTop:0})).toMatchObject({width:844,height:390});
+ });
+ it('fills layout bounds when Chrome reports a stale, shortened and panned visual viewport',()=>{
+  expect(gameViewport({width:726,height:254,scale:1,offsetLeft:59,offsetTop:0},{width:844,height:331,keyboard:false})).toMatchObject({width:844,height:331,left:0,top:0});
  });
  it('prevents native pinch takeover during play but preserves single touches and menus',()=>{
   const target=new EventTarget();let playing=true;

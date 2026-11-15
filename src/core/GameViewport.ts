@@ -1,8 +1,18 @@
 /** Browser zoom is distinct from the 3D camera. Keep the game's logical pixel
  * size stable when an iOS browser ignores user-scalable=no. */
-export function gameViewport(view: {width:number;height:number;scale:number;offsetLeft:number;offsetTop:number}) {
+export function gameViewport(view: {width:number;height:number;scale:number;offsetLeft:number;offsetTop:number}, layout?:{width:number;height:number;keyboard:boolean}) {
  const scale=Number.isFinite(view.scale)&&view.scale>0?view.scale:1;
- return {width:Math.max(1,view.width*scale),height:Math.max(1,view.height*scale),inverseScale:1/scale,left:view.offsetLeft,top:view.offsetTop};
+ const zoomed=Math.abs(scale-1)>.01;
+ // At normal zoom the layout viewport is authoritative. iOS can retain a
+ // smaller visual rectangle and nonzero pan offsets after toolbar transitions.
+ // A focused input is the exception: respect the keyboard's visible rectangle.
+ return {
+  width:Math.max(1,view.width*scale,layout?.width||0),
+  height:Math.max(1,view.height*scale,layout?.keyboard?0:layout?.height||0),
+  inverseScale:1/scale,
+  left:zoomed||layout?.keyboard?view.offsetLeft:0,
+  top:zoomed||layout?.keyboard?view.offsetTop:0,
+ };
 }
 
 /** Pointer Events own game input; native pinch/gesture handling must not take

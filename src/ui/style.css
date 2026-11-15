@@ -3,6 +3,8 @@
   color: #f8f3de;
   background: #a9d6da;
   font-synthesis: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 .living-tabs {display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .living-tabs button {text-align:left;min-height:52px;}
@@ -56,6 +58,8 @@ body,
   background: #173c37;
 }
 body {
+  position: fixed;
+  inset: 0;
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: manipulation;
