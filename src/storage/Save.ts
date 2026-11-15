@@ -27,6 +27,7 @@ export function assertSupportedSave(raw:string|null){
 export function decode(raw: string | null): Save | null {
   try {
     if (!raw) return null;
+    assertSupportedSave(raw);
     const s = JSON.parse(raw);
     if (s.version !== 1) return null;
     const finite = (n: unknown) => typeof n === "number" && Number.isFinite(n);
@@ -124,7 +125,8 @@ export function persist(storage: Pick<Storage, "setItem"> & Partial<Pick<Storage
     }
     // Never replace a readable save with a world that the loader would reject.
     if(Object.keys(save.changes).length>50000)return false;
-    storage.setItem(saveKey(save), JSON.stringify(save));
+    const raw=JSON.stringify(save);assertSupportedSave(raw);
+    storage.setItem(saveKey(save), raw);
     return true;
   } catch {
     return false;
