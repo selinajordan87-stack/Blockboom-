@@ -62,24 +62,16 @@ body {
 }
 #app {
   position: fixed;
-  inset: 0;
+  top: var(--game-top, 0px);
+  left: var(--game-left, 0px);
   width: 100vw;
-  min-width: 100vw;
   height: 100vh;
   height: 100dvh;
-  min-height: 100vh;
-  min-height: 100dvh;
+  width: var(--game-width, 100vw);
+  height: var(--game-height, 100dvh);
+  min-width: 0;
+  min-height: 0;
   isolation: isolate;
-}
-@supports (-webkit-touch-callout: none) {
-  html,
-  body,
-  #app {
-    min-height: -webkit-fill-available;
-  }
-  #app {
-    height: -webkit-fill-available;
-  }
 }
 button {
   font: inherit;

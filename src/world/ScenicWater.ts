@@ -25,13 +25,15 @@ export class ScenicWater{
    vertexShader:`attribute float waterDepth; varying vec3 vWorld; varying float vDepth; uniform float time;
     void main(){vec3 p=position;p.y+=sin(p.x*.72+time*.8)*sin(p.z*.53-time*.45)*.018;vWorld=p;vDepth=waterDepth;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
    fragmentShader:`uniform float time;uniform float light;uniform vec3 fogColor; varying vec3 vWorld; varying float vDepth;
-    void main(){float deep=smoothstep(.3,4.5,vDepth);vec3 color=mix(vec3(.025,.45,.39),vec3(.006,.14,.31),deep);
+    void main(){float deep=smoothstep(.3,4.5,vDepth);vec3 color=mix(vec3(.035,.54,.47),vec3(.012,.23,.43),deep);
      float a=sin(vWorld.x*1.6+vWorld.z*.61+time*.9),b=sin(vWorld.z*2.4-vWorld.x*.32-time*.6);
      float glint=pow(max(0.,a*b),18.);float longWave=sin(vWorld.x*.31+vWorld.z*.17+time*.38)*.025;
      float fresnel=pow(1.-max(0.,normalize(cameraPosition-vWorld).y),3.);
-     color=mix(color,vec3(.45,.72,.78),fresnel*.13)+glint*.12+longWave;
+     float ripple=pow(max(0.,sin(vWorld.x*.48+vWorld.z*1.9-time*.75)),28.);
+     float shore=(1.-smoothstep(.2,1.1,vDepth))*.10;
+     color=mix(color,vec3(.45,.72,.78),fresnel*.24)+glint*.10+longWave+ripple*(.018+shore);
      color*=light;float haze=smoothstep(65.,220.,distance(cameraPosition,vWorld));color=mix(color,fogColor,haze);
-     gl_FragColor=vec4(color,mix(.38,.73,deep)+fresnel*.08);
+     gl_FragColor=vec4(color,mix(.30,.64,deep)+fresnel*.12);
      #include <tonemapping_fragment>
      #include <colorspace_fragment>
     }`});

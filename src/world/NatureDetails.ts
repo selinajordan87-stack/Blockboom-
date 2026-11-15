@@ -4,14 +4,23 @@ import {World,MAX_Y,MIN_Y,type Cell} from './World';
 import {terrainProfile,legacyArea} from './DiscoveryTerrain';
 import {artHash,groveSeeds} from './EnvironmentForm';
 import {contactMaterial} from './ContactShade';
+function painted(g:T.BufferGeometry,color:number){
+ const c=new T.Color(color),rgb:number[]=[];
+ for(let i=0;i<g.getAttribute('position').count;i++)rgb.push(c.r,c.g,c.b);
+ g.setAttribute('color',new T.Float32BufferAttribute(rgb,3));return g;
+}
 function tuft(){
  const pieces:T.BufferGeometry[]=[];
  for(let i=0;i<3;i++){const g=new T.PlaneGeometry(.55,1),v=g.getAttribute('position');for(let j=0;j<v.count;j++){if(v.getY(j)>0)v.setX(j,v.getX(j)*.08+.1);v.setY(j,v.getY(j)+.5);}g.rotateY(i*Math.PI/3);pieces.push(g);}
- const result=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());return result;
+ const result=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());
+ const positions=result.getAttribute('position'),rgb:number[]=[];
+ for(let i=0;i<positions.count;i++){const c=new T.Color(0x62834c).lerp(new T.Color(0xffffff),positions.getY(i));rgb.push(c.r,c.g,c.b);}
+ result.setAttribute('color',new T.Float32BufferAttribute(rgb,3));return result;
 }
 function flower(){
- const stem=new T.BoxGeometry(.055,.55,.055);stem.translate(0,.275,0);const pieces=[stem];
- for(let i=0;i<4;i++){const g=new T.BoxGeometry(.16,.055,.13);g.translate(Math.cos(i*Math.PI/2)*.1,.55,Math.sin(i*Math.PI/2)*.1);pieces.push(g);}
+ const stem=painted(new T.BoxGeometry(.055,.55,.055),0x467438);stem.translate(0,.275,0);const pieces=[stem];
+ for(let i=0;i<4;i++){const g=painted(new T.BoxGeometry(.19,.06,.14),0xffffff);g.translate(Math.cos(i*Math.PI/2)*.13,.55,Math.sin(i*Math.PI/2)*.13);pieces.push(g);}
+ pieces.push(painted(new T.BoxGeometry(.11,.075,.11),0xf5cd64).translate(0,.57,0));
  const r=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());return r;
 }
 /** Small clustered art batches; no collision or writes to saved terrain. */
@@ -19,12 +28,12 @@ export class NatureDetails{
  readonly group=new T.Group();private grass:T.InstancedMesh;private flowers:T.InstancedMesh;private reeds:T.InstancedMesh;private stones:T.InstancedMesh;
  private dummy=new T.Object3D();private color=new T.Color();private shadows:T.InstancedMesh;private key='';private revision=-1;private next=0;
  constructor(private world:World,scene:T.Scene){
-  const mat=new T.MeshLambertMaterial({color:0xffffff,side:T.DoubleSide});
+  const mat=new T.MeshLambertMaterial({color:0xffffff,vertexColors:true,side:T.DoubleSide});
   this.shadows=new T.InstancedMesh(new T.PlaneGeometry(1,1),contactMaterial(),100);this.shadows.frustumCulled=false;this.shadows.count=0;this.group.add(this.shadows);
   this.grass=new T.InstancedMesh(tuft(),mat,360);this.flowers=new T.InstancedMesh(flower(),mat,64);
-  const reedParts=[new T.BoxGeometry(.055,1,.055).translate(0,.5,0),new T.BoxGeometry(.11,.25,.11).translate(0,1,0)];
+  const reedParts=[painted(new T.BoxGeometry(.055,1,.055),0x91ac60).translate(0,.5,0),painted(new T.BoxGeometry(.13,.3,.13),0x765232).translate(0,1,0)];
   const reed=mergeGeometries(reedParts);reedParts.forEach(g=>g.dispose());this.reeds=new T.InstancedMesh(reed,mat,90);
-  this.stones=new T.InstancedMesh(new T.DodecahedronGeometry(1,0),mat,28);
+  this.stones=new T.InstancedMesh(painted(new T.DodecahedronGeometry(1,0),0xffffff),mat,28);
   for(const mesh of [this.grass,this.flowers,this.reeds,this.stones]){mesh.count=0;mesh.frustumCulled=false;this.group.add(mesh);}scene.add(this.group);
  }
  update(position:Cell,time:number){
@@ -48,8 +57,8 @@ export class NatureDetails{
     if(h%3===0)put(this.flowers,px+.2,y+1,pz-.2,.75,.65+(h%4)*.12,.75,[0xeeb352,0xe4d9b2,0xae8ac4,0xd88a6a][(h>>>4)%4],h*.1);
    }
    if((p.lake>.92&&p.lake<1.14||p.river>2&&p.river<4)&&y<1&&this.world.terrainRevision===2){
-    for(let j=0;j<3;j++)put(this.reeds,px+j*.22,y+1,pz+j*.2,1,.8+(h%7)*.12,1,h%2?0x77894b:0x967441,h*.2);
-   }else if(h%23===0&&b==='Gras')put(this.stones,px,y+1.1,pz,.32+(h%3)*.13,.22,.38,forest?0x63734f:0x8b9891,h*.2);
+    for(let j=0;j<3;j++)put(this.reeds,px+j*.22,y+1,pz+j*.2,1,.8+(h%7)*.12,1,h%2?0xffffff:0xd7dfa7,h*.2);
+   }else if(h%23===0&&(b==='Gras'||b==='Sand'))put(this.stones,px,y+1.1,pz,.32+(h%3)*.13,.22,.38,forest?0x63734f:b==='Sand'?0xb1b6a1:0x8b9891,h*.2);
   }
   let shadows=0;for(const t of groveSeeds(cx-27,cx+27,cz-27,cz+27)){
    const p=terrainProfile(t.x,t.z,this.world.terrainRevision);if(this.world.get(t.x,p.top+1,t.z)!=='Holz'&&this.world.get(t.x,p.top+1,t.z)!=='Dunkelholz')continue;

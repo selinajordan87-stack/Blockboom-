@@ -1611,16 +1611,28 @@ function resize() {
     landscape = nextLandscape;
   }
   renderer.setPixelRatio(ratio);
-  // Safari can change its visible viewport while its layout viewport still
-  // has the old dimensions. Keep WebGL aligned with the rectangle the player
-  // actually sees, rather than revealing the browser-coloured page behind it.
+  // Chrome on iOS also changes its visual viewport as browser controls move.
+  // Use one rectangle for the app, input coordinates and WebGL, not a mix of
+  // device-height, fill-available and dynamic viewport units.
   const visibleWidth = Math.max(1, window.visualViewport?.width || innerWidth);
   const visibleHeight = Math.max(1, window.visualViewport?.height || innerHeight);
+  const rootStyle = document.documentElement.style;
+  rootStyle.setProperty("--game-width", `${visibleWidth}px`);
+  rootStyle.setProperty("--game-height", `${visibleHeight}px`);
+  rootStyle.setProperty("--game-left", `${window.visualViewport?.offsetLeft || 0}px`);
+  rootStyle.setProperty("--game-top", `${window.visualViewport?.offsetTop || 0}px`);
   renderer.setSize(visibleWidth, visibleHeight, false);
   camera.aspect = visibleWidth / visibleHeight;
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);
+window.addEventListener("pageshow", resize);
+window.addEventListener("orientationchange", () => {
+  clearInput();
+  requestAnimationFrame(resize);
+  // iOS settles its toolbar and safe areas after the orientation event.
+  setTimeout(resize, 250);
+});
 let lastViewportScale=1;
 function keyboardViewport() {
   const scale=window.visualViewport?.scale||1;if(Math.abs(scale-lastViewportScale)>.01){recordDiagnostic("browser-viewport-scale",String(scale));lastViewportScale=scale;}
