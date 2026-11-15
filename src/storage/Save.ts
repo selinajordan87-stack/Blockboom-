@@ -22,7 +22,7 @@ export function saveKey(save:Save){return save.extension?.terrainRevision===2?TE
 export class NewerSaveError extends Error {constructor(){super("Dieser Spielstand wurde mit einer neueren BLOCKBOOM-Version erstellt.");}}
 export function assertSupportedSave(raw:string|null){
  if(!raw)return;let data:any;try{data=JSON.parse(raw);}catch{return;}
- if(typeof data?.version==="number"&&data.version>1||typeof data?.extension?.terrainRevision==="number"&&data.extension.terrainRevision>2)throw new NewerSaveError();
+ if(typeof data?.version==="number"&&data.version>1||Number.isSafeInteger(data?.extension?.terrainRevision)&&data.extension.terrainRevision>2)throw new NewerSaveError();
 }
 export function decode(raw: string | null): Save | null {
   try {
