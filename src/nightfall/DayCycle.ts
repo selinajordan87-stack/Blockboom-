@@ -38,12 +38,12 @@ export class DayView {
     sky.copy(this.night).lerp(this.day, daylight);
     if (time > .53 && time < .73) sky.lerp(this.sunset, Math.sin((time-.53)/.2*Math.PI)*.55);
     (this.scene.fog as T.Fog).color.copy(sky);
-    this.sun.position.set(Math.cos(angle)*30, height*40, -12);
+    this.sun.position.set(-Math.cos(angle)*30, height*40, 28);
     this.sun.intensity = .25 + daylight*1.8;
-    this.sun.color.set(daylight < .6 ? 0xffb980 : 0xffedcf);
+    this.sun.color.set(daylight < .2 ? 0x9abbef : daylight < .6 ? 0xffbd89 : 0xffedcf);
     this.ambient.intensity = .78 + daylight*.68;
     this.ambient.color.set(daylight < .3 ? 0x91b0dd : 0xeaf8ff);
-    this.sunMesh.position.set(origin.x+Math.cos(angle)*49, Math.max(-9,height*49),origin.z-14);
+    this.sunMesh.position.set(origin.x-Math.cos(angle)*49, Math.max(-9,height*49),origin.z+32);
     this.sunMesh.scale.setScalar(1.7);
     this.moon.position.set(origin.x-Math.cos(angle)*45, Math.max(-9,-height*45),origin.z+10);
     this.moon.scale.setScalar(1.2);

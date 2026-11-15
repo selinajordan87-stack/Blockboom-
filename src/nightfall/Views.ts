@@ -41,8 +41,10 @@ export class DefenseView {
   private dummy=new T.Object3D(); private geometry=new T.BoxGeometry(1,1,1);
   private material=new T.MeshLambertMaterial({color:0xffffff});
   private lights:T.PointLight[]=[];
-  private torches:number[][]=[];
+  private torches:number[][]=[];private glow:T.InstancedMesh;private halo:T.InstancedMesh;
   constructor(private world:World,scene:T.Scene) {
+    this.glow=new T.InstancedMesh(this.geometry,new T.MeshBasicMaterial({color:0xffdd8c}),32);this.glow.count=0;this.glow.frustumCulled=false;scene.add(this.glow);
+    this.halo=new T.InstancedMesh(new T.PlaneGeometry(1,1),new T.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{strength:{value:.18}},vertexShader:`varying vec2 v;void main(){v=uv;gl_Position=projectionMatrix*modelViewMatrix*instanceMatrix*vec4(position,1.);}`,fragmentShader:`varying vec2 v;uniform float strength;void main(){float r=length((v-.5)*2.);gl_FragColor=vec4(1.,.58,.12,(1.-smoothstep(0.,1.,r))*strength);}`}),32);this.halo.count=0;this.halo.frustumCulled=false;scene.add(this.halo);
     this.group.name="NIGHTFALL build parts";scene.add(this.group);
     for(let i=0;i<3;i++){const light=new T.PointLight(0xffba64,0,8,2);scene.add(light);this.lights.push(light);}
   }
@@ -86,6 +88,10 @@ export class DefenseView {
       this.revision=this.world.propsRevision;
     }
     const torches=this.torches.sort((a,b)=>Math.hypot(a[0]-origin.x,a[2]-origin.z)-Math.hypot(b[0]-origin.x,b[2]-origin.z));
+    let glows=0;for(const t of torches.slice(0,32)){if(Math.hypot(t[0]-origin.x,t[2]-origin.z)>55)continue;const lantern=this.world.get(t[0],t[1],t[2])==='Laterne';
+     this.dummy.position.set(t[0]+.5,t[1]+(lantern?.4:.76),t[2]+.5);this.dummy.rotation.set(0,0,0);this.dummy.scale.setScalar(lantern?.26:.16);this.dummy.updateMatrix();this.glow.setMatrixAt(glows,this.dummy.matrix);
+     this.dummy.rotation.set(0,Math.atan2(origin.x-this.dummy.position.x,origin.z-this.dummy.position.z),0);this.dummy.scale.setScalar(night?1.4:.7);this.dummy.updateMatrix();this.halo.setMatrixAt(glows++,this.dummy.matrix);
+    }this.glow.count=this.halo.count=glows;this.glow.instanceMatrix.needsUpdate=this.halo.instanceMatrix.needsUpdate=true;(this.halo.material as T.ShaderMaterial).uniforms.strength.value=night?.23:.1;
     this.lights.forEach((light,i)=>{light.intensity=night&&torches[i]?2.6:0;if(torches[i])light.position.set(torches[i][0]+.5,torches[i][1]+.9,torches[i][2]+.5);});
   }
 }

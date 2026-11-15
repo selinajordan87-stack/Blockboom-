@@ -19,7 +19,7 @@ export class ScenicWater{
     if(legacyArea(x,z)||seen.has(`${x},${z}`))continue;const f=terrainProfile(x+.5,z+.5,2);if(f.river>2.6||f.lake<1.05)continue;seen.add(`${x},${z}`);quad(x,z,1);
    }
   }
-  const bedGeometry=new T.BufferGeometry();bedGeometry.setAttribute('position',new T.Float32BufferAttribute(floor,3));bedGeometry.setAttribute('color',new T.Float32BufferAttribute(sand,3));bedGeometry.computeVertexNormals();this.bed=new T.Mesh(bedGeometry,new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide}));scene.add(this.bed);
+  const bedGeometry=new T.BufferGeometry();bedGeometry.setAttribute('position',new T.Float32BufferAttribute(floor,3));bedGeometry.setAttribute('color',new T.Float32BufferAttribute(sand,3));bedGeometry.setAttribute('normal',new T.Float32BufferAttribute(floor.map((_,i)=>i%3===1?1:0),3));this.bed=new T.Mesh(bedGeometry,new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide}));scene.add(this.bed);
   const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(p,3));geometry.setAttribute('waterDepth',new T.Float32BufferAttribute(depth,1));
   const material=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{time:{value:0},light:{value:1},fogColor:{value:new T.Color(0xb9d8dc)}},
    vertexShader:`attribute float waterDepth; varying vec3 vWorld; varying float vDepth; uniform float time;

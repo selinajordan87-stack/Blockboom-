@@ -16,9 +16,9 @@ export function artRiver(x:number,z:number){
  return {distance:d,width};
 }
 export function lakeRidge(x:number,z:number){
- const peaks=[[-119,-159,24,27,18],[-141,-150,17,22,15],[-98,-163,20,21,17]];
+ const peaks=[[-119,-159,26,26,19],[-141,-150,18,22,15],[-98,-163,22,20,17]];
  let h=0;
- for(const[px,pz,height,rx,rz]of peaks){const dx=(x-px)/rx,dz=(z-pz)/rz;h=Math.max(h,height*Math.max(0,1-Math.hypot(dx,dz)));}
+ for(const[px,pz,height,rx,rz]of peaks){const dx=(x-px)/rx,dz=(z-pz)/rz;const a=Math.atan2(dz,dx),r=Math.hypot(dx,dz)*(1+.1*Math.sin(a*3+px));h=Math.max(h,height*Math.max(0,1-r)**.88);}
  return h>0?Math.max(0,h+Math.sin(x*.5+z*.18)*1.1+Math.sin(z*.65)*.65):0;
 }
 export type TreeSeed={x:number;z:number;h:number;kind:number;seed:number};
@@ -30,8 +30,9 @@ export function groveSeeds(minX:number,maxX:number,minZ:number,maxZ:number):Tree
   const forest=Math.hypot((x+104)/65,(z-22)/58)<1,shore=Math.hypot((x+111)/66,(z+116)/56)<1;
   const cluster=Math.sin(x*.095+z*.031)+Math.cos(z*.105-x*.028);
   if(forest&&(Math.hypot(x+105,z-29)<9||Math.hypot(x+127,z-4)<7))continue;
-  if(!(forest?(seed%5!==0&&cluster>-.95):shore?(seed%3===0):seed%16===0))continue;
-  trees.push({x,z,h:forest?6+(seed>>>8)%6:5+(seed>>>8)%5,kind:shore?seed%3:seed%4,seed});
+  if(!(forest?(seed%5!==0&&cluster>-.95):shore?(seed%3!==0):seed%16===0))continue;
+  trees.push({x,z,h:forest?6+(seed>>>8)%6:6+(seed>>>8)%5,kind:shore?seed%3:seed%4,seed});
  }
+ for(const[x,z,h,kind]of [[-132,-82,8,1],[-126,-68,7,2],[-103,-67,9,0]])if(x>=minX-5&&x<=maxX+5&&z>=minZ-5&&z<=maxZ+5&&!trees.some(t=>t.x===x&&t.z===z))trees.push({x,z,h,kind,seed:artHash(x,z)});
  return trees;
 }

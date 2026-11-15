@@ -21,7 +21,7 @@ export class LivingView {
   let i=0;const ids:string[]=[];
   for(const a of s.animals.slice(0,MAX_ANIMALS)){if(a.health===0||Math.hypot(a.pos[0]-origin.x,a.pos[2]-origin.z)>48)continue;
    const bird=a.kind==="Huhn",cow=a.kind==="Kuh",sheep=a.kind==="Schaf",pig=a.kind==="Schwein";
-   const small=a.kind==="Katze"?.62:bird?.48:cow?1.15:1,body=cow?0xc2bca6:sheep?0xe8dfc6:pig?0xc99787:a.kind==="Wolf"?0x8f9b9c:bird?0xe6d8b5:0xa98665;
+   const small=a.kind==="Katze"?.68:bird?.48:cow?1.15:1,body=cow?0xc2bca6:sheep?0xe8dfc6:pig?0xc99787:a.kind==="Wolf"?0x9ca8a4:bird?0xe6d8b5:0xa98665;
    const parts=[
     [0,.55,0,sheep?.72:.55,sheep?.62:.45,bird?.58:.85,body],[0,.78,.55,.4,.4,.4,body],
     [-.2,.2,-.25,.13,.4,.14,0x605f56],[.2,.2,-.25,.13,.4,.14,0x605f56],[-.2,.2,.25,.13,.4,.14,0x605f56],[.2,.2,.25,.13,.4,.14,0x605f56],
@@ -29,11 +29,14 @@ export class LivingView {
     [-.12,.83,.77,.045,.045,.025,0x202d2b],[.12,.83,.77,.045,.045,.025,0x202d2b],
     [0,.55,-.55,.09,a.kind==="Katze"?.5:.15,pig?.17:.4,body],[0,.7,.8,pig?.3:.18,pig?.18:.1,bird?.3:.12,bird?0xe0b45d:pig?0xb97b74:0x3d4942],
    ];
+   if(a.kind==='Wolf'){parts[1]=[0,.8,.57,.35,.38,.46,0xaab2ac];parts[11]=[0,.7,.86,.23,.16,.25,0x5c6863];}
+   if(a.kind==='Katze'){parts[6]=[-.14,1.02,.55,.13,.22,.14,0x715449];parts[7]=[.14,1.02,.55,.13,.22,.14,0x715449];}
+   if(sheep){parts[1][6]=0x756b5a;parts[6][4]=.08;parts[7][4]=.08;}
    if(cow){parts[6]=[-.24,1.05,.5,.1,.24,.1,0xe4d3a5];parts[7]=[.24,1.05,.5,.1,.24,.1,0xe4d3a5];parts[0][6]=0x665c4e;}
    if(bird){parts[2]=[-.14,.18,.12,.07,.35,.1,0xd8b15c];parts[3]=[.14,.18,.12,.07,.35,.1,0xd8b15c];parts[4]=[-.31,.59,0,.12,.35,.4,0xd6c7a4];parts[5]=[.31,.59,0,.12,.35,.4,0xd6c7a4];parts[6]=[0,1.04,.55,.12,.16,.2,0xb45d4d];parts[7]=[0,.55,.66,.1,.17,.12,0xb45d4d];}
    for(let p=0;p<parts.length;p++){const [x,y,z,sx,sy,sz,c]=parts[p];
     this.dummy.position.set(a.pos[0]+(x*Math.cos(a.heading)+z*Math.sin(a.heading))*small,a.pos[1]+(a.mode==="Schlafen"?.23:y)*small,a.pos[2]+(-x*Math.sin(a.heading)+z*Math.cos(a.heading))*small);
-    this.dummy.rotation.set(p>=2&&p<=5&&a.action==="Gehen"?Math.sin(s.clock*8+p)*.4:0,a.heading,a.mode==="Schlafen"?.5:0);
+    this.dummy.rotation.set(p>=2&&p<=5&&a.action==="Gehen"?Math.sin(s.clock*8+p)*.4:p===1?Math.sin(s.clock*1.7+a.pos[0])*.035:0,a.heading+(p===10?Math.sin(s.clock*2)*.13:0),a.mode==="Schlafen"?.5:0);
     this.dummy.scale.set(sx*small,sy*small,sz*small);this.dummy.updateMatrix();this.animals.setMatrixAt(i,this.dummy.matrix);this.animals.setColorAt(i,this.color.set(c));ids[i++]=a.id;
    }
   }

@@ -9,28 +9,35 @@ export class LandmarkView {
  readonly group=new T.Group();
  private peaks:T.InstancedMesh;private peakData:number[][]=[];
  private far:T.Mesh;private silhouettes:T.InstancedMesh;private smoke:T.InstancedMesh;
- private tileCenters:[number,number][]=[];private tileLOD:number[]=[];private indices:Uint32Array;private key="";private dummy=new T.Object3D();private color=new T.Color();
+ private tileTriangles:number[][]=[];private tileCenters:[number,number][]=[];private tileLOD:number[]=[];private indices:Uint32Array;private key="";private dummy=new T.Object3D();private color=new T.Color();
  private grove:T.InstancedMesh;private trunks:T.InstancedMesh;private groveData:number[][]=[];
  private forward=new T.Vector3(0,0,-1);
  private landmarks:[number,number,number,number,number,number,number][]=[];
  constructor(scene:T.Scene,private world:World){
   this.group.name="Discovery distant LOD and river";this.group.userData.lod=true;scene.add(this.group);
-  const p:number[]=[],colors:number[]=[];
+  const p:number[]=[],colors:number[]=[];let vertex=0;
+  const tint=(height:number,surface:string)=>new T.Color(surface==='Sand'?0xd2c698:height>20?0xd5dcd8:height>13?0x98a9b5:height>6?0x91a39b:0x82ae60);
   for(let x=-LIMIT;x<LIMIT;x+=12)for(let z=-LIMIT;z<LIMIT;z+=12){
-   // Only the revised ridge receives a denser silhouette, sampled from the SAME
-   // height function as collision terrain. The rest retains its old LOD budget.
-   const ridge=world.terrainRevision===2&&(Math.hypot(x+6-145,z+6+105)<76||Math.hypot(x+6+110,z+6+153)<55);
-   for(const step of ridge?[12,4]:[12])for(let tx=x;tx<x+12;tx+=step)for(let tz=z;tz<z+12;tz+=step){
-    this.tileCenters.push([tx+step/2,tz+step/2]);
-    this.tileLOD.push(ridge?(step===4?2:1):0);
-    for(const[dx,dz]of [[0,0],[step,0],[0,step],[step,step]]){
-     const xx=tx+dx,zz=tz+dz,profile=terrainProfile(xx,zz,this.world.terrainRevision),height=legacyArea(xx,zz)?0:profile.top;
-     p.push(xx,height+(world.terrainRevision===2?1.02:.12),zz);const c=new T.Color(profile.surface==="Sand"?0xc5b47c:profile.surface==="Kalkstein"?0xb7b9a2:height>7?0x87959b:0x79a35b);colors.push(c.r,c.g,c.b);
+   const detailed=world.terrainRevision===2&&(Math.hypot(x+6-145,z+6+105)<65||Math.hypot(x+6+110,z+6+125)<75);
+   for(const step of detailed?[12,3]:[12])for(let tx=x;tx<x+12;tx+=step)for(let tz=z;tz<z+12;tz+=step){
+    this.tileCenters.push([tx+step/2,tz+step/2]);this.tileLOD.push(detailed?(step===3?2:1):0);const list:number[]=[];
+    const quad=(points:number[][],color:T.Color)=>{for(const q of points){p.push(...q);colors.push(color.r,color.g,color.b);}list.push(vertex,vertex+2,vertex+1,vertex+1,vertex+2,vertex+3);vertex+=4;};
+    const profile=terrainProfile(tx+step/2,tz+step/2,world.terrainRevision);
+    if(step===3){
+     const h=profile.top+1,c=tint(profile.top,profile.surface);
+     // Blocky medium-distance surfaces share the height field of the real voxels.
+     quad([[tx,h,tz],[tx+step,h,tz],[tx,h,tz+step],[tx+step,h,tz+step]],c);
+     const hx=terrainProfile(tx+step*1.5,tz+step/2,2).top+1,hz=terrainProfile(tx+step/2,tz+step*1.5,2).top+1;
+     if(hx!==h)quad([[tx+step,h,tz],[tx+step,hx,tz],[tx+step,h,tz+step],[tx+step,hx,tz+step]],c.clone().multiplyScalar(.83));
+     if(hz!==h)quad([[tx,h,tz+step],[tx+step,h,tz+step],[tx,hz,tz+step],[tx+step,hz,tz+step]],c.clone().multiplyScalar(.87));
+    }else{
+     const points:number[][]=[];for(const[dx,dz]of [[0,0],[step,0],[0,step],[step,step]]){const xx=tx+dx,zz=tz+dz,profile=terrainProfile(xx,zz,world.terrainRevision),height=legacyArea(xx,zz)?0:profile.top;points.push([xx,height+(world.terrainRevision===2?1:.12),zz]);}
+     quad(points,tint(profile.top,profile.surface));
     }
+    this.tileTriangles.push(list);
    }
   }
-  this.indices=new Uint32Array(this.tileCenters.length*6);
-  for(let i=0;i<this.tileCenters.length;i++){const v=i*4;this.indices.set([v,v+2,v+1,v+1,v+2,v+3],i*6);}
+  this.indices=new Uint32Array(this.tileTriangles.flat());
   const geometry=new T.BufferGeometry();geometry.setAttribute("position",new T.Float32BufferAttribute(p,3));geometry.setAttribute("normal",new T.Float32BufferAttribute(p.map((_,i)=>i%3===1?1:0),3));geometry.setAttribute("color",new T.Float32BufferAttribute(colors,3));geometry.setIndex(new T.BufferAttribute(this.indices,1).setUsage(T.DynamicDrawUsage));geometry.computeVertexNormals();geometry.computeBoundingSphere();
   const terrainMaterial=new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide});
   terrainMaterial.onBeforeCompile=shader=>{
@@ -46,7 +53,7 @@ export class LandmarkView {
   this.grove=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0xffffff}),1400);this.trunks=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0x69503c}),700);
   this.grove.frustumCulled=this.trunks.frustumCulled=false;this.grove.count=this.trunks.count=0;this.group.add(this.grove,this.trunks);
   if(world.terrainRevision===2)for(const t of groveSeeds(-205,210,-205,160)){
-   const p=terrainProfile(t.x,t.z,2);if(legacyArea(t.x,t.z)||p.top>10||p.lake<1.17||p.river<5||p.trail<4||p.village||mountainPathSample(t.x,t.z).distance<4)continue;
+   const p=terrainProfile(t.x,t.z,2);if(legacyArea(t.x,t.z)||p.top>10||p.lake<1.17&&p.top<1||p.river<5||p.trail<4||p.village||mountainPathSample(t.x,t.z).distance<4)continue;
    this.groveData.push([t.x,p.top+1,t.z,t.h,t.kind]);
   }
   this.silhouettes=new T.InstancedMesh(box,new T.MeshLambertMaterial({color:0xffffff,fog:false}),100);this.silhouettes.frustumCulled=false;this.silhouettes.name="distant landmark LOD";this.group.add(this.silhouettes);
@@ -77,9 +84,9 @@ export class LandmarkView {
   const horizontal=Math.hypot(this.forward.x,this.forward.z)||1;
   const behind=(px:number,pz:number,d:number)=>d>72&&((px-x)*this.forward.x+(pz-z)*this.forward.z)/horizontal<-.2*d;
   if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z),chunkDistance=Math.hypot(Math.floor(cx/12)*12+6-x,Math.floor(cz/12)*12+6-z);
-   if(this.tileLOD[i]===2&&chunkDistance>=100||this.tileLOD[i]===1&&chunkDistance<100)continue;
-   if(this.world.terrainRevision===2&&terrainProfile(cx,cz,2).lake<1.16)continue;
-   if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;const v=i*4;for(const a of [v,v+2,v+1,v+1,v+2,v+3])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
+   if(this.tileLOD[i]===2&&chunkDistance>=155||this.tileLOD[i]===1&&chunkDistance<155)continue;
+   if(this.world.terrainRevision===2&&terrainProfile(cx,cz,2).lake<.97)continue;
+   if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;for(const a of this.tileTriangles[i])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
   let trees=0,canopies=0;
   for(const[tx,ty,tz,h,kind]of this.groveData){const distance=Math.hypot(tx-x,tz-z);if(distance>160||distance<30||behind(tx,tz,distance)||this.world.activeChunks.has(`${Math.floor(tx/12)},${Math.floor(tz/12)}`))continue;if(trees>=700)break;
    this.dummy.position.set(tx+.5,ty+h*.38,tz+.5);this.dummy.scale.set(.65,h*.76,.65);this.dummy.rotation.set(0,0,0);this.dummy.updateMatrix();this.trunks.setMatrixAt(trees++,this.dummy.matrix);

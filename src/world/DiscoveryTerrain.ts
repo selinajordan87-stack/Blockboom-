@@ -77,6 +77,10 @@ export function terrainProfile(x:number,z:number,revision:1|2=1){
   const arch=Math.floor(9*Math.max(0,1-((x-134)/11)**2-((z+90)/11)**2));
   top=Math.max(top,arch);if(top>3)surface='Stein';
  }
+ if(revision===2){
+  const headland=Math.hypot((x+132)/8.5,(z+82)/8);
+  if(headland<1){top=Math.max(top,headland<.7?1:0);surface=headland<.82?'Gras':'Sand';}
+ }
  // A timber crossing at the river, and a jetty to the island, are real solids.
  const bridge=river<3.9&&trail<2.15;
  const jetty=Math.abs(x+115)<1.6&&z>=-111&&z<=-77;
@@ -150,7 +154,7 @@ export function decorateDiscoveryChunk(world:World,cx:number,cz:number){
  const w=scopedWorld(world,cx,cz);
  if(world.terrainRevision===2)for(const t of groveSeeds(cx*12-5,cx*12+16,cz*12-5,cz*12+16)){
   const {x,z,h,kind}=t,p=terrainProfile(x,z,2);
-  if(legacyArea(x,z)||p.lake<1.17||p.river<5||p.trail<4||p.village||p.top>10||caveRange(x,z,2)||mountainPathSample(x,z).distance<4)continue;
+  if(legacyArea(x,z)||p.lake<1.17&&p.top<1||p.river<5||p.trail<4||p.village||p.top>10||caveRange(x,z,2)||mountainPathSample(x,z).distance<4)continue;
   let edited=false;for(let y=MIN_Y;y<=MAX_Y;y++)if(Object.hasOwn(world.changes,`${x},${y},${z}`)){edited=true;break;}if(edited)continue;
   const wood:Block=kind===0?'Dunkelholz':'Holz';
   for(let y=1;y<=h;y++)w.set(x,p.top+y,z,wood,false);

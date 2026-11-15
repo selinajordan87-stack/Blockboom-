@@ -1,26 +1,31 @@
 import * as T from "three";
+import {contactMaterial} from "../world/ContactShade";
 import type {Cell} from "../world/World";
 import type {Tool} from "../inventory/Equipment";
 /** One batch for the complete player, including its equipped world-space tool. */
 export class Avatar {
  mesh:T.InstancedMesh;private root=new T.Object3D();private joint=new T.Object3D();private part=new T.Object3D();private color=new T.Color();
- private tip=new T.Vector3();
+ private tip=new T.Vector3();private shadow:T.Mesh;
  constructor(scene:T.Scene){
-  this.mesh=new T.InstancedMesh(new T.BoxGeometry(1,1,1),new T.MeshLambertMaterial({color:0xffffff}),24);
+  this.shadow=new T.Mesh(new T.PlaneGeometry(.9,.75),contactMaterial());this.shadow.rotation.x=-Math.PI/2;scene.add(this.shadow);
+  this.mesh=new T.InstancedMesh(new T.BoxGeometry(1,1,1),new T.MeshLambertMaterial({color:0xffffff}),30);
   this.mesh.name="BLOCKBOOM Spielfigur";this.mesh.frustumCulled=false;this.mesh.count=0;this.mesh.visible=false;scene.add(this.mesh);
  }
  update(pos:Cell,yaw:number,pitch:number,tool:Tool,moving:boolean,time:number,action:string,visible:boolean){
-  this.mesh.visible=visible;if(!visible)return;
+  this.shadow.visible=visible;this.shadow.position.set(pos[0],pos[1]+.025,pos[2]);this.mesh.visible=visible;if(!visible)return;
   this.root.position.set(...pos);this.root.rotation.set(0,yaw,0);this.root.updateMatrix();
   const walk=moving?Math.sin(time*8)*.42:0,swing=action==="idle"?walk:Math.sin(time*17)*.65-.6;
   const boxes=[
-   [0,1.49,0,.43,.43,.42,0xd8a77d,0],[0,1.7,.02,.45,.12,.44,0x5c4438,0],
+   [0,1.49,0,.43,.43,.42,0xd8a77d,0],[0,1.7,.02,.45,.12,.44,0x583b2c,0],
    [-.1,1.53,-.22,.05,.05,.025,0x24392f,0],[.1,1.53,-.22,.05,.05,.025,0x24392f,0],
-   [0,1.01,0,.52,.56,.3,0x327365,0],[-.16,.39,0,.22,.72,.25,0x31495f,walk],[.16,.39,0,.22,.72,.25,0x31495f,-walk],
-   [-.39,1,0,.19,.5,.22,0x327365,-walk],[.39,1,0,.19,.5,.22,0x327365,swing],
+   [0,1.01,0,.52,.56,.3,0x39758f,0],[-.16,.39,0,.22,.72,.25,0x354b63,walk],[.16,.39,0,.22,.72,.25,0x354b63,-walk],
+   [-.39,1,0,.19,.5,.22,0x39758f,-walk],[.39,1,0,.19,.5,.22,0x39758f,swing],
    [-.39,.73,0,.19,.18,.22,0xd8a77d,-walk],[.39,.73,0,.19,.18,.22,0xd8a77d,swing],
   ];
   boxes.push([0,1.05,.24,.38,.44,.18,0x9b754c,0],[0,1.26,.25,.4,.09,.2,0x6d5038,0]);
+  boxes.push([0,1.54,.215,.44,.3,.035,0x583b2c,0],[-.22,1.59,0,.04,.24,.4,0x654730,0],[.22,1.59,0,.04,.24,.4,0x654730,0],
+   [-.16,.11,-.035,.24,.19,.32,0x594b3c,walk],[.16,.11,-.035,.24,.19,.32,0x594b3c,-walk],
+   [-.13,1.08,.345,.045,.32,.03,0x674c34,0],[.13,1.08,.345,.045,.32,.03,0x674c34,0],[0,1.16,.352,.085,.065,.04,0xd4c7a0,0]);
   let i=0;const add=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:number,angle=0,parent=this.root.matrix)=>{
    this.part.position.set(x,y,z);this.part.rotation.set(angle,0,0);this.part.scale.set(sx,sy,sz);this.part.updateMatrix();this.part.matrix.premultiply(parent);this.mesh.setMatrixAt(i,this.part.matrix);this.mesh.setColorAt(i++,this.color.set(color));
   };

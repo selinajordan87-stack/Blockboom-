@@ -238,11 +238,11 @@ export class FishView {
       );
     }
     if (part === "tail") {
-      object.scale.set(0.38 * length, 0.42 * length, 0.3 * length);
+      object.scale.set(.7 * length, .5 * length, .36 * length);
       object.rotation.y += Math.sin(time * 7 + fish.phase) * 0.38;
     }
     if (part === "dorsal") {
-      object.scale.set(0.2 * length, 0.3 * length, 0.32 * length);
+      object.scale.set(.5 * length, .26 * length, .4 * length);
       if (fish.species === "Hecht") {
         object.position.x -= forwardX * 0.18 * length;
         object.position.z -= forwardZ * 0.18 * length;
@@ -255,8 +255,8 @@ export class FishView {
         fish.species,
       );
       object.scale.set(
-        marked ? bodyWidth * 1.03 : 0,
-        marked ? bodyHeight * 1.02 : 0,
+        marked ? bodyWidth * .93 : 0,
+        marked ? bodyHeight * .83 : 0,
         marked ? 0.09 * length : 0,
       );
       object.position.x -= forwardX * 0.08 * length;
@@ -324,17 +324,13 @@ export class FishView {
 }
 
 function makeGeometries() {
-  const tail = new T.ConeGeometry(0.5, 0.8, 3);
-  tail.rotateX(Math.PI / 2);
-  const dorsal = new T.ConeGeometry(0.5, 0.8, 3);
-  dorsal.rotateZ(Math.PI);
-  return {
-    body: new T.BoxGeometry(1, 1, 1),
-    head: new T.BoxGeometry(1, 1, 1),
-    tail,
-    dorsal,
-    fins: new T.BoxGeometry(1, 1, 1),
-    marking: new T.BoxGeometry(1, 1, 1),
-    eye: new T.SphereGeometry(1, 6, 4),
-  };
+ const p:number[]=[],indices:number[]=[],rings=[[-.5,.17],[-.05,.5],[.5,.3]];
+ for(const[z,r]of rings)for(let side=0;side<6;side++){const a=side*Math.PI/3;p.push(Math.cos(a)*r,Math.sin(a)*r,z);}
+ for(let ring=0;ring<2;ring++)for(let side=0;side<6;side++){const a=ring*6+side,b=ring*6+(side+1)%6;indices.push(a,b,a+6,b,b+6,a+6);}
+ indices.push(0,2,1,0,3,2,0,4,3,0,5,4,12,13,14,12,14,15,12,15,16,12,16,17);
+ const body=new T.BufferGeometry();body.setAttribute('position',new T.Float32BufferAttribute(p,3));body.setIndex(indices);body.computeVertexNormals();
+ const fin=(points:number[][])=>{const p:number[]=[],idx:number[]=[];for(const x of [-.04,.04])for(const[z,y]of points)p.push(x,y,z);idx.push(0,1,2,0,2,3,4,6,5,4,7,6);for(let i=0;i<4;i++){const j=(i+1)%4;idx.push(i,j,i+4,j,j+4,i+4);}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(idx);g.computeVertexNormals();return g;};
+ const tail=fin([[.5,0],[-.5,.5],[-.18,0],[-.5,-.5]]),dorsal=fin([[-.5,0],[.5,0],[.2,.65],[-.15,.9]]);
+ const head=new T.CylinderGeometry(.4,.5,1,6,1);head.rotateX(Math.PI/2);
+ return {body,head,tail,dorsal,fins:new T.BoxGeometry(1,1,1),marking:new T.BoxGeometry(1,1,1),eye:new T.SphereGeometry(1,6,4)};
 }

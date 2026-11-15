@@ -1,3 +1,4 @@
+import {Waterfall} from "./world/Waterfall";
 import {VISUAL_PREVIEW} from "./Preview";
 import {ScenicWater} from "./world/ScenicWater";
 import {Atmosphere} from "./world/Atmosphere";
@@ -162,9 +163,9 @@ const discovery=new DiscoveryEngine(expansion.discovery,expansion);
 try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.living&&!localStorage.getItem(SAVE_KEY+".pre-v06"))localStorage.setItem(SAVE_KEY+".pre-v06",raw);}catch{}
 if (!saved) {expansion.nightfall.mode = "Survival";expansion.nightfall.refuge=true;}
 if(VISUAL_PREVIEW&&!saved){
- expansion.terrainRevision=2;expansion.camera.perspective='third';expansion.camera.distance=5;expansion.tool='Angel';
+ expansion.terrainRevision=2;expansion.camera.perspective='third';expansion.camera.distance=5.5;expansion.view.fov=62;expansion.tool='Angel';
  expansion.nightfall.mode='Kreativ';expansion.nightfall.difficulty='Friedlich';expansion.nightfall.time=.23;
- player.pos=[-115,1.02,-81];player.yaw=0;player.pitch=-.12;
+ player.pos=[-122,1.02,-73];player.yaw=-.10;player.pitch=-.06;
 }
 try {
   const raw = readSaveRaw(localStorage);
@@ -258,6 +259,7 @@ view.update();
 const fishView = new FishView(shoal, scene, camera);
 const water = new WaterView(scene, expansion.edition);
 const fishingWaters = new FishingWaters(scene,world.terrainRevision);
+const waterfall=world.terrainRevision===2?new Waterfall(scene):null;
 const scenicWater=world.terrainRevision===2?new ScenicWater(scene):null;
 const atmosphere=new Atmosphere(scene);
 const fishingView = new FishingView(scene);
@@ -652,7 +654,7 @@ function menu() {
   $("menu-inventory").onclick=showInventory;$("menu-tools").onclick=()=>{resumeGame();$("tool-toggle").click();};$("menu-building").onclick=showMaterials;
   $("menu-adventure").onclick=()=>livingUI.hub();$("menu-learning").onclick=()=>adventure.challenge();$("menu-missions").onclick=()=>adventure.journal();
   if(VISUAL_PREVIEW)$("preview-places").onclick=()=>{
-   const places=[{name:'Spiegelsee',pos:[-115,1.02,-81],yaw:0,pitch:-.12},{name:'Silbergebirge',pos:[100,1.02,-70],yaw:-.9,pitch:.12},{name:'Flüsterwald',pos:[-105,1.02,29],yaw:-.5,pitch:-.12},{name:'Alte Mine',pos:[130,1.02,-90],yaw:-Math.PI/2,pitch:0},{name:'Schmiede & Siedlung',pos:[100,1.02,75],yaw:Math.PI,pitch:0},{name:'Flussauen',pos:[-70,1.02,65],yaw:1.1,pitch:-.15}];
+   const places=[{name:'Spiegelsee',pos:[-122,1.02,-73],yaw:-.10,pitch:-.06},{name:'Silbergebirge',pos:[100,1.02,-70],yaw:-.9,pitch:.12},{name:'Flüsterwald',pos:[-105,1.02,29],yaw:-.5,pitch:-.12},{name:'Alte Mine',pos:[130,1.02,-90],yaw:-Math.PI/2,pitch:0},{name:'Schmiede & Siedlung',pos:[100,1.02,75],yaw:Math.PI,pitch:0},{name:'Flussauen',pos:[-70,1.02,65],yaw:1.1,pitch:-.15}];
    openPanel('VISUELLE PREVIEW',`<h2>Ein Blick in die Welt</h2><p>Besuche einen Ort. Deinen Preview-Spielstand behältst du.</p><div class="menu-grid">${places.map((p,i)=>`<button data-art-place="${i}">${p.name}</button>`).join('')}</div><label>Tagesstimmung<select id="art-time"><option value=".23">Morgenlicht</option><option value=".35">Mittag</option><option value=".60">Abend</option><option value=".78">Mondnacht</option></select></label>`);
    $<HTMLSelectElement>('art-time').onchange=e=>{night.time=Number((e.target as HTMLSelectElement).value);closePanel();};
    document.querySelectorAll<HTMLButtonElement>('[data-art-place]').forEach(b=>b.onclick=()=>{const p=places[Number(b.dataset.artPlace)];clearInput();regionStream.ensure(p.pos[0],p.pos[2]);player.pos=[...p.pos] as [number,number,number];player.yaw=p.yaw;player.pitch=p.pitch;player.vy=0;player.safeSpawn();view.setFocus(player.pos[0],player.pos[2]);view.update();closePanel();});
@@ -1851,10 +1853,10 @@ function tickFrame(now:number){
     mobileHUD.update({tool:expansion.tool,functional:!!animalTarget||["Bett","Truhe","Werkbank","Ofen","Grill","Schatztruhe","Acker","Tür","Tür offen","Tor","Tor offen","Lagerkiste"].includes(b||"")||expansion.tool==="Hacke"&&["Gras","Erde"].includes(b||""),nearby:!!spot||arena||!!localMission&&expansion.tool==="Bauwerkzeug",spot:!!spot,fishing:fishing.state,zombie:/Wanderer|Sprinter|Koloss/.test($("target-label").textContent||""),targetBlock:b,hasTarget:!!target,animal:!!animalTarget,noteAction:noteTarget?"Lesen":undefined,cropAction:target&&b==="Acker"?(expansion.living.crops.some(c=>c.cell.join(",")===target!.join(",")&&stage(expansion.living,c)>=3)?"Ernten":expansion.living.crops.some(c=>c.cell.join(",")===target!.join(","))?"Wächst":"Pflanzen"):undefined,blockCount:night.mode==="Kreativ"?"∞":expansion.materials[TYPES[selected]]||0,block:TYPES[selected],blockColor:`#${colors[TYPES[selected]].toString(16).padStart(6,"0")}`},expansion.camera);
     $("place").dataset.label=planningTower?"Turm":"Bauen";$("place").setAttribute("aria-label",planningTower?"Aussichtsturm am Vorschauplatz bauen":"Block platzieren");
   } else if (!started) {
-    if(VISUAL_PREVIEW){camera.position.set(-119,5.2,-77);camera.lookAt(-111,4,-116);}else{camera.position.set(23,18,29);camera.lookAt(-2,0,-2);}
+    if(VISUAL_PREVIEW){camera.position.set(-124,4.2,-68);camera.lookAt(-112,6,-125);}else{camera.position.set(23,18,29);camera.lookAt(-2,0,-2);}
   }
   dayView.update(night.time,camera.position);
-  atmosphere.update(now,night.time,camera.position);scenicWater?.update(now,night.time,(scene.fog as T.Fog).color);
+  atmosphere.update(now,night.time,camera.position);waterfall?.update(now,night.time);scenicWater?.update(now,night.time,(scene.fog as T.Fog).color);
   for(const cloud of movingClouds)cloud.position.x=cloud.userData.baseX+Math.sin(expansion.living.clock*.015+cloud.position.z)*2;
   if(player.pos[1]<-3)ambient.intensity*=.48;
   livingView.update(expansion.living,camera.position);
