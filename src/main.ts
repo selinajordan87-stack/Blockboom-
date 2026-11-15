@@ -1611,8 +1611,13 @@ function resize() {
     landscape = nextLandscape;
   }
   renderer.setPixelRatio(ratio);
-  renderer.setSize(Math.max(1,innerWidth), Math.max(1,innerHeight));
-  camera.aspect = Math.max(1,innerWidth) / Math.max(1,innerHeight);
+  // Safari can change its visible viewport while its layout viewport still
+  // has the old dimensions. Keep WebGL aligned with the rectangle the player
+  // actually sees, rather than revealing the browser-coloured page behind it.
+  const visibleWidth = Math.max(1, window.visualViewport?.width || innerWidth);
+  const visibleHeight = Math.max(1, window.visualViewport?.height || innerHeight);
+  renderer.setSize(visibleWidth, visibleHeight, false);
+  camera.aspect = visibleWidth / visibleHeight;
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);
@@ -1628,8 +1633,9 @@ function keyboardViewport() {
     `${window.visualViewport?.offsetTop || 0}px`,
   );
 }
-window.visualViewport?.addEventListener("resize", keyboardViewport);
-window.visualViewport?.addEventListener("scroll", keyboardViewport);
+const syncVisibleViewport=()=>{keyboardViewport();resize();};
+window.visualViewport?.addEventListener("resize", syncVisibleViewport);
+window.visualViewport?.addEventListener("scroll", syncVisibleViewport);
 keyboardViewport();
 resize();
 const diagnostics = new URLSearchParams(location.search).has("diagnostics");

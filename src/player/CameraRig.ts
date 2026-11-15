@@ -1,6 +1,5 @@
 import * as T from "three";
 import {World,LIMIT,MIN_Y,type Cell} from "../world/World";
-import {collides} from "../nightfall/Defense";
 
 export interface CameraSettings {version:1;perspective:"first"|"third";distance:number}
 export interface ControlSettings {joystickSize:number;opacity:number;handedness:"right"|"left"}
@@ -20,7 +19,26 @@ export function readControls(raw:unknown):ControlSettings{
 export class CameraRig {
  actualDistance=0;blocked=false;temporaryFirst=false;recoveries=0;
  private mode="first";private compressed=false;private pivot=new T.Vector3();private direction=new T.Vector3();private offset=new T.Vector3();private sample=new T.Vector3();
+ private cameraOffset=new T.Vector3();private right=new T.Vector3();
+ private passThrough=new Set(["Laub","Glas","Fackel","Laterne","Zaun","Leiter","Teppich"]);
  constructor(private world:World){}
+  /** Leaves, glass and small props must not force a first-person camera. */
+  private cameraBlocked(at:T.Vector3){
+   for(let x=Math.floor(at.x-.24);x<=Math.floor(at.x+.24);x++)
+    for(let y=Math.floor(at.y-.18);y<=Math.floor(at.y+.28);y++)
+     for(let z=Math.floor(at.z-.24);z<=Math.floor(at.z+.24);z++){
+      const block=this.world.get(x,y,z);
+      if(block&&!this.passThrough.has(block))return true;
+     }
+   return false;
+  }
+  private clearance(offset:T.Vector3,desired:number){
+   for(let distance=.12;distance<=desired+.01;distance+=.12){
+    const d=Math.min(distance,desired);this.sample.copy(this.pivot).addScaledVector(offset,d);
+    if(Math.abs(this.sample.x)>=LIMIT-.25||Math.abs(this.sample.z)>=LIMIT-.25||this.sample.y<MIN_Y+.25||this.cameraBlocked(this.sample))return Math.max(0,d-.16);
+   }
+   return desired;
+  }
  update(camera:T.PerspectiveCamera,actor:{pos:Cell;yaw:number;pitch:number},settings:CameraSettings,fov:number,dt:number,force=false){
   if(!Number.isFinite(actor.yaw)||!Number.isFinite(actor.pitch)){actor.yaw=0;actor.pitch=-.12;this.recoveries++;force=true;}
   if(!Number.isFinite(this.actualDistance)){this.actualDistance=0;this.recoveries++;force=true;}
@@ -33,29 +51,37 @@ export class CameraRig {
   this.blocked=false;this.temporaryFirst=false;
   if(settings.perspective==="third"){
    const desired=finite(settings.distance,2,9,4);
-   this.offset.copy(this.direction).multiplyScalar(-desired).add(new T.Vector3(Math.cos(actor.yaw)*.4,.65,-Math.sin(actor.yaw)*.4)).normalize();
-   let allowed=desired;
-   for(let distance=.08;distance<=desired+.08;distance+=.08){
-    const d=Math.min(distance,desired);this.sample.copy(this.pivot).addScaledVector(this.offset,d);
-    if(Math.abs(this.sample.x)>=LIMIT-.1||Math.abs(this.sample.z)>=LIMIT-.1||this.sample.y<MIN_Y+.2||collides(this.world,[this.sample.x,this.sample.y-.2,this.sample.z],.4,.2)){
-     allowed=Math.max(0,d-.12);this.blocked=true;break;
-    }
-   }
+   this.right.set(Math.cos(actor.yaw),0,-Math.sin(actor.yaw));
+   // Prefer the usual over-the-shoulder view. If a real wall is behind the
+   // player, try both shoulders and a slightly higher angle before moving in.
+   const candidates=[
+    this.direction.clone().multiplyScalar(-1).addScaledVector(this.right,.32).add(new T.Vector3(0,.38,0)).normalize(),
+    this.direction.clone().multiplyScalar(-1).addScaledVector(this.right,-.52).add(new T.Vector3(0,.52,0)).normalize(),
+    this.direction.clone().multiplyScalar(-1).add(new T.Vector3(0,.9,0)).normalize(),
+   ];
+   let allowed=0;this.cameraOffset.copy(candidates[0]);
+   for(const candidate of candidates){const clear=this.clearance(candidate,desired);if(clear>allowed){allowed=clear;this.cameraOffset.copy(candidate);}}
+   this.blocked=allowed<desired-.08;
    const elapsed=Number.isFinite(dt)?Math.min(.1,Math.max(0,dt)):0;
-   this.actualDistance=force||allowed<this.actualDistance?allowed:this.actualDistance+(allowed-this.actualDistance)*(1-Math.exp(-8*elapsed));
-   // A shoulder camera inside the avatar is neither a usable third-person
-   // view nor an eye view. Keep the chosen distance, but use the eyes until
-   // there is room again. Hysteresis prevents flicker at a wall or tree.
-   this.compressed=allowed<(this.compressed?1.9:1.45);
-   this.temporaryFirst=this.compressed||this.actualDistance<1.45;
+   this.actualDistance=force||allowed<this.actualDistance?allowed:this.actualDistance+(allowed-this.actualDistance)*(1-Math.exp(-11*elapsed));
+   // Do not collapse to an extreme close-up because of a tree or fence. The
+   // alternate angles above keep third person useful in almost every place.
+   this.compressed=allowed<(this.compressed?.72:.52);
+   this.temporaryFirst=this.compressed||this.actualDistance<.52;
    if(!this.temporaryFirst){
-    camera.position.copy(this.pivot).addScaledVector(this.offset,this.actualDistance);
+    camera.position.copy(this.pivot).addScaledVector(this.cameraOffset,this.actualDistance);
     this.sample.copy(this.pivot).addScaledVector(this.direction,5);camera.lookAt(this.sample);
    }
   }else {this.actualDistance=0;this.compressed=false;}
   if(settings.perspective==="first"||this.temporaryFirst){camera.position.set(actor.pos[0],actor.pos[1]+1.6,actor.pos[2]);camera.rotation.set(actor.pitch,actor.yaw,0);}
   camera.updateProjectionMatrix();camera.updateMatrixWorld(true);
  }
- reset(settings:CameraSettings){settings.perspective="first";settings.distance=4;this.actualDistance=0;this.mode="first";this.compressed=false;this.blocked=false;this.temporaryFirst=false;this.recoveries++;}
+ reset(settings:CameraSettings){
+  // Resetting frees a blocked rig but does not silently replace the player's
+  // selected perspective with a close first-person view.
+  settings.distance=finite(settings.distance,2,9,4);
+  this.actualDistance=settings.perspective==="third"?settings.distance:0;
+  this.mode=settings.perspective;this.compressed=false;this.blocked=false;this.temporaryFirst=false;this.recoveries++;
+ }
  get thirdVisible(){return this.mode==="third"&&this.actualDistance>1.05&&!this.temporaryFirst;}
 }
