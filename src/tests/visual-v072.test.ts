@@ -13,3 +13,12 @@ it('ersetzt Fernplatten durch begrenzte Gipfelgeometrie und entsorgt alle Ressou
  const world=new World(),scene=new T.Scene(),art=new LandmarkView(scene,world);art.update([0,1,17],1000);
  const peaks=art.group.getObjectByName('layered ridge silhouettes') as T.InstancedMesh;expect(peaks).toBeTruthy();expect(peaks.count).toBeLessThanOrEqual(9);expect(peaks.geometry.getAttribute('position').count).toBeLessThan(200);art.dispose();expect(scene.children).not.toContain(art.group);
 });
+it('zeigt die feinere Berg-LOD nur in der Nähe statt ihr Budget von der Startwiese aus zu verbrauchen',()=>{
+ const camera=new T.PerspectiveCamera();camera.position.set(0,2.6,17);camera.lookAt(145,22,-105);
+ const old=new LandmarkView(new T.Scene(),new World()),world=new World();world.terrainRevision=2;const fresh=new LandmarkView(new T.Scene(),world);
+ old.update([0,1,17],1000,camera);fresh.update([0,1,17],1000,camera);
+ const count=(view:LandmarkView)=>(view.group.getObjectByName('distant terrain LOD') as T.Mesh).geometry.drawRange.count;
+ expect(count(fresh)).toBeLessThanOrEqual(count(old)+300);
+ const peaks=fresh.group.getObjectByName('layered ridge silhouettes') as T.InstancedMesh;
+ expect(peaks.count).toBeLessThanOrEqual(6);old.dispose();fresh.dispose();
+});

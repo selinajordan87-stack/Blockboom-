@@ -1,8 +1,16 @@
 import {expect,it} from 'vitest';
 import {World,MAX_Y} from '../world/World';
-import {terrainProfile,caveRange} from '../world/DiscoveryTerrain';
+import {terrainProfile,caveRange,generateDiscoveryColumn} from '../world/DiscoveryTerrain';
 import {RegionStream} from '../living/Regions';
 import {MOUNTAIN_PATH,mountainSculpt} from '../world/TerrainSculpt';
+
+it('trägt Fels unter kahlen Gipfeln statt einer künstlichen Erdschicht',()=>{
+ const old=new World(),world=new World();world.terrainRevision=2;
+ generateDiscoveryColumn(old,123,-121);generateDiscoveryColumn(world,123,-121);
+ const top=terrainProfile(123,-121,2).top;
+ expect(['Stein','Schiefer']).toContain(world.get(123,top-1,-121));
+ expect(old.get(123,terrainProfile(123,-121,1).top-1,-121)).toBe('Erde');
+});
 
 it('verbindet den äußeren Rand ohne senkrechte Generationsnaht',()=>{
  let edges=0;

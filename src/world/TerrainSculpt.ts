@@ -1,5 +1,6 @@
 import type {Block} from './World';
 export const MOUNTAIN_PATH:readonly (readonly[number,number,number])[]=[[130,-90,0],[112,-108,5],[127,-132,10],[155,-132,15],[166,-111,19],[145,-105,24]];
+const peaks:readonly (readonly[number,number,number,number])[]=[[145,-105,25,44],[123,-121,21,32],[164,-125,23,32]];
 export function mountainPathSample(x:number,z:number){
  let distance=Infinity,height=0;
  for(let i=1;i<MOUNTAIN_PATH.length;i++){
@@ -10,7 +11,6 @@ export function mountainPathSample(x:number,z:number){
 }
 /** Generation 2 is immutable and opt-in. Existing saves always decode as 1. */
 export function mountainSculpt(x:number,z:number){
- const peaks=[[145,-105,25,44],[123,-121,21,32],[164,-125,23,32]];
  const edge=Math.hypot(x-145,z+105);
  if(edge>=70)return null;
  let elevation=0;for(const [px,pz,h,r]of peaks)elevation=Math.max(elevation,h*Math.max(0,1-Math.hypot((x-px)*.9,z-pz)/r));

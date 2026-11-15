@@ -87,9 +87,10 @@ export function caveRange(x:number,z:number):AirRange|null{
 function generated(w:World,x:number,y:number,z:number,b:Block|null){if((w.get(x,y,z)||null)!==b)w.set(x,y,z,b,false);}
 export function generateDiscoveryColumn(w:World,x:number,z:number){
  const p=terrainProfile(x,z,w.terrainRevision),air=caveRange(x,z);
+ const bareRock=w.terrainRevision===2&&p.top>7&&!!mountainSculpt(x,z);
  for(let y=MIN_Y;y<=MAX_Y;y++){
   let b:Block|null=null;
-  if(y<=p.top){b=y===p.top?p.surface:y>=p.top-2?"Erde":"Stein";
+  if(y<=p.top){b=y===p.top?p.surface:y>=p.top-2&&!bareRock?"Erde":bareRock&&y>14?"Schiefer":"Stein";
    const hash=Math.abs(x*73856093^y*19349663^z*83492791);
    if(y<p.top-3&&y>MIN_Y){if(hash%41===0)b="Kohleerz";else if(hash%53===0)b="Kupfererz";else if(y<-4&&hash%67===0)b="Eisenerz";else if(y<-9&&hash%79===0)b="Golderz";}
   }

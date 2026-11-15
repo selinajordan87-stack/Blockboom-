@@ -7,7 +7,7 @@ export class LandmarkView {
  readonly group=new T.Group();
  private peaks:T.InstancedMesh;private peakData:number[][]=[];
  private far:T.Mesh;private silhouettes:T.InstancedMesh;private smoke:T.InstancedMesh;
- private tileCenters:[number,number][]=[];private indices:Uint32Array;private key="";private dummy=new T.Object3D();private color=new T.Color();
+ private tileCenters:[number,number][]=[];private tileLOD:number[]=[];private indices:Uint32Array;private key="";private dummy=new T.Object3D();private color=new T.Color();
  private forward=new T.Vector3(0,0,-1);
  private landmarks:[number,number,number,number,number,number,number][]=[];
  constructor(scene:T.Scene,private world:World){
@@ -16,9 +16,10 @@ export class LandmarkView {
   for(let x=-LIMIT;x<LIMIT;x+=12)for(let z=-LIMIT;z<LIMIT;z+=12){
    // Only the revised ridge receives a denser silhouette, sampled from the SAME
    // height function as collision terrain. The rest retains its old LOD budget.
-   const step=world.terrainRevision===2&&Math.hypot(x+6-145,z+6+105)<76?4:12;
-   for(let tx=x;tx<x+12;tx+=step)for(let tz=z;tz<z+12;tz+=step){
+   const ridge=world.terrainRevision===2&&Math.hypot(x+6-145,z+6+105)<76;
+   for(const step of ridge?[12,4]:[12])for(let tx=x;tx<x+12;tx+=step)for(let tz=z;tz<z+12;tz+=step){
     this.tileCenters.push([tx+step/2,tz+step/2]);
+    this.tileLOD.push(ridge?(step===4?2:1):0);
     for(const[dx,dz]of [[0,0],[step,0],[0,step],[step,step]]){
      const xx=tx+dx,zz=tz+dz,profile=terrainProfile(xx,zz,this.world.terrainRevision),height=legacyArea(xx,zz)?0:profile.top;
      p.push(xx,height+(world.terrainRevision===2?1.02:.12),zz);const c=new T.Color(profile.surface==="Sand"?0xc5b47c:profile.surface==="Kalkstein"?0xb7b9a2:height>7?0x87918b:0x70935b);colors.push(c.r,c.g,c.b);
@@ -56,7 +57,9 @@ export class LandmarkView {
   // thousands of triangles behind the camera in the single LOD batch.
   const horizontal=Math.hypot(this.forward.x,this.forward.z)||1;
   const behind=(px:number,pz:number,d:number)=>d>72&&((px-x)*this.forward.x+(pz-z)*this.forward.z)/horizontal<-.2*d;
-  if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z);if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;const v=i*4;for(const a of [v,v+2,v+1,v+1,v+2,v+3])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
+  if(key!==this.key){this.key=key;let n=0;for(let i=0;i<this.tileCenters.length;i++){const[cx,cz]=this.tileCenters[i],distance=Math.hypot(cx-x,cz-z),chunkDistance=Math.hypot(Math.floor(cx/12)*12+6-x,Math.floor(cz/12)*12+6-z);
+   if(this.tileLOD[i]===2&&chunkDistance>=100||this.tileLOD[i]===1&&chunkDistance<100)continue;
+   if(distance>270||behind(cx,cz,distance)||distance<45&&this.world.activeChunks.has(`${Math.floor(cx/12)},${Math.floor(cz/12)}`))continue;const v=i*4;for(const a of [v,v+2,v+1,v+1,v+2,v+3])this.indices[n++]=a;}this.far.geometry.setDrawRange(0,n);this.far.geometry.index!.needsUpdate=true;}
   let i=0;for(const[px,py,pz,sx,sy,sz,c]of this.landmarks){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||behind(px,pz,distance)||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.silhouettes.setMatrixAt(i,this.dummy.matrix);this.silhouettes.setColorAt(i++,this.color.set(c));}this.silhouettes.count=i;this.silhouettes.instanceMatrix.needsUpdate=true;if(this.silhouettes.instanceColor)this.silhouettes.instanceColor.needsUpdate=true;
   let peakCount=0;for(const[px,py,pz,sx,sy,sz,c]of this.peakData){const distance=Math.hypot(px-x,pz-z);if(distance<36||distance>260||behind(px,pz,distance)||this.world.activeChunks.has(`${Math.floor(px/12)},${Math.floor(pz/12)}`))continue;this.dummy.position.set(px,py,pz);this.dummy.rotation.set(0,0,0);this.dummy.scale.set(sx,sy,sz);this.dummy.updateMatrix();this.peaks.setMatrixAt(peakCount,this.dummy.matrix);this.peaks.setColorAt(peakCount++,this.color.set(c));}this.peaks.count=peakCount;this.peaks.instanceMatrix.needsUpdate=true;if(this.peaks.instanceColor)this.peaks.instanceColor.needsUpdate=true;
   i=0;for(const[cx,cz,h]of [[104,90,10],[44,28,6]])for(let j=0;j<5;j++){const t=((time*.0006+j*.23)%1);this.dummy.position.set(cx+Math.sin(t*3)*1.3,h+t*9,cz+t*2);this.dummy.scale.setScalar(.6+t*2);this.dummy.updateMatrix();this.smoke.setMatrixAt(i++,this.dummy.matrix);}this.smoke.instanceMatrix.needsUpdate=true;
