@@ -84,9 +84,10 @@ export class TouchControls {
       if (!this.enabled() || this.owners.get(surface) !== e.pointerId) return;
       if (surface === this.joystick) this.move(e);
       else {
+        const scale=typeof window==='undefined'?1:window.visualViewport?.scale||1;
         this.turn(
-          Math.max(-90, Math.min(90, e.clientX - lx)),
-          Math.max(-90, Math.min(90, e.clientY - ly)),
+          Math.max(-90, Math.min(90, (e.clientX - lx)*scale)),
+          Math.max(-90, Math.min(90, (e.clientY - ly)*scale)),
         );
         lx = e.clientX;
         ly = e.clientY;

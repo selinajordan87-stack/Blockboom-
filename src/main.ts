@@ -1,4 +1,5 @@
 import {Waterfall} from "./world/Waterfall";
+import {gameViewport,installGameGestureGuard} from "./core/GameViewport";
 import {VISUAL_PREVIEW} from "./Preview";
 import {ScenicWater} from "./world/ScenicWater";
 import {Atmosphere} from "./world/Atmosphere";
@@ -670,6 +671,7 @@ function resumeGame(){
  clearInput();suspended=false;$("interruption").hidden=true;closePanel();last=performance.now();accum=0;resize();
 }
 function resetCamera(){
+ resize();
  clearInput();cameraRig.reset(expansion.camera);expansion.view.fov=70;player.yaw=0;player.pitch=-.12;updateFov();updateCamera(0,true);recordDiagnostic("camera-reset");save();resumeGame();
 }
 function quickCamera(){
@@ -1614,18 +1616,23 @@ function resize() {
   // Chrome on iOS also changes its visual viewport as browser controls move.
   // Use one rectangle for the app, input coordinates and WebGL, not a mix of
   // device-height, fill-available and dynamic viewport units.
-  const visibleWidth = Math.max(1, window.visualViewport?.width || innerWidth);
-  const visibleHeight = Math.max(1, window.visualViewport?.height || innerHeight);
+  const rect = gameViewport(window.visualViewport || {width:innerWidth,height:innerHeight,scale:1,offsetLeft:0,offsetTop:0});
+  const visibleWidth = rect.width;
+  const visibleHeight = rect.height;
   const rootStyle = document.documentElement.style;
   rootStyle.setProperty("--game-width", `${visibleWidth}px`);
   rootStyle.setProperty("--game-height", `${visibleHeight}px`);
-  rootStyle.setProperty("--game-left", `${window.visualViewport?.offsetLeft || 0}px`);
-  rootStyle.setProperty("--game-top", `${window.visualViewport?.offsetTop || 0}px`);
+  rootStyle.setProperty("--game-left", `${rect.left}px`);
+  rootStyle.setProperty("--game-top", `${rect.top}px`);
+  rootStyle.setProperty("--game-scale", `${rect.inverseScale}`);
+  rootStyle.setProperty("--usable-height", `${rect.height}px`);
+  rootStyle.setProperty("--viewport-top", "0px");
   renderer.setSize(visibleWidth, visibleHeight, false);
   camera.aspect = visibleWidth / visibleHeight;
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);
+installGameGestureGuard(document,canPlay);
 window.addEventListener("pageshow", resize);
 window.addEventListener("orientationchange", () => {
   clearInput();
@@ -1636,14 +1643,6 @@ window.addEventListener("orientationchange", () => {
 let lastViewportScale=1;
 function keyboardViewport() {
   const scale=window.visualViewport?.scale||1;if(Math.abs(scale-lastViewportScale)>.01){recordDiagnostic("browser-viewport-scale",String(scale));lastViewportScale=scale;}
-  document.documentElement.style.setProperty(
-    "--usable-height",
-    `${window.visualViewport?.height || innerHeight}px`,
-  );
-  document.documentElement.style.setProperty(
-    "--viewport-top",
-    `${window.visualViewport?.offsetTop || 0}px`,
-  );
 }
 const syncVisibleViewport=()=>{keyboardViewport();resize();};
 window.visualViewport?.addEventListener("resize", syncVisibleViewport);
