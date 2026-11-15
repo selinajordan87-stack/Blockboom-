@@ -18,6 +18,14 @@ it("priorisiert nahe Chunks und verteilt deren Spalten über mehrere kleine Budg
  expect(view.metrics.maxBuildMs).toBeGreaterThan(0);view.dispose();
 });
 
+it("trennt den unbudgetierten Startaufbau von den gemessenen Laufzeit-Slices",()=>{
+ const world=new World(),view=new WorldView(world,new T.Scene(),fakeClock());view.update();
+ expect(view.metrics.maxBuildMs).toBeGreaterThan(0);expect(view.metrics.maxRuntimeBuildMs).toBe(0);
+ world.set(6,1,6,'Stein');view.update(1);
+ expect(view.metrics.maxRuntimeBuildMs).toBeGreaterThan(0);
+ expect(view.metrics.maxRuntimeBuildMs).toBeLessThan(view.metrics.maxBuildMs);view.dispose();
+});
+
 it("behält den vollständigen alten Chunk bis beide neuen Materialschichten fertig sind",()=>{
  const world=new World(),view=new WorldView(world,new T.Scene(),fakeClock());view.update();
  const previous=mesh(view,"0,0:solid")!,untouched=mesh(view,"-2,-2:solid")!,oldGeometry=previous.geometry;

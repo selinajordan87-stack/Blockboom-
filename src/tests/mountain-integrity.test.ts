@@ -2,7 +2,16 @@ import {expect,it} from 'vitest';
 import {World,MAX_Y} from '../world/World';
 import {terrainProfile,caveRange} from '../world/DiscoveryTerrain';
 import {RegionStream} from '../living/Regions';
-import {MOUNTAIN_PATH} from '../world/TerrainSculpt';
+import {MOUNTAIN_PATH,mountainSculpt} from '../world/TerrainSculpt';
+
+it('verbindet den äußeren Rand ohne senkrechte Generationsnaht',()=>{
+ let edges=0;
+ for(let x=74;x<=216;x++)for(let z=-176;z<=-34;z++)for(const[dx,dz]of [[1,0],[0,1]]){
+  if(!!mountainSculpt(x,z)===!!mountainSculpt(x+dx,z+dz))continue;
+  expect(Math.abs(terrainProfile(x,z,2).top-terrainProfile(x+dx,z+dz,2).top),`${x},${z}`).toBeLessThanOrEqual(1);edges++;
+ }
+ expect(edges).toBeGreaterThan(100);
+});
 
 it('hält beide Kammern frei, trägt ihre Decke und erhält den Fund',()=>{
  const world=new World();world.terrainRevision=2;const stream=new RegionStream(world,true);stream.ensure(147,-99);

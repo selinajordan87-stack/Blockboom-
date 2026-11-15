@@ -189,7 +189,7 @@ const emptyData = ():ChunkData => ({p:[],n:[],c:[],uv:[],i:[]});
 type ChunkBuild = {id:string;cx:number;cz:number;column:number;solid:ChunkData;glass:ChunkData;cpuMs:number};
 export interface WorldRenderMetrics {
   /** CPU time spent in the latest update, rather than elapsed time across frames. */
-  lastBuildMs:number;maxBuildMs:number;totalBuildMs:number;
+  lastBuildMs:number;maxBuildMs:number;maxRuntimeBuildMs:number;totalBuildMs:number;
   lastChunkMs:number;maxChunkMs:number;queue:number;rebuilt:number;
   columns:number;restarts:number;activeMeshes:number;currentChunk:string|null;
 }
@@ -216,7 +216,7 @@ export class WorldView {
   private visibleDistance=64;
   private faceColors=Object.fromEntries(Object.entries(colors).map(([block,color])=>[block,new T.Color(color)])) as Record<Block,T.Color>;
   private grassSide=new T.Color(0x8d8c55);
-  readonly metrics:WorldRenderMetrics={lastBuildMs:0,maxBuildMs:0,totalBuildMs:0,lastChunkMs:0,maxChunkMs:0,queue:0,rebuilt:0,columns:0,restarts:0,activeMeshes:0,currentChunk:null};
+  readonly metrics:WorldRenderMetrics={lastBuildMs:0,maxBuildMs:0,maxRuntimeBuildMs:0,totalBuildMs:0,lastChunkMs:0,maxChunkMs:0,queue:0,rebuilt:0,columns:0,restarts:0,activeMeshes:0,currentChunk:null};
   constructor(public world: World, scene: T.Scene, private clock:()=>number=()=>performance.now()) {
     this.group.name = "chunked voxel world";
     scene.add(this.group);
@@ -251,6 +251,7 @@ export class WorldView {
     }
     this.metrics.lastBuildMs=this.clock()-started;
     this.metrics.maxBuildMs=Math.max(this.metrics.maxBuildMs,this.metrics.lastBuildMs);
+    if(Number.isFinite(budgetMs))this.metrics.maxRuntimeBuildMs=Math.max(this.metrics.maxRuntimeBuildMs,this.metrics.lastBuildMs);
     this.metrics.totalBuildMs+=this.metrics.lastBuildMs;
     this.syncMetrics();
   }
