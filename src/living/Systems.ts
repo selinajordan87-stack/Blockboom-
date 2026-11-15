@@ -22,8 +22,8 @@ export function feed(animal:Animal,store:ItemStore){
  const food=foods.find(f=>store.count(f)>0);if(!food||!store.add(food,-1))return false;
  animal.hunger=Math.min(100,animal.hunger+35);animal.trust=Math.min(3,animal.trust+1);if(animal.trust>=2)animal.tame=true;animal.action="Fressen";return true;
 }
-function animalFloor(w:World,x:number,z:number,around:number){
- for(let y=Math.min(MAX_Y,Math.floor(around));y>=MIN_Y;y--)if(solid(w.get(Math.floor(x),y,Math.floor(z))))return y+1;
+function animalFloor(w:World,x:number,z:number,around:number,groundOnly=false){
+ for(let y=Math.min(MAX_Y,Math.floor(around));y>=MIN_Y;y--)if(solid(w.get(Math.floor(x),y,Math.floor(z)))&&(!groundOnly||!["Laub","Holz","Dunkelholz"].includes(w.get(Math.floor(x),y,Math.floor(z))!)))return y+1;
  return null;
 }
 function safeAnimalSpot(w:World,origin:Cell):Cell|null{
@@ -49,7 +49,9 @@ export function updateAnimals(s:LivingState,w:World,player:Cell,dt:number){
   if(distance>30)continue;
   // New wild animals settle onto their streamed surface. Pets keep their saved
   // underground position; a distant unloaded chunk never teleports wildlife.
-  if(!a.tame){const floor=animalFloor(w,a.pos[0],a.pos[2],MAX_Y);if(floor!==null&&!collides(w,[a.pos[0],floor+.001,a.pos[2]],.75,.24))a.pos[1]=floor+.001;}
+  if(!a.tame){const floor=animalFloor(w,a.pos[0],a.pos[2],MAX_Y,w.terrainRevision===2);
+   if(floor!==null){const ground:Cell=[a.pos[0],floor+.001,a.pos[2]];if(!collides(w,ground,.75,.24))a.pos[1]=ground[1];else if(w.terrainRevision===2){const p=safeAnimalSpot(w,ground);if(p)a.pos=p;}}
+  }
   // Also recover waiting/sleeping pets and new wildlife inside an old building.
   if(collides(w,a.pos,.75,.24)){const p=safeAnimalSpot(w,a.tame?a.home:a.pos)||safeAnimalSpot(w,player);if(p)a.pos=p;}
   a.hunger=Math.max(0,a.hunger-dt*.02);a.phase+=dt;
