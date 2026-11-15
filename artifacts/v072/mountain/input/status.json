@@ -1,0 +1,955 @@
+{
+  "errors": [],
+  "events": [
+    {
+      "event": "start",
+      "version": "WORLD DISCOVERY · v0.7.1",
+      "method": "fresh isolated context, UI and input only; technical known route, no save/position injection; no human finding-time claim"
+    },
+    {
+      "event": "experimental-bootstrap",
+      "method": "Revision-2 fixture at normal new-game spawn. No position writes after load. All travel uses CDP touch joystick/camera and normal Space jump; known route, not human finding-time proof."
+    },
+    {
+      "event": "capture",
+      "name": "01-start-distant",
+      "seconds": 5.42,
+      "position": [
+        0,
+        1.0000090528699894,
+        17
+      ],
+      "region": "meadow",
+      "frames": 32,
+      "performance": {
+        "calls": 79,
+        "geometries": 60,
+        "textures": 4,
+        "frame": {
+          "fps": 13.268720433829467,
+          "frameMs": 16.800000000000182,
+          "p95Ms": 133.30000000000018,
+          "samples": 23
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 106.59999999997672,
+          "lastChunkMs": 3.7999999999883585,
+          "maxChunkMs": 7.699999999953434,
+          "queue": 0,
+          "rebuilt": 26,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 28,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0.1000000000349246,
+          "maxColumnMs": 2.800000000046566,
+          "generatedChunks": 10,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 1440
+        },
+        "activeMeshes": 95,
+        "activeAnimals": 10,
+        "activeZombies": 0,
+        "heap": 26055766
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "approach:0,23",
+      "position": [
+        -0.000007485166701740474,
+        1.0000090351018094,
+        22.849999999995234
+      ],
+      "seconds": 12.141
+    },
+    {
+      "event": "arrived",
+      "name": "approach:12,24",
+      "position": [
+        11.854875236684428,
+        1.0000090139427633,
+        23.99000632575487
+      ],
+      "seconds": 13.299
+    },
+    {
+      "event": "arrived",
+      "name": "approach:24,24",
+      "position": [
+        23.854871173946098,
+        1.000009000786149,
+        23.999880823023226
+      ],
+      "seconds": 10.197
+    },
+    {
+      "event": "arrived",
+      "name": "approach:54,23",
+      "position": [
+        53.76342345754779,
+        1.000009003362865,
+        23.007849926792034
+      ],
+      "seconds": 22.495
+    },
+    {
+      "event": "arrived",
+      "name": "approach:64,27",
+      "position": [
+        63.966429601818454,
+        1.0000090654827247,
+        27.0004891804723
+      ],
+      "seconds": 27.505
+    },
+    {
+      "event": "arrived",
+      "name": "approach:64,-45",
+      "position": [
+        63.99983548134595,
+        1.0000090483921775,
+        -44.699503037428066
+      ],
+      "seconds": 49.098
+    },
+    {
+      "event": "arrived",
+      "name": "approach:100,-70",
+      "position": [
+        100.01926926640179,
+        1.0000090686011567,
+        -70.0135508133892
+      ],
+      "seconds": 30.695
+    },
+    {
+      "event": "arrived",
+      "name": "approach:122,-84",
+      "position": [
+        122.0394190538028,
+        1.0000090302165472,
+        -84.02508189818991
+      ],
+      "seconds": 19.304
+    },
+    {
+      "event": "arrived",
+      "name": "approach:130,-90",
+      "position": [
+        129.6273678327371,
+        1.0000090388969871,
+        -89.72031583353377
+      ],
+      "seconds": 8.19
+    },
+    {
+      "event": "capture",
+      "name": "02-foot",
+      "seconds": 204.912,
+      "position": [
+        129.6273678327371,
+        1.000009070635181,
+        -89.72031583353377
+      ],
+      "region": "mountain",
+      "frames": 5049,
+      "performance": {
+        "calls": 28,
+        "geometries": 65,
+        "textures": 4,
+        "frame": {
+          "fps": 17.476534112010004,
+          "frameMs": 33.30000000001746,
+          "p95Ms": 100,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 17147.899999991176,
+          "lastChunkMs": 101.70000000006985,
+          "maxChunkMs": 101.70000000006985,
+          "queue": 0,
+          "rebuilt": 485,
+          "columns": 0,
+          "restarts": 725,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 40.199999999953434,
+          "maxColumnMs": 39.39999999990687,
+          "generatedChunks": 118,
+          "unloadedChunks": 94,
+          "pendingChunks": 0,
+          "generatedColumns": 17008
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 36242328
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "ascent:0",
+      "position": [
+        111.9868229388041,
+        6.000009002681327,
+        -108.05967582904583
+      ],
+      "seconds": 56.251
+    },
+    {
+      "event": "capture",
+      "name": "03-serpentine",
+      "seconds": 263.409,
+      "position": [
+        111.9868229388041,
+        6.0000090375389385,
+        -108.05967582904583
+      ],
+      "region": "mountain",
+      "frames": 6223,
+      "performance": {
+        "calls": 28,
+        "geometries": 62,
+        "textures": 4,
+        "frame": {
+          "fps": 25.578445896258103,
+          "frameMs": 16.70000000001164,
+          "p95Ms": 66.70000000001164,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 6.400000000023283,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 19787.49999998964,
+          "lastChunkMs": 25.599999999976717,
+          "maxChunkMs": 102.90000000002328,
+          "queue": 8,
+          "rebuilt": 534,
+          "columns": 44,
+          "restarts": 825,
+          "activeMeshes": 33,
+          "currentChunk": "10,-11"
+        },
+        "stream": {
+          "lastMs": 0.7000000000698492,
+          "maxRuntimeMs": 40.199999999953434,
+          "maxColumnMs": 39.39999999990687,
+          "generatedChunks": 131,
+          "unloadedChunks": 107,
+          "pendingChunks": 2,
+          "generatedColumns": 19007
+        },
+        "activeMeshes": 83,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 41707741
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "ascent:1",
+      "position": [
+        126.70575146002196,
+        10.000009036721604,
+        -131.70043847074362
+      ],
+      "seconds": 46.756
+    },
+    {
+      "event": "capture",
+      "name": "04-middle",
+      "seconds": 313.457,
+      "position": [
+        126.70575146002196,
+        10.000009028718821,
+        -131.70043847074362
+      ],
+      "region": "mountain",
+      "frames": 7531,
+      "performance": {
+        "calls": 28,
+        "geometries": 68,
+        "textures": 4,
+        "frame": {
+          "fps": 23.302102043788533,
+          "frameMs": 33.29999999998836,
+          "p95Ms": 83.30000000004657,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 21693.899999988498,
+          "lastChunkMs": 18.699999999953434,
+          "maxChunkMs": 102.90000000002328,
+          "queue": 0,
+          "rebuilt": 586,
+          "columns": 0,
+          "restarts": 884,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 40.199999999953434,
+          "maxColumnMs": 39.39999999990687,
+          "generatedChunks": 143,
+          "unloadedChunks": 118,
+          "pendingChunks": 0,
+          "generatedColumns": 20608
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 36385418
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "ascent:2",
+      "position": [
+        154.716337193438,
+        15.000009017455117,
+        -132.00781332246083
+      ],
+      "seconds": 49.903
+    },
+    {
+      "event": "capture",
+      "name": "05-viewpoint",
+      "seconds": 368.675,
+      "position": [
+        154.716337193438,
+        15.00000904430993,
+        -132.00781332246083
+      ],
+      "region": "mountain",
+      "frames": 8950,
+      "performance": {
+        "calls": 31,
+        "geometries": 70,
+        "textures": 4,
+        "frame": {
+          "fps": 26.375075553601846,
+          "frameMs": 49.899999999965075,
+          "p95Ms": 66.70000000001164,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 26517.699999984703,
+          "lastChunkMs": 23.19999999983702,
+          "maxChunkMs": 108,
+          "queue": 0,
+          "rebuilt": 691,
+          "columns": 0,
+          "restarts": 1027,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 47.59999999997672,
+          "maxColumnMs": 39.39999999990687,
+          "generatedChunks": 168,
+          "unloadedChunks": 143,
+          "pendingChunks": 0,
+          "generatedColumns": 24208
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 53731769
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "ascent:3",
+      "position": [
+        166.00181638748924,
+        19.000009046619375,
+        -111.2840436841293
+      ],
+      "seconds": 47.985
+    },
+    {
+      "event": "capture",
+      "name": "06-upper-ridge",
+      "seconds": 422.977,
+      "position": [
+        166.00181638748924,
+        19.000009084327257,
+        -111.2840436841293
+      ],
+      "region": "mountain",
+      "frames": 10258,
+      "performance": {
+        "calls": 24,
+        "geometries": 70,
+        "textures": 4,
+        "frame": {
+          "fps": 20.339844908682572,
+          "frameMs": 33.40000000002328,
+          "p95Ms": 83.40000000002328,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 29349.29999998235,
+          "lastChunkMs": 66.9000000001397,
+          "maxChunkMs": 108,
+          "queue": 0,
+          "rebuilt": 750,
+          "columns": 0,
+          "restarts": 1135,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 47.59999999997672,
+          "maxColumnMs": 39.39999999990687,
+          "generatedChunks": 183,
+          "unloadedChunks": 158,
+          "pendingChunks": 0,
+          "generatedColumns": 26368
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 22703265
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "ascent:4",
+      "position": [
+        144.96886530676977,
+        25.00000904921749,
+        -105.00096742965701
+      ],
+      "seconds": 71.284
+    },
+    {
+      "event": "capture",
+      "name": "07-summit",
+      "seconds": 498.459,
+      "position": [
+        144.96886530676977,
+        25.000009040131182,
+        -105.00096742965701
+      ],
+      "region": "mountain",
+      "frames": 12080,
+      "performance": {
+        "calls": 69,
+        "geometries": 68,
+        "textures": 4,
+        "frame": {
+          "fps": 28.23629069261264,
+          "frameMs": 33.40000000002328,
+          "p95Ms": 66.70000000001164,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 31168.199999979697,
+          "lastChunkMs": 41.89999999990687,
+          "maxChunkMs": 108,
+          "queue": 0,
+          "rebuilt": 788,
+          "columns": 0,
+          "restarts": 1188,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 49.90000000002328,
+          "maxColumnMs": 49.5,
+          "generatedChunks": 193,
+          "unloadedChunks": 168,
+          "pendingChunks": 0,
+          "generatedColumns": 27808
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 37193530
+      }
+    },
+    {
+      "event": "capture",
+      "name": "08-valley",
+      "seconds": 503.571,
+      "position": [
+        144.96886530676977,
+        25.00000907892386,
+        -105.00096742965701
+      ],
+      "region": "mountain",
+      "frames": 12221,
+      "performance": {
+        "calls": 29,
+        "geometries": 69,
+        "textures": 4,
+        "frame": {
+          "fps": 27.854183350161936,
+          "frameMs": 16.79999999998836,
+          "p95Ms": 66.70000000001164,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 31168.199999979697,
+          "lastChunkMs": 41.89999999990687,
+          "maxChunkMs": 108,
+          "queue": 0,
+          "rebuilt": 788,
+          "columns": 0,
+          "restarts": 1188,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 49.90000000002328,
+          "maxColumnMs": 49.5,
+          "generatedChunks": 193,
+          "unloadedChunks": 168,
+          "pendingChunks": 0,
+          "generatedColumns": 27808
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 25826859
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "descent:166,-111",
+      "position": [
+        165.81247899334983,
+        20.000009001345823,
+        -110.94650302241001
+      ],
+      "seconds": 17.194
+    },
+    {
+      "event": "arrived",
+      "name": "descent:155,-132",
+      "position": [
+        155.190809652957,
+        16.00000903674945,
+        -131.62844298033855
+      ],
+      "seconds": 18.498
+    },
+    {
+      "event": "arrived",
+      "name": "descent:127,-132",
+      "position": [
+        127.21823930516486,
+        11.000009083676355,
+        -131.99713409516818
+      ],
+      "seconds": 20.4
+    },
+    {
+      "event": "arrived",
+      "name": "descent:112,-108",
+      "position": [
+        112.1557253655643,
+        6.000009004057637,
+        -108.24558048662885
+      ],
+      "seconds": 20.5
+    },
+    {
+      "event": "arrived",
+      "name": "descent:130,-90",
+      "position": [
+        130.01155937124312,
+        1.0000090062268696,
+        -89.98816834220338
+      ],
+      "seconds": 20.492
+    },
+    {
+      "event": "capture",
+      "name": "09-entrance",
+      "seconds": 606.014,
+      "position": [
+        130.01155937124312,
+        1.000009050985911,
+        -89.98816834220338
+      ],
+      "region": "mountain",
+      "frames": 14955,
+      "performance": {
+        "calls": 33,
+        "geometries": 66,
+        "textures": 4,
+        "frame": {
+          "fps": 25.001041710071313,
+          "frameMs": 66.69999999995343,
+          "p95Ms": 66.70000000006985,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 40257.59999996796,
+          "lastChunkMs": 12.099999999627471,
+          "maxChunkMs": 112.39999999967404,
+          "queue": 0,
+          "rebuilt": 981,
+          "columns": 0,
+          "restarts": 1535,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 49.90000000002328,
+          "maxColumnMs": 49.5,
+          "generatedChunks": 244,
+          "unloadedChunks": 216,
+          "pendingChunks": 0,
+          "generatedColumns": 35152
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 26703612
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "first-chamber:137,-90",
+      "position": [
+        136.76154969811964,
+        -1.9999909739707706,
+        -89.99959581210493
+      ],
+      "seconds": 6.848
+    },
+    {
+      "event": "arrived",
+      "name": "first-chamber:147,-90",
+      "position": [
+        146.4365358333093,
+        -6.999990983465305,
+        -90.01597518563048
+      ],
+      "seconds": 7.296
+    },
+    {
+      "event": "arrived",
+      "name": "first-chamber:147,-106",
+      "position": [
+        146.99417777889673,
+        0.000009012055005406264,
+        -106.13985469147326
+      ],
+      "seconds": 58.097
+    },
+    {
+      "event": "capture",
+      "name": "10-first-chamber",
+      "seconds": 679.475,
+      "position": [
+        146.99417777889673,
+        0.00000907783734047593,
+        -106.13985469147326
+      ],
+      "region": "mountain",
+      "frames": 16990,
+      "performance": {
+        "calls": 30,
+        "geometries": 65,
+        "textures": 4,
+        "frame": {
+          "fps": 27.587158177868346,
+          "frameMs": 66.69999999995343,
+          "p95Ms": 66.69999999995343,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 42955.199999960605,
+          "lastChunkMs": 32.200000000419095,
+          "maxChunkMs": 112.39999999967404,
+          "queue": 0,
+          "rebuilt": 1046,
+          "columns": 0,
+          "restarts": 1637,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 49.90000000002328,
+          "maxColumnMs": 49.5,
+          "generatedChunks": 259,
+          "unloadedChunks": 231,
+          "pendingChunks": 0,
+          "generatedColumns": 37312
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 25406849
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "deep-chamber:147,-90",
+      "position": [
+        146.99997160893625,
+        -6.999990941423055,
+        -90.01485573235459
+      ],
+      "seconds": 16.188
+    },
+    {
+      "event": "arrived",
+      "name": "deep-chamber:154,-90",
+      "position": [
+        153.67495656649058,
+        -9.999990942373401,
+        -90.00068476059326
+      ],
+      "seconds": 8.295
+    },
+    {
+      "event": "arrived",
+      "name": "deep-chamber:158,-90",
+      "position": [
+        158.02494676354846,
+        -11.999990918095422,
+        -89.99144974528812
+      ],
+      "seconds": 4.098
+    },
+    {
+      "event": "capture",
+      "name": "11-deep-chamber",
+      "seconds": 713.409,
+      "position": [
+        158.02494676354846,
+        -11.999990983200217,
+        -89.99144974528812
+      ],
+      "region": "cave",
+      "frames": 17825,
+      "performance": {
+        "calls": 27,
+        "geometries": 59,
+        "textures": 4,
+        "frame": {
+          "fps": 19.780926241871235,
+          "frameMs": 83.40000000002328,
+          "p95Ms": 83.40000000002328,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 4,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 44922.49999996601,
+          "lastChunkMs": 23.899999999906868,
+          "maxChunkMs": 112.39999999967404,
+          "queue": 5,
+          "rebuilt": 1080,
+          "columns": 49,
+          "restarts": 1701,
+          "activeMeshes": 33,
+          "currentChunk": "15,-8"
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 49.90000000002328,
+          "maxColumnMs": 49.5,
+          "generatedChunks": 269,
+          "unloadedChunks": 241,
+          "pendingChunks": 0,
+          "generatedColumns": 38752
+        },
+        "activeMeshes": 83,
+        "activeAnimals": 0,
+        "activeZombies": 0,
+        "heap": 47428540
+      }
+    },
+    {
+      "event": "arrived",
+      "name": "return:154,-90",
+      "position": [
+        154.31245514836698,
+        -10.999990989983662,
+        -90.0123312073473
+      ],
+      "seconds": 14.052
+    },
+    {
+      "event": "arrived",
+      "name": "return:147,-90",
+      "position": [
+        146.92498195112447,
+        -6.999990926374493,
+        -89.9955748538872
+      ],
+      "seconds": 25.693
+    },
+    {
+      "event": "arrived",
+      "name": "return:137,-90",
+      "position": [
+        136.83797323979135,
+        -1.999990924342654,
+        -89.9939723766237
+      ],
+      "seconds": 35.803
+    },
+    {
+      "event": "arrived",
+      "name": "return:130,-90",
+      "position": [
+        129.71495592433476,
+        1.0000090828457033,
+        -90.01587607169458
+      ],
+      "seconds": 22.496
+    },
+    {
+      "event": "capture",
+      "name": "12-return",
+      "seconds": 812.694,
+      "position": [
+        129.71495592433476,
+        1.0000090578890914,
+        -90.01587607169458
+      ],
+      "region": "mountain",
+      "frames": 20264,
+      "performance": {
+        "calls": 86,
+        "geometries": 65,
+        "textures": 4,
+        "frame": {
+          "fps": 24.284124253769097,
+          "frameMs": 33.40000000002328,
+          "p95Ms": 66.70000000006985,
+          "samples": 240
+        },
+        "chunk": {
+          "lastBuildMs": 6.100000000093132,
+          "maxBuildMs": 106.59999999997672,
+          "totalBuildMs": 47943.69999997085,
+          "lastChunkMs": 13.699999999953434,
+          "maxChunkMs": 112.39999999967404,
+          "queue": 2,
+          "rebuilt": 1153,
+          "columns": 21,
+          "restarts": 1780,
+          "activeMeshes": 36,
+          "currentChunk": "8,-9"
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 49.90000000002328,
+          "maxColumnMs": 49.5,
+          "generatedChunks": 284,
+          "unloadedChunks": 256,
+          "pendingChunks": 0,
+          "generatedColumns": 40912
+        },
+        "activeMeshes": 86,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 29817210
+      }
+    },
+    {
+      "event": "capture",
+      "name": "13-reload",
+      "seconds": 815.982,
+      "position": [
+        129.71495592433476,
+        1.0000090466314853,
+        -90.01587607169458
+      ],
+      "region": "mountain",
+      "frames": 12,
+      "performance": {
+        "calls": 88,
+        "geometries": 73,
+        "textures": 4,
+        "frame": {
+          "fps": 10.002500625156292,
+          "frameMs": 83.19999999999982,
+          "p95Ms": 83.39999999999986,
+          "samples": 4
+        },
+        "chunk": {
+          "lastBuildMs": 0,
+          "maxBuildMs": 241.39999999990687,
+          "totalBuildMs": 241.39999999990687,
+          "lastChunkMs": 8,
+          "maxChunkMs": 13.900000000139698,
+          "queue": 0,
+          "rebuilt": 37,
+          "columns": 0,
+          "restarts": 0,
+          "activeMeshes": 38,
+          "currentChunk": null
+        },
+        "stream": {
+          "lastMs": 0,
+          "maxRuntimeMs": 0,
+          "maxColumnMs": 3.3999999999068677,
+          "generatedChunks": 21,
+          "unloadedChunks": 0,
+          "pendingChunks": 0,
+          "generatedColumns": 3024
+        },
+        "activeMeshes": 88,
+        "activeAnimals": 1,
+        "activeZombies": 0,
+        "heap": 24269870
+      }
+    },
+    {
+      "event": "passed",
+      "method": "Normal-spawn approach, ascent, descent, both chambers, return, save/reload"
+    },
+    {
+      "event": "export",
+      "method": "normal save export UI, actual played state",
+      "storage": {
+        "characters": 6966,
+        "estimatedUTF16Bytes": 13932,
+        "worldChanges": 4,
+        "mapTiles": 81
+      }
+    }
+  ]
+}

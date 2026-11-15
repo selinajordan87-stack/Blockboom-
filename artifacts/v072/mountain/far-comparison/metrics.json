@@ -1,0 +1,118 @@
+{
+  "method": "Controlled save/camera comparison fixtures; Chromium SwiftShader, not device FPS or input-route proof. Only identicalStandingPosition pairs are valid same-position terrain comparisons.",
+  "errors": [],
+  "comparisons": [
+    {
+      "name": "far-ridge",
+      "identicalStandingPosition": true
+    }
+  ],
+  "results": [
+    {
+      "revision": 1,
+      "name": "far-ridge",
+      "fixture": {
+        "position": [
+          64,
+          1.01,
+          -45
+        ],
+        "yaw": -0.93,
+        "pitch": 0.16
+      },
+      "actual": [
+        64,
+        1.0000090190972006,
+        -45
+      ],
+      "calls": 27,
+      "triangles": 16120,
+      "geometries": 67,
+      "textures": 4,
+      "blocks": 72159,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 228,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 228,
+        "lastChunkMs": 5.000000000232831,
+        "maxChunkMs": 21.99999999976717,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 2.199999999953434,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 24.23123521606185,
+        "frameMs": 16.699999999999818,
+        "p95Ms": 83.29999999999995,
+        "samples": 42
+      }
+    },
+    {
+      "revision": 2,
+      "name": "far-ridge",
+      "fixture": {
+        "position": [
+          64,
+          1.01,
+          -45
+        ],
+        "yaw": -0.93,
+        "pitch": 0.16
+      },
+      "actual": [
+        64,
+        1.0000090728081403,
+        -45
+      ],
+      "calls": 26,
+      "triangles": 16852,
+      "geometries": 67,
+      "textures": 4,
+      "blocks": 72151,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 160.19999999995343,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 160.19999999995343,
+        "lastChunkMs": 4.2999999998137355,
+        "maxChunkMs": 8.599999999860302,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.09999999986030161,
+        "maxColumnMs": 5.5,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 28.57346953353811,
+        "frameMs": 50,
+        "p95Ms": 66.70000000000005,
+        "samples": 40
+      }
+    }
+  ]
+}

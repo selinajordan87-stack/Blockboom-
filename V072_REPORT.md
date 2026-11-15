@@ -1,5 +1,7 @@
 # v0.7.2 – Visual & World Polish: geprüfter Zwischenstand
 
+Aktuelle Fortsetzung vom 15. November 2026: [Terrain Revision 2 – Bergvalidierung](MOUNTAIN_VALIDATION_V072.md). Der technische Auf-/Abstieg und beide Kammerbereiche wurden inzwischen mit Player-Physik und normaler Browser-Eingabe geprüft. Es gibt echte Generation-1-/2-Vergleiche und einen separaten Speicherschutz. Die folgenden älteren Abschnitte dokumentieren die jeweiligen historischen Checkpoints; die aktuelle Abnahmeentscheidung und Messwerte stehen im verlinkten Bericht. **Revision 2 bleibt gesperrt, keine Veröffentlichung.**
+
 **Kein fertiges Release. Nicht auf main übernommen oder veröffentlicht.** Die Live-Version bleibt v0.7.1. Die optischen Abnahmekriterien sind noch nicht erreicht. Ausgangspunkt ist der tatsächliche HEAD `bab05373617badc14be72396590aab22af256987`, nicht nur der frühere Softwarecommit `25fc213`.
 
 ## Visual Audit

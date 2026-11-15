@@ -1,0 +1,14 @@
+
+Running 7 tests using 1 worker
+
+(node:10270) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/mountain-v072.spec.ts:9:12 › experimenteller Berg: Renderbudget start (4.9s)
+  ✓  2 e2e/mountain-v072.spec.ts:9:12 › experimenteller Berg: Renderbudget foot (4.2s)
+  ✓  3 e2e/mountain-v072.spec.ts:9:12 › experimenteller Berg: Renderbudget summit (4.2s)
+  ✓  4 e2e/mountain-v072.spec.ts:9:12 › experimenteller Berg: Renderbudget chamber (4.1s)
+  ✓  5 e2e/mountain-v072.spec.ts:27:1 › Revision-2-Export, Import, Sicherung und Reload behalten Terrain und Deltas (7.9s)
+  ✓  6 e2e/newer-terrain-save.spec.ts:2:63 › neuere Terrainrevision zeigt Schutzmeldung und verändert keine Speicherdaten: blockboom.save (2.8s)
+  ✓  7 e2e/newer-terrain-save.spec.ts:2:63 › neuere Terrainrevision zeigt Schutzmeldung und verändert keine Speicherdaten: blockboom.save.terrain2 (2.6s)
+
+  7 passed (31.8s)

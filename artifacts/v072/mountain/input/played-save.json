@@ -1,0 +1,727 @@
+{
+  "format": "blockboom-backup",
+  "version": 1,
+  "created": "2026-11-15T08:46:37.609Z",
+  "world": {
+    "version": 1,
+    "position": [
+      129.71495592433476,
+      1.0000090711811722,
+      -90.01587607169458
+    ],
+    "yaw": 1.5151573441875965,
+    "pitch": -0.12000002670288068,
+    "changes": {
+      "8,0,18": "Acker",
+      "9,0,18": "Acker",
+      "8,0,19": "Acker",
+      "9,0,19": "Acker"
+    },
+    "fish": {
+      "Rotauge": 0,
+      "Flussbarsch": 0,
+      "Hecht": 0,
+      "Karpfen": 0,
+      "Forelle": 0,
+      "Zander": 0,
+      "Schleie": 0,
+      "Brasse": 0
+    },
+    "progress": {
+      "completedMissions": [],
+      "repetitions": 0,
+      "successfulAnswers": 0,
+      "voluntaryHints": 0
+    },
+    "missionActive": false,
+    "settings": {
+      "sound": false,
+      "quality": 1
+    },
+    "extension": {
+      "version": 1,
+      "edition": 4,
+      "terrainRevision": 2,
+      "tool": "Spitzhacke",
+      "materials": {},
+      "catches": [],
+      "best": {},
+      "tokens": 0,
+      "badges": [
+        "Morgenlicht"
+      ],
+      "missions": {
+        "treasure": {
+          "accepted": false,
+          "step": 0,
+          "completed": false
+        }
+      },
+      "view": {
+        "fov": 70,
+        "sensitivity": 1
+      },
+      "camera": {
+        "version": 1,
+        "perspective": "first",
+        "distance": 4
+      },
+      "controls": {
+        "joystickSize": 88,
+        "opacity": 0.42,
+        "handedness": "right"
+      },
+      "angling": {
+        "version": 1,
+        "loadout": {
+          "rod": "Stipprute",
+          "rig": "Posenmontage",
+          "line": "Mono 0,20",
+          "hook": "Haken klein",
+          "bait": "Wurm"
+        },
+        "unlocked": [
+          "Stipprute",
+          "Posenmontage",
+          "Mono 0,20",
+          "Haken klein",
+          "Wurm"
+        ],
+        "spots": [
+          "small"
+        ],
+        "achievements": [],
+        "released": 0,
+        "kept": 0,
+        "inspected": [],
+        "rulesEnabled": true,
+        "season": "Sommer"
+      },
+      "nightfall": {
+        "version": 1,
+        "mode": "Kreativ",
+        "difficulty": "Friedlich",
+        "time": 0.9918085000000643,
+        "dayLength": 1200,
+        "night": 1,
+        "waveNight": -1,
+        "health": 100,
+        "hunger": 100,
+        "defeated": 0,
+        "survived": 1,
+        "buildingDamage": false,
+        "refuge": true,
+        "supplies": {
+          "Beeren": 3,
+          "Fischgericht": 0,
+          "Kohle": 0,
+          "Schnur": 0
+        },
+        "crafted": [],
+        "chest": {},
+        "damage": {},
+        "writing": {
+          "timed": false,
+          "dictation": false,
+          "wins": 0,
+          "attempts": 0,
+          "hints": 0,
+          "speedSamples": [],
+          "history": []
+        }
+      },
+      "living": {
+        "version": 1,
+        "wildlifeVersion": 1,
+        "clock": 806.170199999915,
+        "bag": {
+          "Samen:Weizen": 4,
+          "Samen:Karotte": 4,
+          "Samen:Kartoffel": 4,
+          "Samen:Kürbis": 4
+        },
+        "chests": {},
+        "crops": [
+          {
+            "cell": [
+              8,
+              0,
+              18
+            ],
+            "kind": "Weizen",
+            "planted": 0,
+            "growthOffset": 0
+          },
+          {
+            "cell": [
+              9,
+              0,
+              18
+            ],
+            "kind": "Karotte",
+            "planted": 0,
+            "growthOffset": 50
+          },
+          {
+            "cell": [
+              8,
+              0,
+              19
+            ],
+            "kind": "Kartoffel",
+            "planted": 0,
+            "growthOffset": 120
+          },
+          {
+            "cell": [
+              9,
+              0,
+              19
+            ],
+            "kind": "Kürbis",
+            "planted": 0,
+            "growthOffset": 210
+          }
+        ],
+        "regions": [
+          "meadow",
+          "village",
+          "mountain",
+          "cave"
+        ],
+        "looted": [],
+        "mined": [],
+        "completed": [],
+        "placed": [],
+        "blueprint": false,
+        "home": null,
+        "selectedSeed": "Weizen",
+        "explored": [
+          "-1,0",
+          "-1,1",
+          "-1,2",
+          "0,0",
+          "0,1",
+          "0,2",
+          "1,0",
+          "1,1",
+          "1,2",
+          "-2,0",
+          "-2,1",
+          "-2,2",
+          "2,0",
+          "2,1",
+          "2,2",
+          "3,0",
+          "3,1",
+          "3,2",
+          "4,0",
+          "4,1",
+          "4,2",
+          "2,-1",
+          "3,-1",
+          "4,-1",
+          "2,-2",
+          "3,-2",
+          "4,-2",
+          "2,-3",
+          "3,-3",
+          "4,-3",
+          "2,-4",
+          "3,-4",
+          "4,-4",
+          "5,-4",
+          "5,-3",
+          "5,-2",
+          "3,-5",
+          "4,-5",
+          "5,-5",
+          "6,-5",
+          "6,-4",
+          "6,-3",
+          "4,-6",
+          "5,-6",
+          "6,-6",
+          "7,-6",
+          "7,-5",
+          "7,-4",
+          "8,-6",
+          "8,-5",
+          "8,-4",
+          "6,-7",
+          "7,-7",
+          "8,-7",
+          "9,-7",
+          "9,-6",
+          "9,-5",
+          "6,-8",
+          "7,-8",
+          "8,-8",
+          "5,-8",
+          "5,-7",
+          "6,-9",
+          "7,-9",
+          "8,-9",
+          "6,-10",
+          "7,-10",
+          "8,-10",
+          "9,-10",
+          "9,-9",
+          "9,-8",
+          "10,-10",
+          "10,-9",
+          "10,-8",
+          "10,-7",
+          "11,-9",
+          "11,-8",
+          "11,-7",
+          "10,-6",
+          "11,-6",
+          "10,-5"
+        ],
+        "entrances": [
+          "mountainMine"
+        ],
+        "animals": [
+          {
+            "id": "animal-0",
+            "kind": "Wolf",
+            "name": "",
+            "pos": [
+              -5.2664281794975425,
+              1.001,
+              16.620689276363102
+            ],
+            "home": [
+              -5,
+              1,
+              15
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.20570399999986,
+            "mode": "Warten",
+            "phase": 39.714799999999975,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-1",
+            "kind": "Katze",
+            "name": "",
+            "pos": [
+              5.9018516729113735,
+              6.001,
+              15.074604673201874
+            ],
+            "home": [
+              7,
+              1,
+              14
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.07537599999985,
+            "mode": "Warten",
+            "phase": 47.231199999999966,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-2",
+            "kind": "Huhn",
+            "name": "",
+            "pos": [
+              6.120561982437181,
+              1.001,
+              3.367007892761515
+            ],
+            "home": [
+              8,
+              1,
+              3
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.18370599999986,
+            "mode": "Warten",
+            "phase": 42.814699999999974,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-3",
+            "kind": "Kuh",
+            "name": "",
+            "pos": [
+              -19.35841649658644,
+              5.001,
+              18.483507144649764
+            ],
+            "home": [
+              -20,
+              1,
+              18
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.5003599999999,
+            "mode": "Warten",
+            "phase": 27.982,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-4",
+            "kind": "Schaf",
+            "name": "",
+            "pos": [
+              -36,
+              1,
+              12
+            ],
+            "home": [
+              -36,
+              1,
+              12
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 75,
+            "mode": "Warten",
+            "phase": 4,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-5",
+            "kind": "Schwein",
+            "name": "",
+            "pos": [
+              26.79243810294799,
+              1.001,
+              20.270611110106135
+            ],
+            "home": [
+              28,
+              1,
+              18
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 73.73438999999979,
+            "mode": "Warten",
+            "phase": 68.28049999999996,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-6",
+            "kind": "Kuh",
+            "name": "",
+            "pos": [
+              -7.997055098757596,
+              1.001,
+              13.76932803296429
+            ],
+            "home": [
+              -8,
+              1,
+              12
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.33469999999988,
+            "mode": "Warten",
+            "phase": 39.264999999999986,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-7",
+            "kind": "Schaf",
+            "name": "",
+            "pos": [
+              -11.55610874331996,
+              5.001,
+              19.934969533417537
+            ],
+            "home": [
+              -12,
+              1,
+              20
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.34403199999988,
+            "mode": "Warten",
+            "phase": 39.79839999999999,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-8",
+            "kind": "Schwein",
+            "name": "",
+            "pos": [
+              -16.591916018194464,
+              1.001,
+              6.085322013024263
+            ],
+            "home": [
+              -18,
+              1,
+              5
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.50969399999991,
+            "mode": "Warten",
+            "phase": 32.51529999999998,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-9",
+            "kind": "Huhn",
+            "name": "",
+            "pos": [
+              -2.448161022581293,
+              1.001,
+              7.406471075242545
+            ],
+            "home": [
+              0,
+              1,
+              8
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 74.28070199999988,
+            "mode": "Warten",
+            "phase": 44.96489999999998,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-10",
+            "kind": "Katze",
+            "name": "",
+            "pos": [
+              13.002236654274132,
+              7.001,
+              24.067289998130956
+            ],
+            "home": [
+              12,
+              1,
+              22
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 73.99871399999984,
+            "mode": "Warten",
+            "phase": 60.06429999999997,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-11",
+            "kind": "Wolf",
+            "name": "",
+            "pos": [
+              -42,
+              1,
+              8
+            ],
+            "home": [
+              -42,
+              1,
+              8
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 75,
+            "mode": "Warten",
+            "phase": 11,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-12",
+            "kind": "Schaf",
+            "name": "",
+            "pos": [
+              -100,
+              8,
+              30
+            ],
+            "home": [
+              -100,
+              8,
+              30
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 75,
+            "mode": "Warten",
+            "phase": 12,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-13",
+            "kind": "Kuh",
+            "name": "",
+            "pos": [
+              -94,
+              8,
+              24
+            ],
+            "home": [
+              -94,
+              8,
+              24
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 75,
+            "mode": "Warten",
+            "phase": 13,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-14",
+            "kind": "Wolf",
+            "name": "",
+            "pos": [
+              -108,
+              8,
+              39
+            ],
+            "home": [
+              -108,
+              8,
+              39
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 75,
+            "mode": "Warten",
+            "phase": 14,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-15",
+            "kind": "Huhn",
+            "name": "",
+            "pos": [
+              95,
+              8,
+              84
+            ],
+            "home": [
+              95,
+              8,
+              84
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 75,
+            "mode": "Warten",
+            "phase": 15,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-16",
+            "kind": "Katze",
+            "name": "",
+            "pos": [
+              105,
+              8,
+              91
+            ],
+            "home": [
+              105,
+              8,
+              91
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 75,
+            "mode": "Warten",
+            "phase": 16,
+            "heading": 0,
+            "action": "Ruhen"
+          },
+          {
+            "id": "animal-17",
+            "kind": "Schaf",
+            "name": "",
+            "pos": [
+              116,
+              8,
+              -103
+            ],
+            "home": [
+              116,
+              8,
+              -103
+            ],
+            "tame": false,
+            "trust": 0,
+            "hunger": 70.10920999999931,
+            "mode": "Warten",
+            "phase": 261.539499999998,
+            "heading": 0,
+            "action": "Ruhen"
+          }
+        ]
+      },
+      "discovery": {
+        "version": 1,
+        "enabled": true,
+        "visited": [
+          "note:start-plan",
+          "note:wall-plan",
+          "region:meadow",
+          "animal:Wolf",
+          "animal:Katze",
+          "animal:Kuh",
+          "region:village",
+          "animal:Schwein",
+          "region:mountain",
+          "note:mine-map",
+          "animal:Schaf",
+          "region:cave",
+          "inside-mine",
+          "inside-old-mountain",
+          "note:crystal-code"
+        ],
+        "read": [],
+        "applied": [
+          "planting"
+        ],
+        "completed": [],
+        "skipped": [],
+        "gatheredHolz": 0,
+        "gatheredStein": 0,
+        "crafted": [],
+        "harvested": [],
+        "caught": [],
+        "slept": false,
+        "answers": {}
+      }
+    }
+  },
+  "learning": {
+    "version": 1,
+    "mode": "Lern-Challenge",
+    "clock": 0,
+    "recent": [],
+    "results": {}
+  }
+}

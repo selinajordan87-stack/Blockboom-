@@ -24,6 +24,6 @@ Ein Import sichert die zuvor aktive Welt, erhält die separate Generation-1-Welt
 
 ### Weiterhin keine Freigabe
 
-Generation 2 bleibt ein kontrollierter Prototyp. Neu erstellte Produktwelten bleiben Generation 1. Offene visuelle, Browser-Weg- und Renderprüfungen müssen vor einer Freigabe abgeschlossen werden; See/Ufer/Fluss werden bis zur Bergabnahme nicht umgeformt.
+Generation 2 bleibt ein kontrollierter Prototyp. Neu erstellte Produktwelten bleiben Generation 1. Der Browser-Eingabeweg, Speicher-Roundtrip und die korrigierten Renderbudgetfälle bestehen inzwischen; Details und Einschränkungen: [Bergvalidierung](MOUNTAIN_VALIDATION_V072.md). Die abschließende visuelle Berg-/LOD-Abnahme und ein echter Gerätetest stehen noch aus. See/Ufer/Fluss werden bis zur Bergabnahme nicht umgeformt.
 
 Spätere Produktoption, hier bewusst nicht umgesetzt: „Neue Welt mit verbessertem Terrain“, mit ausdrücklicher Übernahme von Lernfortschritt, Fangbuch, Erfolgen und Einstellungen. Keine Übernahme alter Keller/Bauten durch implizites Neugenerieren.

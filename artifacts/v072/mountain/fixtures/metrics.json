@@ -1,0 +1,668 @@
+{
+  "method": "Controlled save/camera comparison fixtures; Chromium SwiftShader, not device FPS or input-route proof. Only identicalStandingPosition pairs are valid same-position terrain comparisons.",
+  "errors": [],
+  "comparisons": [
+    {
+      "name": "distant",
+      "identicalStandingPosition": true
+    },
+    {
+      "name": "approach",
+      "identicalStandingPosition": true
+    },
+    {
+      "name": "foot",
+      "identicalStandingPosition": true
+    },
+    {
+      "name": "summit",
+      "identicalStandingPosition": false
+    },
+    {
+      "name": "entrance",
+      "identicalStandingPosition": false
+    },
+    {
+      "name": "chamber",
+      "identicalStandingPosition": true
+    }
+  ],
+  "results": [
+    {
+      "revision": 1,
+      "name": "distant",
+      "fixture": {
+        "position": [
+          0,
+          1.02,
+          17
+        ],
+        "yaw": -0.87,
+        "pitch": 0.06
+      },
+      "actual": [
+        0,
+        1.0000090648057538,
+        17
+      ],
+      "calls": 73,
+      "triangles": 29696,
+      "geometries": 61,
+      "textures": 4,
+      "blocks": 38548,
+      "chunks": 26,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 128.10000000009313,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 128.10000000009313,
+        "lastChunkMs": 2.800000000046566,
+        "maxChunkMs": 9.199999999953434,
+        "queue": 0,
+        "rebuilt": 26,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 28,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 1.5,
+        "generatedChunks": 10,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 1440
+      },
+      "frame": {
+        "fps": 12.00025263689762,
+        "frameMs": 66.69999999999982,
+        "p95Ms": 166.79999999999973,
+        "samples": 19
+      }
+    },
+    {
+      "revision": 1,
+      "name": "approach",
+      "fixture": {
+        "position": [
+          100,
+          1.01,
+          -70
+        ],
+        "yaw": -0.9,
+        "pitch": 0.16
+      },
+      "actual": [
+        100,
+        1.0000090519205527,
+        -70
+      ],
+      "calls": 28,
+      "triangles": 21018,
+      "geometries": 65,
+      "textures": 4,
+      "blocks": 81415,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 188.4000000001397,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 188.4000000001397,
+        "lastChunkMs": 7.399999999906868,
+        "maxChunkMs": 7.800000000046566,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0,
+        "maxColumnMs": 5.400000000139698,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 18.20265623946605,
+        "frameMs": 33.30000000000018,
+        "p95Ms": 83.39999999999986,
+        "samples": 27
+      }
+    },
+    {
+      "revision": 1,
+      "name": "foot",
+      "fixture": {
+        "position": [
+          130,
+          1.01,
+          -90
+        ],
+        "yaw": -0.5,
+        "pitch": 0.22
+      },
+      "actual": [
+        130,
+        1.0000090119086187,
+        -90
+      ],
+      "calls": 29,
+      "triangles": 23592,
+      "geometries": 67,
+      "textures": 4,
+      "blocks": 109182,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 298.5999999998603,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 298.5999999998603,
+        "lastChunkMs": 8.899999999906868,
+        "maxChunkMs": 17.5,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 7.7999999998137355,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 17.348561515107708,
+        "frameMs": 66.69999999999982,
+        "p95Ms": 100,
+        "samples": 24
+      }
+    },
+    {
+      "revision": 1,
+      "name": "summit",
+      "fixture": {
+        "position": [
+          145.5,
+          26.01,
+          -105.5
+        ],
+        "yaw": 0.7,
+        "pitch": -0.2
+      },
+      "actual": [
+        145.5,
+        25.00000907158777,
+        -105.5
+      ],
+      "calls": 30,
+      "triangles": 22248,
+      "geometries": 64,
+      "textures": 4,
+      "blocks": 116492,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 251.39999999990687,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 251.39999999990687,
+        "lastChunkMs": 7.699999999953434,
+        "maxChunkMs": 17.5,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 3.2000000001862645,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 21.573518506033842,
+        "frameMs": 50,
+        "p95Ms": 66.70000000000027,
+        "samples": 32
+      }
+    },
+    {
+      "revision": 1,
+      "name": "entrance",
+      "fixture": {
+        "position": [
+          128,
+          1.01,
+          -90
+        ],
+        "yaw": -1.5707963267948966,
+        "pitch": -0.1
+      },
+      "actual": [
+        0,
+        1.0000090592446296,
+        17
+      ],
+      "calls": 65,
+      "triangles": 28842,
+      "geometries": 61,
+      "textures": 4,
+      "blocks": 78592,
+      "chunks": 26,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 238.10000000009313,
+        "maxRuntimeBuildMs": 43.5,
+        "totalBuildMs": 1885.7000000064727,
+        "lastChunkMs": 51,
+        "maxChunkMs": 56.4000000001397,
+        "queue": 0,
+        "rebuilt": 67,
+        "columns": 0,
+        "restarts": 76,
+        "activeMeshes": 28,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0.30000000004656613,
+        "maxRuntimeMs": 34.5,
+        "maxColumnMs": 6.600000000093132,
+        "generatedChunks": 31,
+        "unloadedChunks": 12,
+        "pendingChunks": 0,
+        "generatedColumns": 4464
+      },
+      "frame": {
+        "fps": 17.299285430417132,
+        "frameMs": 83.30000000000109,
+        "p95Ms": 100.10000000000036,
+        "samples": 222
+      }
+    },
+    {
+      "revision": 1,
+      "name": "chamber",
+      "fixture": {
+        "position": [
+          158,
+          -11.99,
+          -90
+        ],
+        "yaw": 1.5707963267948966,
+        "pitch": -0.08
+      },
+      "actual": [
+        158,
+        -11.999990942111722,
+        -90
+      ],
+      "calls": 80,
+      "triangles": 26294,
+      "geometries": 67,
+      "textures": 4,
+      "blocks": 108086,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 263.39999999990687,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 263.39999999990687,
+        "lastChunkMs": 8.300000000046566,
+        "maxChunkMs": 11.199999999953434,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 8.300000000046566,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 16.59539158741303,
+        "frameMs": 66.70000000000027,
+        "p95Ms": 83.30000000000018,
+        "samples": 26
+      }
+    },
+    {
+      "revision": 2,
+      "name": "distant",
+      "fixture": {
+        "position": [
+          0,
+          1.02,
+          17
+        ],
+        "yaw": -0.87,
+        "pitch": 0.06
+      },
+      "actual": [
+        0,
+        1.0000090528699894,
+        17
+      ],
+      "calls": 73,
+      "triangles": 29624,
+      "geometries": 61,
+      "textures": 4,
+      "blocks": 38548,
+      "chunks": 26,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 157.80000000004657,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 157.80000000004657,
+        "lastChunkMs": 4,
+        "maxChunkMs": 12.5,
+        "queue": 0,
+        "rebuilt": 26,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 28,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.19999999995343387,
+        "maxColumnMs": 5.100000000093132,
+        "generatedChunks": 10,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 1440
+      },
+      "frame": {
+        "fps": 11.28802281368821,
+        "frameMs": 83.30000000000018,
+        "p95Ms": 183.30000000000018,
+        "samples": 19
+      }
+    },
+    {
+      "revision": 2,
+      "name": "approach",
+      "fixture": {
+        "position": [
+          100,
+          1.01,
+          -70
+        ],
+        "yaw": -0.9,
+        "pitch": 0.16
+      },
+      "actual": [
+        100,
+        1.0000090489366116,
+        -70
+      ],
+      "calls": 27,
+      "triangles": 18178,
+      "geometries": 64,
+      "textures": 4,
+      "blocks": 71064,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 175.30000000004657,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 175.30000000004657,
+        "lastChunkMs": 6,
+        "maxChunkMs": 11.100000000093132,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0.09999999986030161,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 7.600000000093132,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 19.773626073912453,
+        "frameMs": 83.30000000000018,
+        "p95Ms": 100,
+        "samples": 29
+      }
+    },
+    {
+      "revision": 2,
+      "name": "foot",
+      "fixture": {
+        "position": [
+          130,
+          1.01,
+          -90
+        ],
+        "yaw": -0.5,
+        "pitch": 0.22
+      },
+      "actual": [
+        130,
+        1.000009031032965,
+        -90
+      ],
+      "calls": 29,
+      "triangles": 25750,
+      "geometries": 67,
+      "textures": 4,
+      "blocks": 89706,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 198.19999999995343,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 198.19999999995343,
+        "lastChunkMs": 8.300000000046566,
+        "maxChunkMs": 18.49999999976717,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.09999999986030161,
+        "maxColumnMs": 2,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 15.306434825200515,
+        "frameMs": 83.30000000000018,
+        "p95Ms": 116.70000000000027,
+        "samples": 25
+      }
+    },
+    {
+      "revision": 2,
+      "name": "summit",
+      "fixture": {
+        "position": [
+          145.5,
+          26.01,
+          -105.5
+        ],
+        "yaw": 0.7,
+        "pitch": -0.2
+      },
+      "actual": [
+        145.5,
+        24.000009046495492,
+        -105.5
+      ],
+      "calls": 30,
+      "triangles": 20236,
+      "geometries": 62,
+      "textures": 4,
+      "blocks": 106423,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 257.69999999995343,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 257.69999999995343,
+        "lastChunkMs": 7.600000000093132,
+        "maxChunkMs": 13.899999999906868,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 4,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 16.940777864050258,
+        "frameMs": 50,
+        "p95Ms": 83.40000000000009,
+        "samples": 24
+      }
+    },
+    {
+      "revision": 2,
+      "name": "entrance",
+      "fixture": {
+        "position": [
+          128,
+          1.01,
+          -90
+        ],
+        "yaw": -1.5707963267948966,
+        "pitch": -0.1
+      },
+      "actual": [
+        128,
+        1.0000090429687294,
+        -90
+      ],
+      "calls": 29,
+      "triangles": 25870,
+      "geometries": 66,
+      "textures": 4,
+      "blocks": 89706,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 185.19999999995343,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 185.19999999995343,
+        "lastChunkMs": 8,
+        "maxChunkMs": 8,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 3.199999999953434,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 14.227390820240007,
+        "frameMs": 49.90000000000009,
+        "p95Ms": 83.5,
+        "samples": 23
+      }
+    },
+    {
+      "revision": 2,
+      "name": "chamber",
+      "fixture": {
+        "position": [
+          158,
+          -11.99,
+          -90
+        ],
+        "yaw": 1.5707963267948966,
+        "pitch": -0.08
+      },
+      "actual": [
+        158,
+        -11.999990970187874,
+        -90
+      ],
+      "calls": 80,
+      "triangles": 26592,
+      "geometries": 66,
+      "textures": 4,
+      "blocks": 96243,
+      "chunks": 37,
+      "chunk": {
+        "lastBuildMs": 0,
+        "maxBuildMs": 193.39999999990687,
+        "maxRuntimeBuildMs": 0,
+        "totalBuildMs": 193.39999999990687,
+        "lastChunkMs": 6,
+        "maxChunkMs": 8.299999999813735,
+        "queue": 0,
+        "rebuilt": 37,
+        "columns": 0,
+        "restarts": 0,
+        "activeMeshes": 38,
+        "currentChunk": null
+      },
+      "streaming": {
+        "lastMs": 0,
+        "maxRuntimeMs": 0.10000000009313226,
+        "maxColumnMs": 7.600000000093132,
+        "generatedChunks": 21,
+        "unloadedChunks": 0,
+        "pendingChunks": 0,
+        "generatedColumns": 3024
+      },
+      "frame": {
+        "fps": 16.181229773462782,
+        "frameMs": 166.70000000000027,
+        "p95Ms": 150,
+        "samples": 24
+      }
+    }
+  ]
+}

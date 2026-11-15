@@ -1,0 +1,13 @@
+
+Running 6 tests using 1 worker
+
+(node:11250) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 667×375 (5.5s)
+  ✓  2 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 844×390 (4.5s)
+  ✓  3 e2e/mobile-ux.spec.ts:12:94 › aufgeräumtes mobiles HUD und Safe Areas 932×430 (4.8s)
+  ✓  4 e2e/mobile-ux.spec.ts:29:1 › Baumkollision verkürzt die Sicht vorübergehend; Weglaufen stellt den Abstand wieder her (6.9s)
+  ✓  5 e2e/mobile-ux.spec.ts:35:1 › Kamera-Reset löst enge Sicht, bleibt nach Menüwechsel erreichbar und stoppt alte Eingaben (5.7s)
+  ✓  6 e2e/mobile-ux.spec.ts:42:1 › zwei Daumen, zusätzlicher Finger, Rotation und Browserwechsel behalten stabile Steuerung (5.0s)
+
+  6 passed (33.8s)

@@ -1,0 +1,31 @@
+
+Running 24 tests using 1 worker
+
+(node:6926) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/mobile-rescue.spec.ts:21:1 › P0: sichtbarer Fokusverlust während Bewegung öffnet keine manuelle Pause (3.4s)
+  ✓   2 e2e/mobile-rescue.spec.ts:65:1 › Bewegung, Kamera, beide Finger gleichzeitig und unabhängiges Loslassen (5.5s)
+  ✓   3 e2e/mobile-rescue.spec.ts:127:1 › Kamerabewegung allein und 20 schnelle Touchfolgen öffnen kein Menü (11.6s)
+  ✓   4 e2e/mobile-rescue.spec.ts:155:3 › pointercancel: keine hängende Bewegung, nächster Kontakt funktioniert (2.6s)
+  ✓   5 e2e/mobile-rescue.spec.ts:155:3 › lostpointercapture: keine hängende Bewegung, nächster Kontakt funktioniert (2.4s)
+  ✓   6 e2e/mobile-rescue.spec.ts:155:3 › touchcancel: keine hängende Bewegung, nächster Kontakt funktioniert (2.4s)
+  ✓   7 e2e/mobile-rescue.spec.ts:182:1 › Echter Touchcancel bei zwei Kontakten endet ohne Pause (2.3s)
+  ✓   8 e2e/mobile-rescue.spec.ts:204:1 › Manuelle Pause nur per Tippen; Ziehen von Kamera oder Menü aktiviert kein Menü (4.1s)
+  ✓   9 e2e/mobile-rescue.spec.ts:246:1 › Hintergrund unterbricht getrennt, sichtbares Blur bewahrt aktive Daumen (2.6s)
+  ✓  10 e2e/mobile-rescue.spec.ts:296:1 › Altspielstand, Reload und Landschaft: Inventar, Mission, Baublöcke erhalten (10.7s)
+  ✓  11 e2e/mobile-rescue.spec.ts:353:1 › Joystick startet auch auf dem Knopf; Browserleisten-Resize erhält Kontakte (3.9s)
+  ✓  12 e2e/mobile-rescue.spec.ts:389:1 › Dritter Finger auf dem Joystick ersetzt und beendet keinen aktiven Daumen (4.4s)
+  ✓  13 e2e/mountain-v072.spec.ts:8:12 › experimenteller Berg: Renderbudget start (3.6s)
+  ✓  14 e2e/mountain-v072.spec.ts:8:12 › experimenteller Berg: Renderbudget foot (3.7s)
+  ✓  15 e2e/mountain-v072.spec.ts:8:12 › experimenteller Berg: Renderbudget summit (3.9s)
+  ✓  16 e2e/mountain-v072.spec.ts:8:12 › experimenteller Berg: Renderbudget chamber (3.8s)
+  ✓  17 e2e/mountain-v072.spec.ts:22:1 › Revision-2-Export, Import, Sicherung und Reload behalten Terrain und Deltas (8.0s)
+  ✓  18 e2e/newer-terrain-save.spec.ts:2:1 › neuere Terrainrevision zeigt Schutzmeldung und verändert keine Speicherdaten (2.7s)
+  ✓  19 e2e/pages.spec.ts:7:1 › Pages: Unterpfad, gebündelte Assets, Manifest und direkter Neuladevorgang (3.3s)
+  ✓  20 e2e/rescue-v071.spec.ts:15:1 › Kamerawahl ist direkt sichtbar: Ego, echter Abstand, Befreien und unabhängige Daumen (8.0s)
+  ✓  21 e2e/rescue-v071.spec.ts:28:1 › enge Third-Person-Sicht nutzt Augen und Hand, statt im unsichtbaren Körper zu bleiben (5.7s)
+  ✓  22 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · first (19.3s)
+  ✓  23 e2e/rescue-v071.spec.ts:37:53 › Wildtier anvisieren, jagen, Grill herstellen und platzieren, Fleisch garen, essen und laden · third (20.1s)
+  ✓  24 e2e/rescue-v071.spec.ts:58:1 › Angelblick zeigt lebende Fischmodelle beim großen Steg ohne Kamera-Vergrößerung (6.5s)
+
+  24 passed (2.5m)

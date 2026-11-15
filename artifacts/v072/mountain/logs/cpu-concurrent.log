@@ -1,0 +1,14 @@
+
+ RUN  v3.2.7 /workspace/blockboom
+
+stdout | src/tests/mountain-budget.test.ts > misst budgetierte Berg-Chunkaufbauten und gibt ihre Geometrien vollständig frei
+{"method":"Node CPU geometry benchmark, controlled focus coordinates; not GPU or device FPS","generation2Mountain":[{"x":130,"z":-90,"blocks":89002,"chunks":37,"meshes":37,"maxSliceMs":38.19653500000004,"maxChunkCpuMs":40.281710999999405,"maxGenerationSliceMs":33.63937099999998},{"x":112,"z":-108,"blocks":86374,"chunks":37,"meshes":37,"maxSliceMs":38.19653500000004,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":127,"z":-132,"blocks":95077,"chunks":37,"meshes":37,"maxSliceMs":38.19653500000004,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":155,"z":-132,"blocks":105214,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":166,"z":-111,"blocks":107217,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":145,"z":-105,"blocks":105719,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":145,"z":-105,"blocks":105719,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":166,"z":-111,"blocks":107217,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":155,"z":-132,"blocks":105214,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":127,"z":-132,"blocks":95077,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":112,"z":-108,"blocks":86374,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976},{"x":130,"z":-90,"blocks":89002,"chunks":37,"meshes":37,"maxSliceMs":40.319712999999865,"maxChunkCpuMs":54.70793800000365,"maxGenerationSliceMs":37.57709399999976}]}
+
+ ✓ src/tests/mountain-budget.test.ts (1 test) 11195ms
+   ✓ misst budgetierte Berg-Chunkaufbauten und gibt ihre Geometrien vollständig frei  11194ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:39:48
+   Duration  12.08s (transform 229ms, setup 0ms, collect 330ms, tests 11.19s, environment 0ms, prepare 154ms)
+

@@ -1,0 +1,601 @@
+{
+  "method": "Controlled camera fixture, Chromium SwiftShader; no device FPS claim",
+  "calls": 29,
+  "frame": {
+    "fps": 11.539349180706209,
+    "frameMs": 66.59999999999991,
+    "p95Ms": 100,
+    "samples": 5
+  },
+  "chunk": {
+    "lastBuildMs": 0,
+    "maxBuildMs": 210.30000000004657,
+    "maxRuntimeBuildMs": 0,
+    "totalBuildMs": 210.30000000004657,
+    "lastChunkMs": 9,
+    "maxChunkMs": 9,
+    "queue": 0,
+    "rebuilt": 37,
+    "columns": 0,
+    "restarts": 0,
+    "activeMeshes": 38,
+    "currentChunk": null
+  },
+  "streaming": {
+    "lastMs": 0,
+    "maxRuntimeMs": 0,
+    "maxColumnMs": 5.199999999953434,
+    "generatedChunks": 21,
+    "unloadedChunks": 0,
+    "pendingChunks": 0,
+    "generatedColumns": 3024
+  },
+  "heap": 26926380,
+  "activeMeshes": 88,
+  "activeAnimals": 1,
+  "activeZombies": 0,
+  "discovery": {
+    "enabled": true,
+    "notes": [],
+    "chapters": [],
+    "goals": [
+      "shelter",
+      "garden",
+      "water"
+    ]
+  },
+  "blueprint": {
+    "planning": false,
+    "origin": [
+      130,
+      2,
+      -91
+    ],
+    "valid": false,
+    "cells": 0
+  },
+  "triangles": 25750,
+  "geometries": 67,
+  "textures": 4,
+  "chunks": 38,
+  "ratio": 1,
+  "fov": 70,
+  "camera": {
+    "perspective": "first",
+    "desiredDistance": 4,
+    "actualDistance": 0,
+    "blocked": false,
+    "temporaryFirst": false,
+    "avatar": false,
+    "position": [
+      130,
+      2.60000900702582,
+      -90
+    ],
+    "recoveries": 0
+  },
+  "input": {
+    "joystick": null,
+    "look": null
+  },
+  "lifecycle": {
+    "paused": false,
+    "suspended": false,
+    "webglLost": false
+  },
+  "events": [],
+  "toolAction": "idle",
+  "particles": 0,
+  "renderedFrames": 14,
+  "picks": 5,
+  "angling": {
+    "state": "idle",
+    "power": 0,
+    "tension": 0,
+    "progress": 0,
+    "target": null,
+    "spot": null
+  },
+  "nightfall": {
+    "time": 0.3203333333333333,
+    "phase": "Mittag",
+    "health": 100,
+    "hunger": 100,
+    "mode": "Kreativ",
+    "cap": 4,
+    "night": 0,
+    "player": {
+      "pos": [
+        130,
+        1.0000090070258196,
+        -90
+      ],
+      "yaw": -0.5,
+      "pitch": 0.22
+    },
+    "zombies": []
+  },
+  "living": {
+    "region": "mountain",
+    "clock": 0.3999999999999998,
+    "animals": [
+      {
+        "id": "animal-0",
+        "kind": "Wolf",
+        "pos": [
+          -5,
+          1,
+          15
+        ],
+        "tame": false,
+        "name": "",
+        "health": 42
+      },
+      {
+        "id": "animal-1",
+        "kind": "Katze",
+        "pos": [
+          7,
+          1,
+          14
+        ],
+        "tame": false,
+        "name": "",
+        "health": 18
+      },
+      {
+        "id": "animal-2",
+        "kind": "Huhn",
+        "pos": [
+          8,
+          1,
+          3
+        ],
+        "tame": false,
+        "name": "",
+        "health": 16
+      },
+      {
+        "id": "animal-3",
+        "kind": "Kuh",
+        "pos": [
+          -20,
+          1,
+          18
+        ],
+        "tame": false,
+        "name": "",
+        "health": 50
+      },
+      {
+        "id": "animal-4",
+        "kind": "Schaf",
+        "pos": [
+          -36,
+          1,
+          12
+        ],
+        "tame": false,
+        "name": "",
+        "health": 32
+      },
+      {
+        "id": "animal-5",
+        "kind": "Schwein",
+        "pos": [
+          28,
+          1,
+          18
+        ],
+        "tame": false,
+        "name": "",
+        "health": 40
+      },
+      {
+        "id": "animal-6",
+        "kind": "Kuh",
+        "pos": [
+          -8,
+          1,
+          12
+        ],
+        "tame": false,
+        "name": "",
+        "health": 50
+      },
+      {
+        "id": "animal-7",
+        "kind": "Schaf",
+        "pos": [
+          -12,
+          1,
+          20
+        ],
+        "tame": false,
+        "name": "",
+        "health": 32
+      },
+      {
+        "id": "animal-8",
+        "kind": "Schwein",
+        "pos": [
+          -18,
+          1,
+          5
+        ],
+        "tame": false,
+        "name": "",
+        "health": 40
+      },
+      {
+        "id": "animal-9",
+        "kind": "Huhn",
+        "pos": [
+          0,
+          1,
+          8
+        ],
+        "tame": false,
+        "name": "",
+        "health": 16
+      },
+      {
+        "id": "animal-10",
+        "kind": "Katze",
+        "pos": [
+          12,
+          1,
+          22
+        ],
+        "tame": false,
+        "name": "",
+        "health": 18
+      },
+      {
+        "id": "animal-11",
+        "kind": "Wolf",
+        "pos": [
+          -42,
+          1,
+          8
+        ],
+        "tame": false,
+        "name": "",
+        "health": 42
+      },
+      {
+        "id": "animal-12",
+        "kind": "Schaf",
+        "pos": [
+          -100,
+          8,
+          30
+        ],
+        "tame": false,
+        "name": "",
+        "health": 32
+      },
+      {
+        "id": "animal-13",
+        "kind": "Kuh",
+        "pos": [
+          -94,
+          8,
+          24
+        ],
+        "tame": false,
+        "name": "",
+        "health": 50
+      },
+      {
+        "id": "animal-14",
+        "kind": "Wolf",
+        "pos": [
+          -108,
+          8,
+          39
+        ],
+        "tame": false,
+        "name": "",
+        "health": 42
+      },
+      {
+        "id": "animal-15",
+        "kind": "Huhn",
+        "pos": [
+          95,
+          8,
+          84
+        ],
+        "tame": false,
+        "name": "",
+        "health": 16
+      },
+      {
+        "id": "animal-16",
+        "kind": "Katze",
+        "pos": [
+          105,
+          8,
+          91
+        ],
+        "tame": false,
+        "name": "",
+        "health": 18
+      },
+      {
+        "id": "animal-17",
+        "kind": "Schaf",
+        "pos": [
+          116,
+          8,
+          -103
+        ],
+        "tame": false,
+        "name": "",
+        "health": 32
+      }
+    ],
+    "crops": 4,
+    "blocks": 89706,
+    "loadedChunks": 37
+  },
+  "fish": [
+    {
+      "id": 0,
+      "species": "Rotauge",
+      "x": -9.513135795165995,
+      "y": -0.018458522242202024,
+      "z": -5.830247707828685,
+      "alive": true
+    },
+    {
+      "id": 1,
+      "species": "Rotauge",
+      "x": -16.687176103650742,
+      "y": -0.042674377591566955,
+      "z": 13.210299409058017,
+      "alive": true
+    },
+    {
+      "id": 2,
+      "species": "Rotauge",
+      "x": 17.191732654132,
+      "y": -0.15856470960145708,
+      "z": -7.577207203257062,
+      "alive": true
+    },
+    {
+      "id": 3,
+      "species": "Flussbarsch",
+      "x": -10.348009603478227,
+      "y": -0.17801191359560378,
+      "z": -5.223200482260777,
+      "alive": true
+    },
+    {
+      "id": 4,
+      "species": "Flussbarsch",
+      "x": -18.538195645381403,
+      "y": -0.21060018795923016,
+      "z": 13.39433957098317,
+      "alive": true
+    },
+    {
+      "id": 5,
+      "species": "Flussbarsch",
+      "x": 16.020960063562914,
+      "y": -0.32251062146221465,
+      "z": -9.657343564635383,
+      "alive": true
+    },
+    {
+      "id": 6,
+      "species": "Hecht",
+      "x": -18.758184261651486,
+      "y": -0.23399961756364143,
+      "z": 13.120731534729703,
+      "alive": true
+    },
+    {
+      "id": 7,
+      "species": "Hecht",
+      "x": 16.389400326261224,
+      "y": -0.3296921658821309,
+      "z": -10.011043481975511,
+      "alive": true
+    },
+    {
+      "id": 8,
+      "species": "Hecht",
+      "x": 3.065008203374655,
+      "y": -0.3998259775856852,
+      "z": -20.773993315565612,
+      "alive": true
+    },
+    {
+      "id": 9,
+      "species": "Karpfen",
+      "x": -12.01102526573658,
+      "y": -0.7485917577500288,
+      "z": -6.096223691019442,
+      "alive": true
+    },
+    {
+      "id": 10,
+      "species": "Karpfen",
+      "x": -18.47127172220867,
+      "y": -0.8202879207849145,
+      "z": 10.639401368569063,
+      "alive": true
+    },
+    {
+      "id": 11,
+      "species": "Karpfen",
+      "x": 5.310731259250666,
+      "y": -0.9001676595213526,
+      "z": -20.38729393719335,
+      "alive": true
+    },
+    {
+      "id": 12,
+      "species": "Forelle",
+      "x": 17.613591834217914,
+      "y": -0.12456370215038565,
+      "z": -10.955061843055844,
+      "alive": true
+    },
+    {
+      "id": 13,
+      "species": "Forelle",
+      "x": -17.008031297552364,
+      "y": -0.19251923693885825,
+      "z": 11.154044801492926,
+      "alive": true
+    },
+    {
+      "id": 14,
+      "species": "Forelle",
+      "x": 19.8071223176104,
+      "y": -0.27850167650082663,
+      "z": -9.421948821886815,
+      "alive": true
+    },
+    {
+      "id": 15,
+      "species": "Zander",
+      "x": -17.27814079509419,
+      "y": -0.6585337507634124,
+      "z": 11.583700570880941,
+      "alive": true
+    },
+    {
+      "id": 16,
+      "species": "Zander",
+      "x": 19.209617066716547,
+      "y": -0.7327439936129867,
+      "z": -9.354033913472566,
+      "alive": true
+    },
+    {
+      "id": 17,
+      "species": "Zander",
+      "x": -18.091755840879685,
+      "y": -0.7951549598330461,
+      "z": 13.79634596550875,
+      "alive": true
+    },
+    {
+      "id": 18,
+      "species": "Schleie",
+      "x": -17.38444773745673,
+      "y": -0.7871101368937645,
+      "z": 12.510725243677047,
+      "alive": true
+    },
+    {
+      "id": 19,
+      "species": "Schleie",
+      "x": 3.6558317621206418,
+      "y": -0.8523043105677572,
+      "z": -17.748251583688866,
+      "alive": true
+    },
+    {
+      "id": 20,
+      "species": "Schleie",
+      "x": -19.766672950165123,
+      "y": -0.9220867949485609,
+      "z": 12.453764937044044,
+      "alive": true
+    },
+    {
+      "id": 21,
+      "species": "Brasse",
+      "x": -11.286213077146067,
+      "y": -0.6012273372193789,
+      "z": -5.289928154426045,
+      "alive": true
+    },
+    {
+      "id": 22,
+      "species": "Brasse",
+      "x": 16.698194127276025,
+      "y": -0.6663163975721837,
+      "z": -9.870350429636867,
+      "alive": true
+    },
+    {
+      "id": 23,
+      "species": "Brasse",
+      "x": 3.0331426879457277,
+      "y": -0.7370518185847855,
+      "z": -20.51336592414295,
+      "alive": true
+    },
+    {
+      "id": 24,
+      "species": "Rotauge",
+      "x": -115.5761293041891,
+      "y": -0.06600184055476567,
+      "z": -90.77999696725338,
+      "alive": true
+    },
+    {
+      "id": 25,
+      "species": "Flussbarsch",
+      "x": -117.11847871411143,
+      "y": -0.22184758472916313,
+      "z": -89.73933750187275,
+      "alive": true
+    },
+    {
+      "id": 26,
+      "species": "Hecht",
+      "x": -118.23132182768667,
+      "y": -0.28739655182115276,
+      "z": -91.49328346324407,
+      "alive": true
+    },
+    {
+      "id": 27,
+      "species": "Karpfen",
+      "x": -115.82555566038707,
+      "y": -0.7963810860349622,
+      "z": -91.54917573504028,
+      "alive": true
+    },
+    {
+      "id": 28,
+      "species": "Brasse",
+      "x": -85.92642761573332,
+      "y": -0.6528446849939797,
+      "z": -108.79656224841793,
+      "alive": true
+    },
+    {
+      "id": 29,
+      "species": "Schleie",
+      "x": -87.88401807351653,
+      "y": -0.8369587873092996,
+      "z": -110.47417069759155,
+      "alive": true
+    },
+    {
+      "id": 30,
+      "species": "Rotauge",
+      "x": -133.724289206545,
+      "y": -0.07787103869545006,
+      "z": -111.23276192711738,
+      "alive": true
+    },
+    {
+      "id": 31,
+      "species": "Flussbarsch",
+      "x": -132.76241608062819,
+      "y": -0.23514827499184998,
+      "z": -109.51968593958783,
+      "alive": true
+    }
+  ]
+}
