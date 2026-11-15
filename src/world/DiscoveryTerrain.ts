@@ -53,7 +53,7 @@ export function terrainProfile(x:number,z:number,revision:1|2=1){
  if(river<3.7){top=river<1.5?-2:river<2.4?-1:0;surface=river<2.4?"Sand":"Ton";}
  if(island){top=1;surface="Gras";}
  const sculpt=revision===2?mountainSculpt(x,z):null;
- if(sculpt&&!village&&lake>1.1&&river>5&&trail>2.15){top=sculpt.top;surface=sculpt.surface;}
+ if(sculpt&&!village&&lake>1.1&&river>5&&trail>2.15){top=Math.round(top+(sculpt.top-top)*sculpt.blend);surface=top>21?"Kalkstein":top>14?"Schiefer":top>7?"Stein":sculpt.surface;}
  // A timber crossing at the river, and a jetty to the island, are real solids.
  const bridge=river<3.9&&trail<2.15;
  const jetty=Math.abs(x+115)<1.6&&z>=-111&&z<=-77;

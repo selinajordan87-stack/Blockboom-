@@ -16,7 +16,7 @@ export class LandmarkView {
   for(let x=-LIMIT;x<LIMIT;x+=12)for(let z=-LIMIT;z<LIMIT;z+=12){
    this.tileCenters.push([x+6,z+6]);
    for(const[dx,dz]of [[0,0],[12,0],[0,12],[12,12]]){
-    const xx=x+dx,zz=z+dz,profile=terrainProfile(xx,zz),height=legacyArea(xx,zz)?0:profile.top;
+    const xx=x+dx,zz=z+dz,profile=terrainProfile(xx,zz,this.world.terrainRevision),height=legacyArea(xx,zz)?0:profile.top;
     p.push(xx,height+.12,zz);const c=new T.Color(profile.surface==="Sand"?0xc5b47c:height>7?0x87918b:0x70935b);colors.push(c.r,c.g,c.b);
    }
   }
@@ -29,6 +29,7 @@ export class LandmarkView {
   const peakGeometry=new T.ConeGeometry(1,1,4,3);peakGeometry.rotateY(Math.PI/4);
   this.peaks=new T.InstancedMesh(peakGeometry,new T.MeshLambertMaterial({color:0xffffff}),9);this.peaks.name="layered ridge silhouettes";this.peaks.frustumCulled=false;this.group.add(this.peaks);
   for(const[cx,cz,h]of [[145,-105,24],[45,-40,11],[-108,-46,10]])for(let peak=0;peak<3;peak++){
+   if(this.world.terrainRevision===2&&cx===145)continue;
    const height=h*(peak===1?1:.72);this.peakData.push([cx+(peak-1)*13,height/2,cz-peak*5,15-peak*2,height,12,peak===1?0xb7c7c8:0x718995]);
   }
   for(const[cx,cz]of [[-100,30],[-125,17],[-87,41]])for(let i=0;i<5;i++)add(cx+Math.sin(i*2.4)*8,5+i%3,cz+Math.cos(i*2.4)*8,5,9+i%3,5,i%2?0x335e42:0x46764c);

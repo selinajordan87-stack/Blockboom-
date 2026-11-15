@@ -14,5 +14,5 @@ export function mountainSculpt(x:number,z:number){
  const weight=Math.max(0,Math.min(1,(distance-2)/6));
  const top=Math.min(25,Math.max(0,Math.floor(road*(1-weight)+elevation*weight)));
  const surface:Block=distance<1.8?'Kalkstein':top>21?'Kalkstein':top>14?'Schiefer':top>7?'Stein':'Gras';
- return {top,surface,distance};
+ return {top,surface,distance,blend:Math.min(1,elevation/6)};
 }
