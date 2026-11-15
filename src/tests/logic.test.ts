@@ -118,12 +118,12 @@ const example = (): Save => ({
 });
 describe("Speicherstände", () => {
   it("lädt Position, Weltänderungen, Fische und Auftrag verlustfrei", () => {
-    let raw = "";
+    const values = new Map<string,string>();
     const storage = {
-      setItem: (_k: string, v: string) => {
-        raw = v;
+      setItem: (k: string, v: string) => {
+        values.set(k,v);
       },
-      getItem: () => raw,
+      getItem: (k:string) => values.get(k)??null,
     };
     expect(persist(storage, example())).toBe(true);
     expect(load(storage)).toEqual(example());

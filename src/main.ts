@@ -57,7 +57,7 @@ import { WaterView } from "./world/WaterView";
 import { Inventory, FISH } from "./fishing/Fishing";
 import { ReadingEngine, mission } from "./learning/Learning";
 import { explode } from "./boom/Boom";
-import { load, persist, SAVE_KEY, NewerSaveError, type Save } from "./storage/Save";
+import { load, persist, SAVE_KEY, readSaveRaw, NewerSaveError, type Save } from "./storage/Save";
 import {exportTransfer,parseTransfer,importTransfer,IMPORT_BACKUP,type Transfer} from "./storage/Transfer";
 import {DiscoveryEngine} from "./discovery/Engine";
 import {DiscoveryUI} from "./discovery/UI";
@@ -148,23 +148,23 @@ let reading = new ReadingEngine(),
 let pendingCatch: { fish: FishActor; method: "Angel" | "Holzknüppel" } | null =
   null;
 let preferredFish: import("./fishing/Fishing").FishName | undefined;
-try{const raw=localStorage.getItem(SAVE_KEY);if(raw&&!JSON.parse(raw).extension?.living?.wildlifeVersion&&!localStorage.getItem(SAVE_KEY+".pre-v071"))localStorage.setItem(SAVE_KEY+".pre-v071",raw);}catch{}
-const needsDiscoveryUpgrade=(()=>{try{return !JSON.parse(localStorage.getItem(SAVE_KEY)||"null")?.extension?.discovery;}catch{return true;}})();
+try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.living?.wildlifeVersion&&!localStorage.getItem(SAVE_KEY+".pre-v071"))localStorage.setItem(SAVE_KEY+".pre-v071",raw);}catch{}
+const needsDiscoveryUpgrade=(()=>{try{return !JSON.parse(readSaveRaw(localStorage)||"null")?.extension?.discovery;}catch{return true;}})();
 const expansion = saved?.extension
   ? readExpansion(saved.extension)
   : defaultExpansion(saved ? 1 : 4);
-try{const raw=localStorage.getItem(SAVE_KEY);if(raw&&!JSON.parse(raw).extension?.discovery&&!localStorage.getItem(SAVE_KEY+".pre-v07"))localStorage.setItem(SAVE_KEY+".pre-v07",raw);}catch{}
+try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.discovery&&!localStorage.getItem(SAVE_KEY+".pre-v07"))localStorage.setItem(SAVE_KEY+".pre-v07",raw);}catch{}
 const discovery=new DiscoveryEngine(expansion.discovery,expansion);
-try{const raw=localStorage.getItem(SAVE_KEY);if(raw&&!JSON.parse(raw).extension?.living&&!localStorage.getItem(SAVE_KEY+".pre-v06"))localStorage.setItem(SAVE_KEY+".pre-v06",raw);}catch{}
+try{const raw=readSaveRaw(localStorage);if(raw&&!JSON.parse(raw).extension?.living&&!localStorage.getItem(SAVE_KEY+".pre-v06"))localStorage.setItem(SAVE_KEY+".pre-v06",raw);}catch{}
 if (!saved) {expansion.nightfall.mode = "Survival";expansion.nightfall.refuge=true;}
 try {
-  const raw = localStorage.getItem(SAVE_KEY);
+  const raw = readSaveRaw(localStorage);
   if(raw && !JSON.parse(raw).extension?.nightfall && !localStorage.getItem(SAVE_KEY+".pre-v05"))
     localStorage.setItem(SAVE_KEY+".pre-v05",raw);
 } catch {}
 if (expansion.edition < 4) {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
+    const raw = readSaveRaw(localStorage);
     if (raw && !localStorage.getItem(SAVE_KEY + ".pre-v04"))
       localStorage.setItem(SAVE_KEY + ".pre-v04", raw);
   } catch {}
@@ -232,7 +232,7 @@ function safeLoad() {
     const result = load(localStorage);
     if (result && !result.extension) {
       try {
-        const raw = localStorage.getItem(SAVE_KEY);
+        const raw = readSaveRaw(localStorage);
         if (raw && !localStorage.getItem(SAVE_KEY + ".pre-v02"))
           localStorage.setItem(SAVE_KEY + ".pre-v02", raw);
       } catch {}
@@ -1954,7 +1954,7 @@ setInterval(() => {
 }, 10000);
 // No service worker yet: the manifest prepares installation without stale-cache risk.
 try {
-  const raw = localStorage.getItem(SAVE_KEY);
+  const raw = readSaveRaw(localStorage);
   if (raw && !saved) {
     localStorage.setItem(SAVE_KEY + ".backup", raw);
     toast(

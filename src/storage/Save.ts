@@ -15,6 +15,10 @@ export interface Save {
   settings: { sound: boolean; quality: number };
 }
 export const SAVE_KEY = "blockboom.save";
+/** Old clients only know SAVE_KEY. Never place generation-2 worlds there. */
+export const TERRAIN2_SAVE_KEY = "blockboom.save.terrain2";
+export function readSaveRaw(storage:Pick<Storage,"getItem">){return storage.getItem(TERRAIN2_SAVE_KEY)??storage.getItem(SAVE_KEY);}
+export function saveKey(save:Save){return save.extension?.terrainRevision===2?TERRAIN2_SAVE_KEY:SAVE_KEY;}
 export class NewerSaveError extends Error {constructor(){super("Dieser Spielstand wurde mit einer neueren BLOCKBOOM-Version erstellt.");}}
 export function assertSupportedSave(raw:string|null){
  if(!raw)return;let data:any;try{data=JSON.parse(raw);}catch{return;}
@@ -106,7 +110,7 @@ export function decode(raw: string | null): Save | null {
 }
 export function load(storage: Pick<Storage, "getItem">) {
   try {
-    const raw=storage.getItem(SAVE_KEY);assertSupportedSave(raw);return decode(raw);
+    const raw=readSaveRaw(storage);assertSupportedSave(raw);return decode(raw);
   } catch(error) {
     if(error instanceof NewerSaveError)throw error;
     return null;
@@ -114,10 +118,13 @@ export function load(storage: Pick<Storage, "getItem">) {
 }
 export function persist(storage: Pick<Storage, "setItem"> & Partial<Pick<Storage,"getItem">>, save: Save) {
   try {
-    if(storage.getItem)assertSupportedSave(storage.getItem(SAVE_KEY));
+    if(storage.getItem){
+      assertSupportedSave(readSaveRaw(storage as Pick<Storage,"getItem">));
+      if(saveKey(save)===SAVE_KEY&&storage.getItem(TERRAIN2_SAVE_KEY)!==null)return false;
+    }
     // Never replace a readable save with a world that the loader would reject.
     if(Object.keys(save.changes).length>50000)return false;
-    storage.setItem(SAVE_KEY, JSON.stringify(save));
+    storage.setItem(saveKey(save), JSON.stringify(save));
     return true;
   } catch {
     return false;
