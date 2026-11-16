@@ -3,14 +3,14 @@ import { World, MIN_Y, MAX_Y, type Block } from "./World";
 import { special } from "../nightfall/Defense";
 
 export const colors: Record<Block, number> = {
-  Gras: 0x82ae60,
-  Erde: 0x956747,
-  Stein: 0x82949d,
-  Holz: 0x765035,
-  Bretter: 0xc99a68,
+  Gras: 0x86b95f,
+  Erde: 0x9b7052,
+  Stein: 0x98a4a8,
+  Holz: 0x886044,
+  Bretter: 0xcba170,
   Glas: 0x9cdde0,
-  Laub: 0x5f934f,
-  Sand: 0xe0c98d,
+  Laub: 0x659348,
+  Sand: 0xe7d29b,
   Boom: 0xe59a3f,
   Ziegel: 0xb95f45,
   Kopfstein: 0x737f81,
@@ -71,14 +71,14 @@ export function createVoxelAtlas() {
         if (index === 0) shade = 235 + (hash - 9) * .8;
         if (index === 1)
           shade += y < 4 ? 18 : (x * 3 + y) % 9 === 0 ? -28 : 0;
-        if (index === 2) shade += (x * 5 + y * 7) % 13 === 0 ? -30 : 0;
+        if (index === 2) shade += (x * 5 + y * 7) % 13 === 0 ? -18 : 0;
         if ([3, 10, 12, 14, 15].includes(index))
           shade += Math.floor(y/5)%2===0?4:-5;
         if([3,10,12,14,15].includes(index)&&((x+Math.floor(y/5)*7)%13===0||y%7===0))shade-=17;
         if ([4, 13].includes(index))
-          shade += x % 5 === 0 ? -34 : y % 7 === 0 ? 12 : 0;
+          shade += x % 5 === 0 ? -26 : y % 7 === 0 ? 12 : 0;
         if (index === 5)
-          shade += y % 8 === 0 ? -40 : x % 11 === 0 ? -18 : 8;
+          shade += y % 8 === 0 ? -28 : x % 11 === 0 ? -14 : 8;
         if (index === 6) shade = x === y || x + y === 15 ? 255 : 220;
         if (index === 7) shade = 241 + (hash - 9) * .6;
         if (index === 8)
@@ -215,7 +215,7 @@ export class WorldView {
   private focusZ=17;
   private visibleDistance=64;
   private faceColors=Object.fromEntries(Object.entries(colors).map(([block,color])=>[block,new T.Color(color)])) as Record<Block,T.Color>;
-  private grassSide=new T.Color(0x8a9457);
+  private grassSide=new T.Color(0x8e9e61);
   readonly metrics:WorldRenderMetrics={lastBuildMs:0,maxBuildMs:0,maxRuntimeBuildMs:0,totalBuildMs:0,lastChunkMs:0,maxChunkMs:0,queue:0,rebuilt:0,columns:0,restarts:0,activeMeshes:0,currentChunk:null};
   constructor(public world: World, scene: T.Scene, private clock:()=>number=()=>performance.now()) {
     this.group.name = "chunked voxel world";
