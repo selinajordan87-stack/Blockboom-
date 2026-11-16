@@ -1,5 +1,5 @@
 import {Waterfall} from "./world/Waterfall";
-import {gameViewport,installGameGestureGuard} from "./core/GameViewport";
+import {installGameGestureGuard} from "./core/GameViewport";
 import {VISUAL_PREVIEW} from "./Preview";
 import {ScenicWater} from "./world/ScenicWater";
 import {Atmosphere} from "./world/Atmosphere";
@@ -1612,53 +1612,50 @@ let landscape = innerWidth > innerHeight;
 function resize() {
   ratio = Math.min(devicePixelRatio, settings.quality, ratio);
   viewportDirty = true;
-  const nextLandscape = innerWidth > innerHeight;
+  const app=$("app");
+  const width=Math.max(1,app.clientWidth),height=Math.max(1,app.clientHeight);
+  const nextLandscape = width > height;
   if (nextLandscape !== landscape) {
     clearInput();
     landscape = nextLandscape;
   }
   renderer.setPixelRatio(ratio);
-  // Chrome on iOS also changes its visual viewport as browser controls move.
-  // Use one rectangle for the app, input coordinates and WebGL, not a mix of
-  // device-height, fill-available and dynamic viewport units.
+  // CSS dvh follows browser chrome. Its actual container size is authoritative
+  // for both WebGL and the camera, even if iOS JS viewport reports lag rotation.
   const editing=!!document.activeElement?.matches('input:not([type="range"]),textarea,[contenteditable="true"]');
-  const rect = gameViewport(window.visualViewport || {width:innerWidth,height:innerHeight,scale:1,offsetLeft:0,offsetTop:0},{
-    width:Math.max(innerWidth,document.documentElement.clientWidth),
-    height:Math.max(innerHeight,document.documentElement.clientHeight),
-    keyboard:editing,
-  });
-  const visibleWidth = rect.width;
-  const visibleHeight = rect.height;
+  const vv=window.visualViewport,scale=vv?.scale&&Number.isFinite(vv.scale)?vv.scale:1;
+  const zoomed=Math.abs(scale-1)>.01;
   const rootStyle = document.documentElement.style;
-  rootStyle.setProperty("--game-width", `${visibleWidth}px`);
-  rootStyle.setProperty("--game-height", `${visibleHeight}px`);
-  rootStyle.setProperty("--game-left", `${rect.left}px`);
-  rootStyle.setProperty("--game-top", `${rect.top}px`);
-  rootStyle.setProperty("--game-scale", `${rect.inverseScale}`);
-  rootStyle.setProperty("--usable-height", `${rect.height}px`);
-  rootStyle.setProperty("--viewport-top", "0px");
-  renderer.setSize(visibleWidth, visibleHeight, false);
-  camera.aspect = visibleWidth / visibleHeight;
+  rootStyle.setProperty("--game-left", `${zoomed?vv?.offsetLeft||0:0}px`);
+  rootStyle.setProperty("--game-top", `${zoomed?vv?.offsetTop||0:0}px`);
+  rootStyle.setProperty("--game-scale", `${1/scale}`);
+  rootStyle.setProperty("--usable-height", `${editing&&vv?Math.min(height,vv.height*scale):height}px`);
+  rootStyle.setProperty("--viewport-top", `${editing&&!zoomed?vv?.offsetTop||0:0}px`);
+  renderer.setSize(width, height, false);
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
 }
-window.addEventListener("resize", resize);
+// Coalesce notifications, including CSS-only viewport changes, into one resize.
+let resizeFrame=0;
+function scheduleResize(){if(!resizeFrame)resizeFrame=requestAnimationFrame(()=>{resizeFrame=0;keyboardViewport();resize();});}
+const appSizeObserver=new ResizeObserver(scheduleResize);
+appSizeObserver.observe($("app"));
+window.addEventListener("resize", scheduleResize);
 installGameGestureGuard(document,canPlay);
-window.addEventListener("pageshow", resize);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden){resize();setTimeout(resize,300);}});
-document.addEventListener("focusout",()=>setTimeout(resize,300));
+window.addEventListener("pageshow", scheduleResize);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)scheduleResize();});
+document.addEventListener("focusin",scheduleResize);
+document.addEventListener("focusout",scheduleResize);
 window.addEventListener("orientationchange", () => {
   clearInput();
-  requestAnimationFrame(resize);
-  // iOS settles its toolbar and safe areas after the orientation event.
-  setTimeout(resize, 250);
+  scheduleResize();
 });
 let lastViewportScale=1;
 function keyboardViewport() {
   const scale=window.visualViewport?.scale||1;if(Math.abs(scale-lastViewportScale)>.01){recordDiagnostic("browser-viewport-scale",String(scale));lastViewportScale=scale;}
 }
-const syncVisibleViewport=()=>{keyboardViewport();resize();};
-window.visualViewport?.addEventListener("resize", syncVisibleViewport);
-window.visualViewport?.addEventListener("scroll", syncVisibleViewport);
+window.visualViewport?.addEventListener("resize", scheduleResize);
+window.visualViewport?.addEventListener("scroll", scheduleResize);
 keyboardViewport();
 resize();
 const diagnostics = new URLSearchParams(location.search).has("diagnostics");
