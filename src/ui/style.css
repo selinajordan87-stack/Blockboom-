@@ -71,8 +71,8 @@ body {
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  width: var(--game-width, 100vw);
-  height: var(--game-height, 100dvh);
+  /* CSS owns the viewport rectangle; JS measures it, never fixes its height. */
+  width: 100%;
   min-width: 0;
   min-height: 0;
   isolation: isolate;
