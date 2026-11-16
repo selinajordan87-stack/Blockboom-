@@ -46,7 +46,49 @@ test('single fullscreen container follows landscape browser-height changes',asyn
   }
   await expect.poll(()=>page.locator('#world').evaluate((el:HTMLCanvasElement)=>el.width/el.height)).toBeCloseTo(size.width/size.height,2);
   expect(actual.appAspect).toBeCloseTo(size.width/size.height,2);expect(actual.scroll).toBe(false);
+  // Content, not just the overlay rectangle, must stay reachable in short windows.
+  await page.locator('#start').evaluate(el=>{el.scrollTop=0;});
+  expect(await page.locator('.start-copy').evaluate(el=>el.getBoundingClientRect().top)).toBeGreaterThanOrEqual(0);
+  await page.locator('.start-copy > small').scrollIntoViewIfNeeded();
+  expect(await page.locator('.start-copy > small').evaluate(el=>el.getBoundingClientRect().bottom)).toBeLessThanOrEqual(size.height);
  }
+ await expect(page.locator('#viewport-debug')).toHaveCount(0);
+ await page.locator('#play').click();
+ await expect(page.locator('#start')).toBeHidden();
+ await expect.poll(()=>page.locator('#world').evaluate(el=>el.getBoundingClientRect().height)).toBe(390);
+ expect(errors).toEqual([]);
+ await context.close();
+});
+
+test('opt-in diagnosis reports viewport and asset identity without resizing the game',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:844,height:330},isMobile:true,hasTouch:true});
+ const page=await context.newPage();
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.route('http://blockboom.test/**',async route=>{
+  const path=new URL(route.request().url()).pathname.replace(/^\/Blockboom-\//,'/');
+  await route.fulfill({path:resolve('dist',path==='/'?'index.html':path.slice(1))});
+ });
+ await page.goto('http://blockboom.test/?debugViewport=1');
+ await expect(page.locator('#viewport-debug #values')).toContainText('app 844 × 330');
+ await page.setViewportSize({width:390,height:844});
+ await expect(page.locator('#viewport-debug #values')).toContainText('app 390 × 844');
+ await page.setViewportSize({width:844,height:390});
+ await expect(page.locator('#viewport-debug #values')).toContainText('app 844 × 390');
+ // Exercise the manual-copy fallback (clipboard may be blocked in embedded browsers).
+ await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>Promise.reject(new Error('blocked'))}}));
+ await page.getByRole('button',{name:'Werte kopieren'}).click();
+ const report=page.getByRole('textbox',{name:'Diagnose zum Kopieren'});
+ await expect(report).toBeVisible();
+ const data=JSON.parse(await report.inputValue());
+ expect(data.diagnostic).toBe('v075-1');
+ expect(data.window.innerHeight).toBe(390);
+ expect(data.app.height).toBe(390);
+ expect(data.canvas.height).toBe(390);
+ expect(data.cameraAspect).toBeCloseTo(844/390,2);
+ expect(data.assets.some((url:string)=>url.includes('/assets/index-'))).toBe(true);
+ expect(data.recent.length).toBeLessThanOrEqual(8);
+ await page.locator('#viewport-debug summary').click();
+ await expect(page.locator('#viewport-debug section')).toBeHidden();
  expect(errors).toEqual([]);
  await context.close();
 });
