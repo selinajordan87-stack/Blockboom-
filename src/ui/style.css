@@ -46,8 +46,7 @@
   box-sizing: border-box;
 }
 html,
-body,
-#app {
+body {
   width: 100%;
   min-width: 100%;
   height: 100%;
@@ -58,23 +57,31 @@ body,
   background: #173c37;
 }
 body {
-  position: fixed;
-  inset: 0;
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: manipulation;
 }
 #app {
+  /*
+   * One fullscreen containing block only. Chrome on iOS can report a
+   * different dynamic viewport for 100dvh than it uses for fixed viewport
+   * edges while its browser bars move. A fixed body plus a second fixed,
+   * 100dvh-sized app can therefore clip the app to the shorter rectangle.
+   *
+   * Keep the document non-positioned and let the app itself span the four
+   * viewport edges. Canvas, HUD and start overlay then share this rectangle.
+   * No hard-coded height and no extra pixels beyond the visible viewport.
+   */
   position: fixed;
   top: var(--game-top, 0px);
   left: var(--game-left, 0px);
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  /* CSS owns the viewport rectangle; JS measures it, never fixes its height. */
-  width: 100%;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
   isolation: isolate;
   transform-origin: top left;
   transform: scale(var(--game-scale, 1));
