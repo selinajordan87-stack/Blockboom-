@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>BLOCKBOOM · Browservergleich</title>
+  <script>
+    // Only this isolated page changes its meta tag, never the game's settings.
+    if(new URLSearchParams(location.search).get('mode')==='simple'){
+      document.querySelector('meta[name="viewport"]').content='width=device-width,initial-scale=1,viewport-fit=cover';
+    }
+  </script>
+  <style>
+    /* Deliberately no fixed containers, transforms, overflow locks or JS sizing. */
+    html,body{margin:0;background:#28cbbb;color:#102c29;font:15px/1.4 Arial,sans-serif}
+    main{box-sizing:border-box;min-height:100vh;min-height:100dvh;padding:12px; padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+    h1{font-size:19px;margin:0 0 6px}p{margin:6px 0}pre{font:13px/1.4 monospace;white-space:pre-wrap;margin:8px 0}
+    a,button{display:inline-block;box-sizing:border-box;background:#fff5d8;color:#102c29;font:inherit;padding:10px;min-height:44px;border:1px solid #102c29;border-radius:6px;margin:3px 3px 3px 0}
+    textarea{display:block;box-sizing:border-box;width:100%;height:130px;font-size:16px}[hidden]{display:none!important}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Browservergleich · ohne Spiel</h1>
+    <p>Bleibt außerhalb dieser türkisfarbenen Seite ein grauer Rand?</p>
+    <pre id="values"></pre>
+    <nav aria-label="Vergleich"><a href="?mode=game">A: Spiel-Viewport</a><a href="?mode=simple">B: Ohne Zoomsperre</a><button id="copy">Werte kopieren</button><a href="./?debugViewport=1">Zurück zum Spiel</a></nav>
+    <p id="status" role="status">Keine Spielstände werden gelesen oder geändert.</p>
+    <textarea id="report" aria-label="Diagnose zum Kopieren" readonly hidden></textarea>
+  </main>
+  <script>
+    const mode=new URLSearchParams(location.search).get('mode')==='simple'?'simple':'game';
+    let report='',frame=0;
+    function update(){
+      const vv=window.visualViewport,rect=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
+      const data={diagnostic:'isolated-v075-1',mode,time:new Date().toISOString(),page:location.href,userAgent:navigator.userAgent,
+        viewportMeta:document.querySelector('meta[name="viewport"]').content,
+        window:{innerWidth,innerHeight,outerWidth,outerHeight,scrollX,scrollY,devicePixelRatio},
+        visualViewport:vv?{width:vv.width,height:vv.height,scale:vv.scale,offsetTop:vv.offsetTop,offsetLeft:vv.offsetLeft}:null,
+        screen:{width:screen.width,height:screen.height,orientation:screen.orientation?.type},
+        html:rect(document.documentElement),body:rect(document.body),main:rect(document.querySelector('main'))};
+      report=JSON.stringify(data,null,2);
+      document.getElementById('values').textContent=`${mode==='simple'?'B: Ohne Zoomsperre':'A: Gleicher Viewport-Metatag wie im Spiel'}\nFenster: ${innerWidth} × ${innerHeight} · visualViewport: ${vv?`${vv.width} × ${vv.height}`:'–'}\nSeite: ${data.main.width} × ${data.main.height} · Zoom: ${vv?.scale??'–'}`;
+    }
+    function schedule(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;update();});}
+    for(const name of ['resize','orientationchange','pageshow'])window.addEventListener(name,schedule);
+    window.visualViewport?.addEventListener('resize',schedule);
+    window.visualViewport?.addEventListener('scroll',schedule);
+    document.getElementById('copy').onclick=async()=>{
+      update();
+      const text=document.getElementById('report'),status=document.getElementById('status');text.value=report;
+      try{await navigator.clipboard.writeText(report);status.textContent='Kopiert. Bitte im Chat einfügen.';text.hidden=true;}
+      catch{text.hidden=false;text.focus();text.select();status.textContent='Text gedrückt halten und kopieren.';}
+    };
+    update();
+  </script>
+</body>
+</html>
