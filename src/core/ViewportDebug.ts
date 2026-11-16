@@ -8,12 +8,13 @@ export function installViewportDebug(cameraAspect:()=>number) {
     :host{position:fixed;z-index:2147483647;top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));width:min(420px,calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right) - 16px));color:#fff;background:#102824f5;border:1px solid #fff;border-radius:8px;font:14px/1.4 Arial,sans-serif;}
     *{box-sizing:border-box} summary{padding:10px;cursor:pointer} section{padding:0 10px 10px;max-height:65dvh;overflow:auto;touch-action:pan-y}
     pre{font:12px/1.45 monospace;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
-    button{font:inherit;padding:10px;min-height:44px;color:#102824;background:#f5ebc9;border:0;border-radius:6px;margin:2px}
+    button,a{display:inline-block;font:inherit;padding:10px;min-height:44px;color:#102824;background:#f5ebc9;border:0;border-radius:6px;margin:2px}
     textarea{width:100%;height:110px;font:16px/1.4 monospace} p{margin:6px 0} [hidden]{display:none!important}
     .probe{position:fixed;visibility:hidden;pointer-events:none;width:0;top:0;left:0}
   </style><details open><summary>Viewport-Diagnose · v075-1</summary><section>
     <p>Werte bei sichtbarem Rand kopieren. Keine automatische Übertragung.</p>
     <pre id="values"></pre><button id="refresh">Aktualisieren</button><button id="copy">Werte kopieren</button>
+    <a href="./viewport-check.html">Browservergleich ohne Spiel</a>
     <p id="status" role="status"></p><textarea id="report" aria-label="Diagnose zum Kopieren" readonly hidden></textarea>
   </section></details>`;
   const probes=['vh','svh','dvh'].map(unit=>{
