@@ -9,8 +9,9 @@ export class Atmosphere{
   this.warm=new T.PointLight(0xffc482,0,12,1.5);scene.add(this.warm);
  }
  update(time:number,day:number,origin:T.Vector3){
-  const light=T.MathUtils.smoothstep(Math.sin((day-.05)*Math.PI*2),-.38,.2),dusk=Math.exp(-(((day-.62)/.07)**2));
-  this.sky.position.copy(origin);this.sky.material.uniforms.zenith.value.set(0x142744).lerp(new T.Color(0x368bd2),light);this.sky.material.uniforms.horizon.value.set(0x52617d).lerp(new T.Color(0xc7e4ed),light).lerp(new T.Color(0xe9af82),dusk*.65);
+  const light=T.MathUtils.smoothstep(Math.sin((day-.05)*Math.PI*2),-.38,.2),dusk=Math.exp(-(((day-.62)/.07)**2)),dawn=Math.exp(-(((day-.03)/.055)**2));
+  // Match the fog's horizon palette so distant hills blend into the sky.
+  this.sky.position.copy(origin);this.sky.material.uniforms.zenith.value.set(0x152945).lerp(new T.Color(0x438fcb),light);this.sky.material.uniforms.horizon.value.set(0x3b526f).lerp(new T.Color(0xc1dfe9),light).lerp(new T.Color(0xedb48e),Math.max(dusk*.55,dawn*.3));
   let n=0;for(let cluster=0;cluster<12;cluster++){const a=cluster*2.399,px=Math.cos(a)*95+Math.sin(time*.000008)*5,pz=Math.sin(a)*95;
    for(let j=0;j<4;j++){this.dummy.position.set(origin.x+px+j*3,48+(cluster%3)*3+j%2,origin.z+pz+(j%2)*4);this.dummy.scale.set(7+(cluster%3),1.2+(j%3)*.6,4+(j%2));this.dummy.updateMatrix();this.clouds.setMatrixAt(n++,this.dummy.matrix);}}
   this.clouds.count=n;(this.clouds.material as T.MeshBasicMaterial).color.set(0x6a7894).lerp(new T.Color(0xfff6e4),light);this.clouds.instanceMatrix.needsUpdate=true;this.clouds.visible=light>.1;(this.clouds.material as T.MeshBasicMaterial).opacity=.4+light*.42;

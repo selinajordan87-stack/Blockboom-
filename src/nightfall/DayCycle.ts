@@ -14,9 +14,11 @@ export class DayView {
   private sunMesh: T.Mesh;
   private moon: T.Mesh;
   private stars: T.Points<T.BufferGeometry, T.PointsMaterial>;
-  private day = new T.Color(0xb6d8e2);
-  private night = new T.Color(0x253a59);
-  private sunset = new T.Color(0xb77c79);
+  private day = new T.Color(0xc1dfe9);
+  private night = new T.Color(0x3b526f);
+  private sunset = new T.Color(0xedb48e);
+  private moonlight = new T.Color(0xa6c5ed);
+  private sunlight = new T.Color();
   constructor(private scene: T.Scene, private sun: T.DirectionalLight, private ambient: T.HemisphereLight) {
     const sphere = new T.SphereGeometry(1, 8, 6);
     this.sunMesh = new T.Mesh(sphere, new T.MeshBasicMaterial({ color: 0xffd995, fog: false }));
@@ -36,13 +38,18 @@ export class DayView {
     const daylight = T.MathUtils.smoothstep(height, -.38, .2);
     const sky = this.scene.background as T.Color;
     sky.copy(this.night).lerp(this.day, daylight);
-    if (time > .53 && time < .73) sky.lerp(this.sunset, Math.sin((time-.53)/.2*Math.PI)*.55);
+    const dusk = Math.exp(-(((time-.62)/.07)**2));
+    const dawn = Math.exp(-(((time-.03)/.055)**2));
+    sky.lerp(this.sunset, Math.max(dusk*.55,dawn*.3));
     (this.scene.fog as T.Fog).color.copy(sky);
     this.sun.position.set(-Math.cos(angle)*30, height*40, 28);
-    this.sun.intensity = .25 + daylight*1.8;
-    this.sun.color.set(daylight < .2 ? 0x9abbef : daylight < .6 ? 0xffbd89 : 0xffedcf);
-    this.ambient.intensity = .78 + daylight*.68;
-    this.ambient.color.set(daylight < .3 ? 0x91b0dd : 0xeaf8ff);
+    this.sun.intensity = .28 + daylight*1.65;
+    // Smooth colour transitions keep dusk warm without sudden tint changes.
+    this.sunlight.set(0xffc38c).lerp(new T.Color(0xffefd8),daylight);
+    this.sun.color.copy(this.moonlight).lerp(this.sunlight,T.MathUtils.smoothstep(height,-.18,.12));
+    this.ambient.intensity = .82 + daylight*.48;
+    this.ambient.color.set(0x91afd4).lerp(new T.Color(0xe5f2fa),daylight);
+    this.ambient.groundColor.set(0x37475b).lerp(new T.Color(0x6c7953),daylight);
     this.sunMesh.position.set(origin.x-Math.cos(angle)*49, Math.max(-9,height*49),origin.z+32);
     this.sunMesh.scale.setScalar(1.7);
     this.moon.position.set(origin.x-Math.cos(angle)*45, Math.max(-9,-height*45),origin.z+10);
