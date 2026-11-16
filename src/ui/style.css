@@ -442,6 +442,18 @@ footer {
 .start-copy {
   max-width: 640px;
 }
+/* Short browser windows must not center overflowing start content above the
+ * scroll origin. Only this menu scrolls; the game/HUD remain fixed. */
+#start {
+  align-items: flex-start;
+  overflow-y: auto;
+  touch-action: pan-y;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  padding-left: max(6vw, calc(env(safe-area-inset-left) + 12px));
+  padding-right: max(6vw, calc(env(safe-area-inset-right) + 12px));
+}
+#start > .start-copy { margin-block: auto; }
 .eyebrow {
   font-size: 10px;
   letter-spacing: 3px;

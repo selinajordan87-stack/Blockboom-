@@ -1620,7 +1620,7 @@ function resize() {
     landscape = nextLandscape;
   }
   renderer.setPixelRatio(ratio);
-  // CSS dvh follows browser chrome. Its actual container size is authoritative
+  // The CSS container is authoritative
   // for both WebGL and the camera, even if iOS JS viewport reports lag rotation.
   const editing=!!document.activeElement?.matches('input:not([type="range"]),textarea,[contenteditable="true"]');
   const vv=window.visualViewport,scale=vv?.scale&&Number.isFinite(vv.scale)?vv.scale:1;
@@ -1658,6 +1658,9 @@ window.visualViewport?.addEventListener("resize", scheduleResize);
 window.visualViewport?.addEventListener("scroll", scheduleResize);
 keyboardViewport();
 resize();
+if(new URLSearchParams(location.search).get("debugViewport")==="1"){
+  void import("./core/ViewportDebug").then(({installViewportDebug})=>installViewportDebug(()=>camera.aspect));
+}
 const diagnostics = new URLSearchParams(location.search).has("diagnostics");
 const frameStats=new FrameStats();
 let diagnosticsAt = 0,
