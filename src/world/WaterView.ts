@@ -3,17 +3,26 @@ import * as T from "three";
 /** Two inexpensive layers create depth and movement without a custom shader. */
 export class WaterView {
   group = new T.Group();
-  surface: T.Mesh<T.CircleGeometry, T.MeshBasicMaterial>;
+  surface: T.Mesh<T.CircleGeometry, T.MeshPhongMaterial>;
   private depth: T.Mesh<T.CircleGeometry, T.MeshLambertMaterial>;
   private baseY = 0.38;
   constructor(scene: T.Scene, edition: 1 | 2 | 3 | 4) {
     const geometry = new T.CircleGeometry(1, 64);
+    const tint:number[]=[];
+    const deep=new T.Color(0x247a9b),shallow=new T.Color(0x66c9be);
+    for(let i=0;i<geometry.getAttribute('position').count;i++){
+      const c=i===0?deep:shallow;tint.push(c.r,c.g,c.b);
+    }
+    geometry.setAttribute('color',new T.Float32BufferAttribute(tint,3));
     this.surface = new T.Mesh(
       geometry,
-      new T.MeshBasicMaterial({
-        color: 0x188aa7,
+      new T.MeshPhongMaterial({
+        color: 0xffffff,
+        vertexColors: true,
+        specular: 0x8ebfca,
+        shininess: 48,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.4,
         side: T.DoubleSide,
         depthWrite: false,
       }),
@@ -21,7 +30,7 @@ export class WaterView {
     this.depth = new T.Mesh(
       geometry.clone(),
       new T.MeshLambertMaterial({
-        color: 0x256a82,
+        color: 0x285f78,
         transparent: true,
         opacity: 0.2,
         side: T.DoubleSide,
@@ -46,7 +55,7 @@ export class WaterView {
     this.surface.position.y = this.baseY + wave;
     this.surface.rotation.z = Math.sin(time * 0.00013) * 0.012;
     this.depth.position.y = this.baseY - 0.08 - wave * 0.35;
-    this.surface.material.opacity = 0.46 + Math.sin(time * 0.0007) * 0.025;
+    this.surface.material.opacity = 0.4 + Math.sin(time * 0.0007) * 0.018;
   }
   get level() {
     return this.surface.position.y;
