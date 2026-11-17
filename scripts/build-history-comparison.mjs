@@ -6,7 +6,7 @@ import {resolve,join} from 'node:path';
 
 const repository=resolve(import.meta.dirname,'..');
 const output=resolve(process.argv[2]||'/workspace/blockboom-history-public');
-const base='/Blockboom-viewport-history/';
+const base=process.argv[3]||'/Blockboom-viewport-history/';
 const current='abd4d3742fd5b9dc9cccf8380403499ce6447a5b';
 const early=execFileSync('git',['rev-parse','6946d9f'],{cwd:repository,encoding:'utf8'}).trim();
 mkdirSync(output,{recursive:true});
