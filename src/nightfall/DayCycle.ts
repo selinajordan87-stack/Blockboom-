@@ -19,6 +19,10 @@ export class DayView {
   private sunset = new T.Color(0xedb48e);
   private moonlight = new T.Color(0xa6c5ed);
   private sunlight = new T.Color();
+  private noonLight = new T.Color(0xfff1dd);
+  private skyLight = new T.Color(0xd9efff);
+  private earthLight = new T.Color(0x69724d);
+  private twilight = new T.Color(0xf4a26f);
   constructor(private scene: T.Scene, private sun: T.DirectionalLight, private ambient: T.HemisphereLight) {
     const sphere = new T.SphereGeometry(1, 8, 6);
     this.sunMesh = new T.Mesh(sphere, new T.MeshBasicMaterial({ color: 0xffd995, fog: false }));
@@ -42,14 +46,16 @@ export class DayView {
     const dawn = Math.exp(-(((time-.03)/.055)**2));
     sky.lerp(this.sunset, Math.max(dusk*.55,dawn*.3));
     (this.scene.fog as T.Fog).color.copy(sky);
-    this.sun.position.set(-Math.cos(angle)*30, height*40, 28);
-    this.sun.intensity = .28 + daylight*1.65;
+    // The existing directional light becomes moonlight at night. Keep it
+    // above the horizon so rocks and tree crowns remain legible from above.
+    this.sun.position.set(-Math.cos(angle)*30, Math.max(8,Math.abs(height)*40), 28);
+    this.sun.intensity = .32 + daylight*1.5;
     // Smooth colour transitions keep dusk warm without sudden tint changes.
-    this.sunlight.set(0xffc38c).lerp(new T.Color(0xffefd8),daylight);
+    this.sunlight.copy(this.noonLight).lerp(this.twilight,Math.max(dusk,dawn)*.65);
     this.sun.color.copy(this.moonlight).lerp(this.sunlight,T.MathUtils.smoothstep(height,-.18,.12));
-    this.ambient.intensity = .82 + daylight*.48;
-    this.ambient.color.set(0x91afd4).lerp(new T.Color(0xe5f2fa),daylight);
-    this.ambient.groundColor.set(0x37475b).lerp(new T.Color(0x6c7953),daylight);
+    this.ambient.intensity = .84 + daylight*.36;
+    this.ambient.color.set(0x91afd4).lerp(this.skyLight,daylight);
+    this.ambient.groundColor.set(0x37475b).lerp(this.earthLight,daylight);
     this.sunMesh.position.set(origin.x-Math.cos(angle)*49, Math.max(-9,height*49),origin.z+32);
     this.sunMesh.scale.setScalar(1.7);
     this.moon.position.set(origin.x-Math.cos(angle)*45, Math.max(-9,-height*45),origin.z+10);

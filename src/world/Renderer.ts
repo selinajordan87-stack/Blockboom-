@@ -74,7 +74,7 @@ export function createVoxelAtlas() {
         if (index === 2) shade += (x * 5 + y * 7) % 13 === 0 ? -18 : 0;
         if ([3, 10, 12, 14, 15].includes(index))
           shade += Math.floor(y/5)%2===0?4:-5;
-        if([3,10,12,14,15].includes(index)&&((x+Math.floor(y/5)*7)%13===0||y%7===0))shade-=17;
+        if([3,10,12,14,15].includes(index)&&((x+Math.floor(y/5)*7)%13===0||(y+Math.floor(x/6))%9===0))shade-=15;
         if ([4, 13].includes(index))
           shade += x % 5 === 0 ? -26 : y % 7 === 0 ? 12 : 0;
         if (index === 5)
@@ -97,6 +97,16 @@ export function createVoxelAtlas() {
         if (index === 17) shade += (x + y) % 6 < 2 ? -45 : 18;
         const value = Math.max(145, Math.min(255, shade));
         data[at] = data[at + 1] = data[at + 2] = value;
+        if(index===1){
+          // UV y=1 is the top edge. A broken green turf lip above warm earth
+          // makes a hillside read as soil, rather than a stack of green cubes.
+          const grass=y>=12-(x%5===0?2:x%3===0?1:0);
+          const pigment=grass?colors.Gras:colors.Erde;
+          const strength=value/255;
+          data[at]=Math.round((pigment>>16&255)*strength);
+          data[at+1]=Math.round((pigment>>8&255)*strength);
+          data[at+2]=Math.round((pigment&255)*strength);
+        }
         data[at + 3] = 255;
       }
   const texture = new T.DataTexture(data, width, height, T.RGBAFormat);
@@ -215,7 +225,7 @@ export class WorldView {
   private focusZ=17;
   private visibleDistance=64;
   private faceColors=Object.fromEntries(Object.entries(colors).map(([block,color])=>[block,new T.Color(color)])) as Record<Block,T.Color>;
-  private grassSide=new T.Color(0x8e9e61);
+  private grassSide=new T.Color(0xffffff);
   readonly metrics:WorldRenderMetrics={lastBuildMs:0,maxBuildMs:0,maxRuntimeBuildMs:0,totalBuildMs:0,lastChunkMs:0,maxChunkMs:0,queue:0,rebuilt:0,columns:0,restarts:0,activeMeshes:0,currentChunk:null};
   constructor(public world: World, scene: T.Scene, private clock:()=>number=()=>performance.now()) {
     this.group.name = "chunked voxel world";
